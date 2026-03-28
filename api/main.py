@@ -23,12 +23,13 @@ from contextlib import asynccontextmanager
 
 os.environ.setdefault("VAHAN_SCRAPER_BACKEND", "selenium")
 
-from typing import Annotated, Optional
+from typing import Annotated, Any, Optional
 
 from fastapi import FastAPI, BackgroundTasks, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
+from starlette.middleware.gzip import GZipMiddleware
 from fastapi.openapi.docs import get_swagger_ui_html
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field, field_validator
 
@@ -96,6 +97,11 @@ RESEARCH_DIR = PROJECT_ROOT / "research_data"
 SQLITE_LOCAL = PROJECT_ROOT / "data" / "vahan_local.db"
 # Bundled demo dataset when no DB (fresh Render / local API without PostgreSQL or SQLite load).
 STATIC_MASTER_JSON = PROJECT_ROOT / "docs" / "data" / "vahan_master.json"
+
+# In-memory cache for GET /data/vahan_master_compat: serialized JSON bytes + fingerprint.
+# Invalidates when row count or latest loaded_at changes (reload / upsert).
+_vahan_bundle_cache_fp: tuple[int, str] | None = None
+_vahan_bundle_cache_body: bytes | None = None
 
 # Expose background scrape errors to UI
 last_scrape_error: str | None = None
@@ -170,6 +176,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(GZipMiddleware, minimum_size=1_000)
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 DASHBOARD_DIR = STATIC_DIR / "dashboard"
@@ -549,11 +556,41 @@ def vahan_master_compat():
     """
     Legacy vahan_master.json-shaped bundle for the dashboard (regions, makers, fuels, encoded data rows).
     Merges static analytics overlay from api/static/dashboard/legacy_overlay.json for Intelligence pages.
+
+    Responses are cached in-process until ``vahan_registrations`` row count or ``MAX(loaded_at)``
+    changes, and gzip-compressed when large (see GZipMiddleware).
     """
+    global _vahan_bundle_cache_fp, _vahan_bundle_cache_body
     conn, dialect = _connect_data()
     if conn:
         try:
-            return build_vahan_master_bundle(conn, dialect=dialect)
+            fp = _vahan_registrations_fingerprint(conn, dialect)
+            if (
+                fp is not None
+                and fp == _vahan_bundle_cache_fp
+                and _vahan_bundle_cache_body is not None
+            ):
+                return Response(
+                    content=_vahan_bundle_cache_body,
+                    media_type="application/json; charset=utf-8",
+                    headers={
+                        "X-Vahan-Data-Source": "database-cache",
+                        "Cache-Control": "public, max-age=120",
+                    },
+                )
+            bundle = build_vahan_master_bundle(conn, dialect=dialect)
+            body = json.dumps(bundle, ensure_ascii=False).encode("utf-8")
+            if fp is not None:
+                _vahan_bundle_cache_fp = fp
+                _vahan_bundle_cache_body = body
+            return Response(
+                content=body,
+                media_type="application/json; charset=utf-8",
+                headers={
+                    "X-Vahan-Data-Source": "database",
+                    "Cache-Control": "public, max-age=120",
+                },
+            )
         except Exception as e:
             raise HTTPException(500, str(e))
         finally:
@@ -639,6 +676,33 @@ def _exec(cur, dialect: str, q: str, params: list) -> None:
     if dialect == "sqlite":
         q = q.replace("%s", "?")
     cur.execute(q, params)
+
+
+def _vahan_registrations_fingerprint(conn: Any, dialect: str) -> tuple[int, str] | None:
+    """Cheap cache token: changes when data is loaded or updated."""
+    try:
+        cur = conn.cursor()
+        try:
+            q = "SELECT COUNT(*) AS c, MAX(loaded_at) AS m FROM vahan_registrations"
+            _exec(cur, dialect, q, [])
+            row = cur.fetchone()
+            if row is None:
+                return None
+            if isinstance(row, sqlite3.Row):
+                c = int(row["c"] or 0)
+                m = row["m"]
+            elif isinstance(row, dict):
+                c = int(row.get("c") or 0)
+                m = row.get("m")
+            else:
+                c = int(row[0] or 0)
+                m = row[1] if len(row) > 1 else None
+            m_s = str(m) if m is not None else ""
+            return (c, m_s)
+        finally:
+            cur.close()
+    except Exception:
+        return None
 
 
 
