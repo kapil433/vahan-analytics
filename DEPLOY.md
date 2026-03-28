@@ -137,7 +137,56 @@ The SPA also ships a **CSP** `<meta>` tag for static hosting; the API adds **Con
 
 ---
 
-## 8. Build-time SEO prerender (dashboard)
+## 8. Cloudflare Worker — inject a **secret** header to the origin
+
+Use this when you want a **shared secret** on the **request** from Cloudflare to your API (e.g. Render). The secret is stored as a **Worker secret**, not in client-side HTML or git.
+
+**Important:** The **browser must call a hostname that goes through the Worker** (for example `https://api.vahanintelligence.in`). If the dashboard still uses `https://*.onrender.com` directly, the Worker never runs and no header is added.
+
+### 1. DNS
+
+- Create **`api.vahanintelligence.in`** in Cloudflare DNS as a **proxied** record. For a Worker-only setup you can use a **dummy AAAA** `100::` or follow Cloudflare’s “Worker route” docs; the usual pattern is **route** `api.vahanintelligence.in/*` → your Worker (orange cloud on the record that fronts the Worker).
+
+### 2. Worker code (in this repo)
+
+Example proxy + header: **`deploy/cloudflare-worker/src/index.js`** and **`deploy/cloudflare-worker/wrangler.toml`**.
+
+- **`ORIGIN_HOST`**: your real API host (e.g. `vahan-intelligence-api.onrender.com`) — set in `wrangler.toml` `[vars]` or in the Cloudflare dashboard.
+- **`EDGE_SHARED_SECRET`**: set only via Wrangler or the dashboard (**never** commit it).
+
+### 3. Deploy with Wrangler
+
+```bash
+cd deploy/cloudflare-worker
+npm install -g wrangler   # or use npx wrangler
+wrangler login
+wrangler secret put EDGE_SHARED_SECRET   # paste a long random string
+wrangler deploy
+```
+
+Then attach a **route**: **Workers & Pages** → your worker → **Triggers** → **Routes** → e.g. `api.vahanintelligence.in/*` on zone `vahanintelligence.in`.
+
+### 4. Point the dashboard at the Worker hostname
+
+Set GitHub Actions secret **`VAHAN_API_BASE_URL`** (and any local config) to:
+
+`https://api.vahanintelligence.in`
+
+(not the `onrender.com` URL), so `fetch` hits Cloudflare first.
+
+### 5. Verify on the API (Render) — required for security
+
+The secret header is **not** secret if the origin does not check it. On FastAPI, read **`X-Vahan-Edge-Secret`** (or rename in the Worker) and compare to **`os.environ["EDGE_SHARED_SECRET"]`**; return **403** when missing or wrong **for routes you want to lock** (remember: **OPTIONS** for CORS must still succeed, or preflight will fail).
+
+If you only want the header for logging/metrics and the API stays public, you can skip enforcement — but then the header is not an access control.
+
+### Alternative: non-secret response headers
+
+For **`Strict-Transport-Security`**, **`X-Frame-Options`**, etc., you do **not** need a Worker secret: use **Transform Rules** → **Modify response header** (see §7 above).
+
+---
+
+## 9. Build-time SEO prerender (dashboard)
 
 `scripts/prerender_dashboard_seo.py` injects a `<noscript>` block with the Blog and About text so crawlers that execute little or no JavaScript still see indexable copy. It runs automatically in **Sync public dashboard** and **Deploy GitHub Pages** after `inject_pages_api_base.py`. To refresh locally after editing the dashboard:
 

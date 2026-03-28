@@ -1,0 +1,15 @@
+# Cloudflare Worker — proxy API with secret header
+# Docs: ../../DEPLOY.md (Cloudflare Worker — secret header)
+name = "vahan-api-edge"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+
+# Set after first deploy (Dashboard → Workers → Triggers) or uncomment:
+# routes = [{ pattern = "api.vahanintelligence.in/*", zone_name = "vahanintelligence.in" }]
+
+[vars]
+# Public: hostname only (no scheme). Override in wrangler if needed.
+ORIGIN_HOST = "vahan-intelligence-api.onrender.com"
+
+# Secret: NEVER put here. Use:
+#   wrangler secret put EDGE_SHARED_SECRET
