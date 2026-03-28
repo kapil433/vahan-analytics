@@ -33,6 +33,7 @@ jobs:
           touch _site/.nojekyll
           cp deploy/github-pages/index.html _site/index.html
           cp deploy/github-pages/legacy/README.md _site/legacy/README.md
+          if [ -f deploy/github-pages/CNAME ]; then cp deploy/github-pages/CNAME _site/CNAME; fi
           if [ -f docs/data/vahan_master.json ]; then
             cp docs/data/vahan_master.json _site/data/vahan_master.json
           fi

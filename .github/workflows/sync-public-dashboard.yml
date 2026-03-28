@@ -27,6 +27,7 @@ jobs:
           touch _public/.nojekyll
           cp deploy/github-pages/index.html _public/index.html
           cp deploy/github-pages/legacy/README.md _public/legacy/README.md
+          if [ -f deploy/github-pages/CNAME ]; then cp deploy/github-pages/CNAME _public/CNAME; fi
           if [ -n "$API_BASE" ]; then
             {
               printf '%s\n' "<script>window.__VAHAN_API_BASE__='${API_BASE}';</script>"
