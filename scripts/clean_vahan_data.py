@@ -755,12 +755,17 @@ if __name__ == "__main__":
     import argparse
 
     base = Path(__file__).resolve().parent.parent
-    ap = argparse.ArgumentParser(description="Clean Vahan *_merged.csv into long-format CSVs.")
+    ap = argparse.ArgumentParser(
+        description=(
+            "Clean Vahan exports into long-format CSVs. "
+            "Default: all *_merged.csv under raw-dir (recursive) plus raw-dir/f1/**/*.csv and *.xlsx."
+        ),
+    )
     ap.add_argument(
         "--raw-dir",
         type=Path,
         default=base / "output" / "vahan_data",
-        help="Root folder containing merged CSVs (flat and/or f1/**)",
+        help="Root folder (e.g. output/vahan_data): merged CSVs + f1/ subtree",
     )
     ap.add_argument(
         "--output-dir",
