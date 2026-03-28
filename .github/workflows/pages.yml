@@ -1,5 +1,5 @@
-# GitHub Pages: landing + optional API-backed dashboard (inject __VAHAN_API_BASE__).
-# Set repo variable VAHAN_API_BASE_URL (e.g. https://your-app.onrender.com) for /dashboard/index.html.
+# GitHub Pages: full analytics dashboard at / (and /dashboard/); marketing launcher at /welcome.html.
+# Optional repo variable VAHAN_API_BASE_URL overrides the default Render URL below.
 name: Deploy GitHub Pages
 
 on:
@@ -31,18 +31,19 @@ jobs:
         run: |
           mkdir -p _site/data _site/dashboard _site/legacy
           touch _site/.nojekyll
-          cp deploy/github-pages/index.html _site/index.html
           cp deploy/github-pages/legacy/README.md _site/legacy/README.md
           if [ -f deploy/github-pages/CNAME ]; then cp deploy/github-pages/CNAME _site/CNAME; fi
           if [ -f docs/data/vahan_master.json ]; then
             cp docs/data/vahan_master.json _site/data/vahan_master.json
           fi
-          if [ -n "$API_BASE" ]; then
-            {
-              printf '%s\n' "<script>window.__VAHAN_API_BASE__='${API_BASE}';</script>"
-              cat api/static/dashboard/index.html
-            } > _site/dashboard/index.html
-          fi
+          # Default API = render.yaml service name (override with repo variable VAHAN_API_BASE_URL).
+          API_EFFECTIVE="${API_BASE:-https://vahan-intelligence-api.onrender.com}"
+          API_EFFECTIVE="${API_EFFECTIVE%/}"
+          {
+            printf '%s\n' "<script>window.__VAHAN_API_BASE__='${API_EFFECTIVE}';</script>"
+            cat api/static/dashboard/index.html
+          } | tee _site/index.html > _site/dashboard/index.html
+          cp deploy/github-pages/index.html _site/welcome.html
 
       - uses: actions/upload-pages-artifact@v3
         with:
