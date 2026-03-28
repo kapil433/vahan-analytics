@@ -94,6 +94,8 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 OUTPUT_BASE = PROJECT_ROOT / "output" / "vahan_data"
 RESEARCH_DIR = PROJECT_ROOT / "research_data"
 SQLITE_LOCAL = PROJECT_ROOT / "data" / "vahan_local.db"
+# Bundled demo dataset when no DB (fresh Render / local API without PostgreSQL or SQLite load).
+STATIC_MASTER_JSON = PROJECT_ROOT / "docs" / "data" / "vahan_master.json"
 
 # Expose background scrape errors to UI
 last_scrape_error: str | None = None
@@ -549,14 +551,32 @@ def vahan_master_compat():
     Merges static analytics overlay from api/static/dashboard/legacy_overlay.json for Intelligence pages.
     """
     conn, dialect = _connect_data()
-    if not conn:
-        raise HTTPException(503, _database_unavailable_detail())
-    try:
-        return build_vahan_master_bundle(conn, dialect=dialect)
-    except Exception as e:
-        raise HTTPException(500, str(e))
-    finally:
-        conn.close()
+    if conn:
+        try:
+            return build_vahan_master_bundle(conn, dialect=dialect)
+        except Exception as e:
+            raise HTTPException(500, str(e))
+        finally:
+            conn.close()
+    if STATIC_MASTER_JSON.is_file():
+        return FileResponse(
+            str(STATIC_MASTER_JSON),
+            media_type="application/json",
+            headers={"X-Vahan-Data-Source": "static-docs-data"},
+        )
+    raise HTTPException(503, _database_unavailable_detail())
+
+
+@app.get("/data/vahan_master.json")
+def vahan_master_json_file():
+    """Same bundle as compat static fallback; helps relative fetch(`data/vahan_master.json`) from /dashboard."""
+    if STATIC_MASTER_JSON.is_file():
+        return FileResponse(
+            str(STATIC_MASTER_JSON),
+            media_type="application/json",
+            headers={"X-Vahan-Data-Source": "static-docs-data"},
+        )
+    raise HTTPException(503, _database_unavailable_detail())
 
 
 @app.get("/mock-portal", include_in_schema=False)
