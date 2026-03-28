@@ -392,39 +392,47 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
 .footer-brand{display:flex;align-items:center;gap:10px;margin-bottom:8px}
 .footer-logo{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#1d4ed8,#0ea5e9);color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
 
-/* State vs All India — local filter bar */
+/* State vs All India — mirrors main filter bar; refresh sits below all rows */
 .cmp-filter-bar{
   background:var(--surface2);
   border:1px solid var(--border);
   border-radius:8px;
-  padding:12px 16px;
+  padding:12px 16px 16px;
   margin-bottom:16px;
   display:flex;
   flex-direction:column;
-  gap:12px;
+  gap:10px;
 }
 .cmp-filter-row{
   display:flex;
-  align-items:flex-end;
+  align-items:flex-start;
   flex-wrap:wrap;
-  gap:12px 20px;
+  gap:12px 16px;
 }
 .cmp-filter-row .filter-group{
   display:flex;
   flex-direction:column;
   align-items:flex-start;
   gap:4px;
-  min-height:48px;
-  justify-content:flex-end;
+  min-height:auto;
+  justify-content:flex-start;
 }
-.cmp-filter-actions{
-  margin-left:auto;
+.cmp-filter-row .filter-sep{
+  align-self:stretch;
+  min-height:36px;
+}
+.cmp-filter-refresh-row{
   display:flex;
-  align-items:flex-end;
-  flex-shrink:0;
+  justify-content:flex-end;
+  width:100%;
+  padding-top:4px;
+  border-top:1px solid var(--border);
+  margin-top:4px;
 }
+.cmp-filter-refresh-row .btn{padding:8px 18px;display:inline-flex;align-items:center;gap:6px}
 @media(max-width:900px){
-  .cmp-filter-actions{margin-left:0}
+  .cmp-filter-refresh-row{justify-content:stretch}
+  .cmp-filter-refresh-row .btn{width:100%;justify-content:center}
 }
 
 </style>
@@ -467,9 +475,12 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
 <div class="filter-bar">
   <div class="filter-group">
     <span class="filter-label">GEOGRAPHY</span>
-    <select class="filter-select" id="f-geo">
-      <option value="All India">All India</option>
-    </select>
+    <div class="ms-wrapper" id="ms-geo-wrapper">
+      <div class="ms-trigger" id="ms-geo-trigger" onclick="toggleMS('geo')" style="min-width:120px">All India</div>
+      <div class="ms-dropdown" id="ms-geo-dropdown">
+        <div id="ms-geo-items"></div>
+      </div>
+    </div>
   </div>
   <div class="filter-sep"></div>
   <div class="filter-group">
@@ -800,49 +811,41 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
   <div class="page" id="page-compare">
     <div class="cmp-filter-bar">
       <div class="cmp-filter-row">
-        <div class="filter-group"><span class="filter-label">STATE</span>
-          <select class="filter-select" id="cmp-state" style="min-width:200px">
-            <option value="">Loading…</option>
-          </select>
+        <div class="filter-group"><span class="filter-label">GEOGRAPHY</span>
+          <div class="ms-wrapper" id="cmp-ms-geo-wrapper">
+            <div class="ms-trigger" id="cmp-ms-geo-trigger" onclick="toggleCmpMS('geo')" style="min-width:120px">—</div>
+            <div class="ms-dropdown" id="cmp-ms-geo-dropdown">
+              <div id="cmp-ms-geo-items"></div>
+            </div>
+          </div>
         </div>
-        <div class="filter-sep" style="align-self:stretch;margin-bottom:4px"></div>
+        <div class="filter-sep"></div>
         <div class="filter-group"><span class="filter-label">YEAR TYPE</span>
           <select class="filter-select" id="cmp-yeartype">
             <option value="fy">Financial Year</option>
             <option value="cy">Calendar Year</option>
           </select>
         </div>
-        <div class="filter-group"><span class="filter-label">PERIOD</span>
+        <div class="filter-group"><span class="filter-label">YEAR</span>
           <div class="ms-wrapper" id="cmp-ms-year-wrapper">
-            <div class="ms-trigger" id="cmp-ms-year-trigger" onclick="toggleCmpMS('year')" style="min-width:140px">All Years</div>
+            <div class="ms-trigger" id="cmp-ms-year-trigger" onclick="toggleCmpMS('year')" style="min-width:90px">All Years</div>
             <div class="ms-dropdown" id="cmp-ms-year-dropdown">
               <div id="cmp-ms-year-items"></div>
             </div>
           </div>
         </div>
-        <div class="filter-group"><span class="filter-label">VIEW</span>
-          <select class="filter-select" id="cmp-view">
-            <option value="sidebyside">Side by Side</option>
-            <option value="overlay">Overlaid</option>
-            <option value="index">Index View (State as % of All India)</option>
-          </select>
-        </div>
-        <div class="cmp-filter-actions">
-          <button type="button" class="btn btn-primary" onclick="buildComparePage()" style="padding:8px 18px;display:inline-flex;align-items:center;gap:6px">⟳ Refresh</button>
-        </div>
-      </div>
-      <div class="cmp-filter-row">
         <div class="filter-group"><span class="filter-label">MONTH</span>
           <div class="ms-wrapper" id="cmp-ms-month-wrapper">
-            <div class="ms-trigger" id="cmp-ms-month-trigger" onclick="toggleCmpMS('month')" style="min-width:120px">All Months</div>
+            <div class="ms-trigger" id="cmp-ms-month-trigger" onclick="toggleCmpMS('month')" style="min-width:90px">All Months</div>
             <div class="ms-dropdown" id="cmp-ms-month-dropdown">
               <div id="cmp-ms-month-items"></div>
             </div>
           </div>
         </div>
+        <div class="filter-sep"></div>
         <div class="filter-group"><span class="filter-label">OEM</span>
           <div class="ms-wrapper" id="cmp-ms-oem-wrapper">
-            <div class="ms-trigger" id="cmp-ms-oem-trigger" onclick="toggleCmpMS('oem')" style="min-width:140px">All OEMs</div>
+            <div class="ms-trigger" id="cmp-ms-oem-trigger" onclick="toggleCmpMS('oem')">All OEMs</div>
             <div class="ms-dropdown" id="cmp-ms-oem-dropdown">
               <div class="ms-search"><input type="text" placeholder="Search OEM…" oninput="filterCmpMSItems('oem',this.value)"></div>
               <div id="cmp-ms-oem-items"></div>
@@ -851,12 +854,24 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
         </div>
         <div class="filter-group"><span class="filter-label">FUEL</span>
           <div class="ms-wrapper" id="cmp-ms-fuel-wrapper">
-            <div class="ms-trigger" id="cmp-ms-fuel-trigger" onclick="toggleCmpMS('fuel')" style="min-width:120px">All Fuels</div>
+            <div class="ms-trigger" id="cmp-ms-fuel-trigger" onclick="toggleCmpMS('fuel')">All Fuels</div>
             <div class="ms-dropdown" id="cmp-ms-fuel-dropdown">
               <div id="cmp-ms-fuel-items"></div>
             </div>
           </div>
         </div>
+      </div>
+      <div class="cmp-filter-row">
+        <div class="filter-group"><span class="filter-label">VIEW</span>
+          <select class="filter-select" id="cmp-view">
+            <option value="sidebyside">Side by Side</option>
+            <option value="overlay">Overlaid</option>
+            <option value="index">Index View (State as % of All India)</option>
+          </select>
+        </div>
+      </div>
+      <div class="cmp-filter-refresh-row">
+        <button type="button" class="btn btn-primary" onclick="buildComparePage()">⟳ Refresh</button>
       </div>
     </div>
 
@@ -1382,20 +1397,43 @@ function deltaArrow(v) {
 
 // ── Filter state ──────────────────────────────────────────────
 function getFilters() {
+  const g = getMSValue('geo');
+  let geo;
+  if (g === 'all') geo = 'All India';
+  else if (Array.isArray(g)) geo = g.length === 1 ? g[0] : g.slice();
+  else geo = 'All India';
   return {
     yeartype: document.getElementById('f-yeartype').value,
     year:  getMSValue('year'),   // string, array, or 'all'
     month: getMSValue('month'),  // string, array, or 'all'
     oem:   getMSValue('oem'),    // array or 'all'
     fuel:  getMSValue('fuel'),   // array or 'all'
-    geo:   document.getElementById('f-geo').value
+    geo,
   };
 }
 
+/** Normalize filters.geo / overrides to a list of region names present in DATA.raw */
+function regionsFromGeo(geo) {
+  if (geo == null || geo === '') return ['All India'];
+  if (geo === 'all') return ['All India'];
+  if (Array.isArray(geo)) return geo.length ? geo : ['All India'];
+  return [geo];
+}
+
+function primaryGeoLabel(geo) {
+  if (geo === 'All India' || geo == null) return 'All India';
+  if (Array.isArray(geo)) {
+    if (!geo.length) return 'All India';
+    if (geo.length === 1) return geo[0];
+    return geo.length + ' regions';
+  }
+  return String(geo);
+}
+
 // Multi-select state store
-const MS_STATE = { oem: new Set(['all']), fuel: new Set(['all']), year: new Set(['all']), month: new Set(['all']) };
-/** Compare page only — period / month / OEM / fuel (independent from global filter bar) */
-const CMP_MS_STATE = { year: new Set(['all']), oem: new Set(['all']), fuel: new Set(['all']), month: new Set(['all']) };
+const MS_STATE = { geo: new Set(['all']), oem: new Set(['all']), fuel: new Set(['all']), year: new Set(['all']), month: new Set(['all']) };
+/** Compare page — geography (states only, ≥1) + period / month / OEM / fuel */
+const CMP_MS_STATE = { geo: new Set(), year: new Set(['all']), oem: new Set(['all']), fuel: new Set(['all']), month: new Set(['all']) };
 
 // ── Modal-scoped filter state ────────────────────────────────
 const OEM_DD = {
@@ -1539,13 +1577,13 @@ function toggleMS(key) {
   const dropdown = document.getElementById(`ms-${key}-dropdown`);
   const trigger = document.getElementById(`ms-${key}-trigger`);
   // Close all other dropdowns first
-  ['oem','fuel','year','month'].forEach(k => {
+  ['oem','fuel','year','month','geo'].forEach(k => {
     if (k !== key) {
       document.getElementById(`ms-${k}-dropdown`)?.classList.remove('open');
       document.getElementById(`ms-${k}-trigger`)?.classList.remove('open');
     }
   });
-  ['year','month','oem','fuel'].forEach(k => {
+  ['year','month','oem','fuel','geo'].forEach(k => {
     document.getElementById(`cmp-ms-${k}-dropdown`)?.classList.remove('open');
     document.getElementById(`cmp-ms-${k}-trigger`)?.classList.remove('open');
   });
@@ -1583,11 +1621,15 @@ function updateMSTrigger(key) {
     const val = item.dataset.value;
     const isSelected = s.has('all') ? val === 'all' : s.has(val);
     item.classList.toggle('selected', isSelected);
+    const ch = item.querySelector('.ms-check');
+    if (ch && key === 'geo') ch.textContent = isSelected ? '✓' : '';
   });
   // Update trigger label
-  const defaultLabels = { oem:'All OEMs', fuel:'All Fuels', year:'All Years', month:'All Months' };
-  const nouns = { oem:'OEMs', fuel:'Fuels', year:'Years', month:'Months' };
-  if (s.has('all') || s.size === 0) {
+  const defaultLabels = { geo:'All India', oem:'All OEMs', fuel:'All Fuels', year:'All Years', month:'All Months' };
+  const nouns = { geo:'regions', oem:'OEMs', fuel:'Fuels', year:'Years', month:'Months' };
+  if (key === 'geo' && (s.has('all') || s.size === 0)) {
+    trigger.innerHTML = defaultLabels.geo;
+  } else if (s.has('all') || s.size === 0) {
     trigger.innerHTML = defaultLabels[key] || 'All';
   } else if (s.size === 1) {
     trigger.innerHTML = Array.from(s)[0];
@@ -1599,6 +1641,12 @@ function updateMSTrigger(key) {
 
 function getCmpMSValue(key) {
   const s = CMP_MS_STATE[key];
+  if (key === 'geo') {
+    const arr = Array.from(s).filter(Boolean);
+    const names = window._INDIA_GEOGRAPHY_NAMES || [];
+    if (!arr.length && names[0]) return [names[0]];
+    return arr.length ? arr : (names[0] ? [names[0]] : []);
+  }
   if (s.has('all') || s.size === 0) return 'all';
   return Array.from(s);
 }
@@ -1615,8 +1663,14 @@ function updateCmpMSTrigger(key) {
     const ch = item.querySelector('.ms-check');
     if (ch) ch.textContent = isSelected ? '✓' : '';
   });
-  const defaultLabels = { year:'All Years', oem:'All OEMs', fuel:'All Fuels', month:'All Months' };
-  const nouns = { year:'Years', oem:'OEMs', fuel:'Fuels', month:'Months' };
+  const defaultLabels = { geo:'Geography', year:'All Years', oem:'All OEMs', fuel:'All Fuels', month:'All Months' };
+  const nouns = { geo:'states', year:'Years', oem:'OEMs', fuel:'Fuels', month:'Months' };
+  if (key === 'geo') {
+    if (!s || s.size === 0) trigger.innerHTML = defaultLabels.geo;
+    else if (s.size === 1) trigger.innerHTML = Array.from(s)[0];
+    else trigger.innerHTML = `${s.size} ${nouns.geo} <span class="ms-badge">${s.size}</span>`;
+    return;
+  }
   if (s.has('all') || s.size === 0) {
     trigger.innerHTML = defaultLabels[key] || 'All';
   } else if (s.size === 1) {
@@ -1631,13 +1685,13 @@ function toggleCmpMS(key) {
   const dropdown = document.getElementById(`cmp-ms-${key}-dropdown`);
   const trigger = document.getElementById(`cmp-ms-${key}-trigger`);
   if (!dropdown || !trigger) return;
-  ['year','month','oem','fuel'].forEach(k => {
+  ['year','month','oem','fuel','geo'].forEach(k => {
     if (k !== key) {
       document.getElementById(`cmp-ms-${k}-dropdown`)?.classList.remove('open');
       document.getElementById(`cmp-ms-${k}-trigger`)?.classList.remove('open');
     }
   });
-  ['oem','fuel','year','month'].forEach(k => {
+  ['oem','fuel','year','month','geo'].forEach(k => {
     document.getElementById(`ms-${k}-dropdown`)?.classList.remove('open');
     document.getElementById(`ms-${k}-trigger`)?.classList.remove('open');
   });
@@ -1654,6 +1708,26 @@ function filterCmpMSItems(key, query) {
 
 function toggleCmpMSItem(key, value) {
   const s = CMP_MS_STATE[key];
+  if (key === 'geo') {
+    if (s.has(value)) {
+      if (s.size <= 1) return;
+      s.delete(value);
+    } else {
+      s.add(value);
+    }
+    const _gn = window._INDIA_GEOGRAPHY_NAMES || [];
+    if (s.size === 0 && _gn[0]) s.add(_gn[0]);
+    updateCmpMSTrigger('geo');
+    document.querySelectorAll('#cmp-ms-geo-items .ms-item').forEach(item => {
+      const v = item.dataset.value;
+      const sel = s.has(v);
+      item.classList.toggle('selected', sel);
+      const ch = item.querySelector('.ms-check');
+      if (ch) ch.textContent = sel ? '✓' : '';
+    });
+    if (currentPage === 'compare' && DATA) buildComparePage();
+    return;
+  }
   if (value === 'all') {
     s.clear(); s.add('all');
   } else {
@@ -1760,8 +1834,9 @@ function initMSDropdowns() {
 // ── Get current period's raw data ──────────────────────────────
 function getFilteredRaw(filters, regionOverride) {
   if (!DATA) return [];
-  const region = regionOverride || filters.geo || 'All India';
-  let src = DATA.raw.filter(r => r.region === region);
+  const geoEff = regionOverride !== undefined && regionOverride !== null ? regionOverride : filters.geo;
+  const regions = regionsFromGeo(geoEff);
+  let src = DATA.raw.filter(r => regions.includes(r.region));
   return src.filter(r => {
     // Year filter — supports single value, array, or 'all'
     if (filters.year !== 'all') {
@@ -1812,13 +1887,15 @@ function getPriorPeriodYearRef(filters) {
 // Get prior period data for comparison
 function getPriorPeriodRaw(filters, regionOverride) {
   if (!DATA) return [];
-  const region = regionOverride || filters.geo || 'All India';
-  const src = DATA.raw.filter(r => r.region === region);
+  const geoEff = regionOverride !== undefined && regionOverride !== null ? regionOverride : filters.geo;
+  const regions = regionsFromGeo(geoEff);
+  const src = DATA.raw.filter(r => regions.includes(r.region));
 
   // Anchor year: most recent selected period, or latest full year when All Years
   let yearRef = getPriorPeriodYearRef(filters);
   if (!yearRef) {
-    const lfy = getLatestFullYear(region);
+    const anchorReg = regionsFromGeo(geoEff)[0] || 'All India';
+    const lfy = getLatestFullYear(anchorReg);
     // Return prior period of latest full year so KPIs show meaningful YoY
     if (filters.yeartype === 'fy') {
       const fyList = DATA.meta.financial_years;
@@ -1958,9 +2035,10 @@ function populateOEMDropdown() {
 }
 
 function sumRegsForGeoPeriod(geo, yeartype, periodKey) {
+  const regs = regionsFromGeo(geo);
   let t = 0;
   DATA.raw.forEach((r) => {
-    if (r.region !== geo) return;
+    if (!regs.includes(r.region)) return;
     const p = yeartype === 'fy' ? r.fy : String(r.cal_year);
     if (p === String(periodKey)) t += r.registrations;
   });
@@ -1970,7 +2048,7 @@ function sumRegsForGeoPeriod(geo, yeartype, periodKey) {
 /** CAGR from CY 2012 or FY 2012-13 through latest period when Year = All Years */
 function computeCagrSince2012(filters) {
   if (!DATA || !filters || filters.year !== 'all') return null;
-  const geo = filters.geo || 'All India';
+  const geo = filters.geo == null || filters.geo === '' ? 'All India' : filters.geo;
   const yt = filters.yeartype;
   if (yt === 'cy') {
     const years = DATA.meta.cal_years.map(Number).filter((y) => y >= 2012).sort((a, b) => a - b);
@@ -2097,7 +2175,7 @@ function annualise(val, months) {
 
 function buildTrendChart(filters) {
   const yt = filters.yeartype;
-  const region = filters.geo || 'All India';
+  const regs = regionsFromGeo(filters.geo);
   const periods = yt === 'fy'
     ? DATA.meta.financial_years.filter(y => y !== '2011-12' && y !== '2026-27')
     : DATA.meta.cal_years;
@@ -2107,7 +2185,7 @@ function buildTrendChart(filters) {
   const mthCount = {};
   periods.forEach(p => { byPeriod[p] = 0; mthCount[p] = new Set(); });
   DATA.raw.forEach(r => {
-    if (r.region !== region) return;
+    if (!regs.includes(r.region)) return;
     const p = yt === 'fy' ? r.fy : String(r.cal_year);
     if (byPeriod[p] !== undefined) {
       byPeriod[p] += r.registrations;
@@ -2238,7 +2316,7 @@ function buildDonutChart(rows, filters) {
 
 function buildYoYChart(filters) {
   const yt = filters.yeartype;
-  const region = filters.geo || 'All India';
+  const regs = regionsFromGeo(filters.geo);
   const periods = yt === 'fy'
     ? DATA.meta.financial_years.filter(y => y !== '2011-12' && y !== '2026-27')
     : DATA.meta.cal_years;
@@ -2246,7 +2324,7 @@ function buildYoYChart(filters) {
   const byPeriod = {}, mthCount = {};
   periods.forEach(p => { byPeriod[p] = 0; mthCount[p] = new Set(); });
   DATA.raw.forEach(r => {
-    if (r.region !== region) return;
+    if (!regs.includes(r.region)) return;
     const p = yt === 'fy' ? r.fy : String(r.cal_year);
     if (byPeriod[p] !== undefined) {
       byPeriod[p] += r.registrations;
@@ -2310,10 +2388,10 @@ function buildFuelStackChart(filters) {
   const fuels = ['Petrol','Diesel','CNG','EV','Strong Hybrid'];
   const byPeriodFuel = {};
   periods.forEach(p => { byPeriodFuel[p] = {}; fuels.forEach(f => byPeriodFuel[p][f] = 0); });
-  const _fsr = filters.geo || 'All India';
+  const _regs = regionsFromGeo(filters.geo);
   const _oem = getMSValue('oem'); const _fuel = getMSValue('fuel');
   DATA.raw.forEach(r => {
-    if (r.region !== _fsr) return;
+    if (!_regs.includes(r.region)) return;
     if (_oem !== 'all') { const ol = Array.isArray(_oem)?_oem:[_oem]; if (!ol.includes(r.maker)) return; }
     if (_fuel !== 'all') { const fl = Array.isArray(_fuel)?_fuel:[_fuel]; if (!fl.includes(r.fuel)) return; }
     const p = yt === 'fy' ? r.fy : String(r.cal_year);
@@ -2349,7 +2427,7 @@ function buildMonthlyChart(filters) {
   const byMonthFuel = {};
   for (let m = 1; m <= 12; m++) { byMonthFuel[m] = {}; fuels.forEach(f => byMonthFuel[m][f] = 0); }
 
-  const _mr = filters.geo || 'All India';
+  const _regs = regionsFromGeo(filters.geo);
   // Normalise year to array for comparison
   const yearList = yearVal === 'all' ? null
     : Array.isArray(yearVal) ? yearVal
@@ -2358,7 +2436,7 @@ function buildMonthlyChart(filters) {
   const fuel = getMSValue('fuel');
 
   DATA.raw.forEach(r => {
-    if (r.region !== _mr) return;
+    if (!_regs.includes(r.region)) return;
     if (yearList) {
       const match = yt === 'fy' ? yearList.includes(r.fy) : yearList.map(String).includes(String(r.cal_year));
       if (!match) return;
@@ -2412,9 +2490,9 @@ function buildHeatmap() {
   // Build month×year matrix
   const grid = {};
   years.forEach(y => { grid[y] = {}; for(let m=1;m<=12;m++) grid[y][m] = 0; });
-  const _heatGeo = getFilters().geo || 'All India';
+  const _heatRegs = regionsFromGeo(getFilters().geo);
   DATA.raw.forEach(r => {
-    if (r.region !== _heatGeo) return;
+    if (!_heatRegs.includes(r.region)) return;
     if (fuelF !== 'all' && r.fuel !== fuelF) return;
     const y = yt === 'fy' ? r.fy : String(r.cal_year);
     if (grid[y]) grid[y][r.month] = (grid[y][r.month]||0) + r.registrations;
@@ -2513,10 +2591,10 @@ function buildOEMTrendChart(filters) {
     : DATA.meta.cal_years;
 
   // Top 6 OEMs by total
-  const _oemR = filters.geo || 'All India';
+  const _oemRegs = regionsFromGeo(filters.geo);
   const totals = {};
   DATA.raw.forEach(r => {
-    if (r.region !== _oemR) return;
+    if (!_oemRegs.includes(r.region)) return;
     totals[r.maker] = (totals[r.maker]||0) + r.registrations;
   });
   const top6 = Object.entries(totals).sort((a,b)=>b[1]-a[1]).slice(0,6).map(x=>x[0]);
@@ -2524,7 +2602,7 @@ function buildOEMTrendChart(filters) {
   const byPeriodOEM = {};
   periods.forEach(p => { byPeriodOEM[p] = {}; top6.forEach(o => byPeriodOEM[p][o] = 0); });
   DATA.raw.forEach(r => {
-    if (r.region !== _oemR) return;
+    if (!_oemRegs.includes(r.region)) return;
     const p = yt === 'fy' ? r.fy : String(r.cal_year);
     if (byPeriodOEM[p] && top6.includes(r.maker))
       byPeriodOEM[p][r.maker] += r.registrations;
@@ -2615,9 +2693,9 @@ function buildEVTrendChart(filters) {
   const byPeriod = {};
   const totalByPeriod = {};
   periods.forEach(p => { byPeriod[p] = 0; totalByPeriod[p] = 0; });
-  const _evR = filters.geo || 'All India';
+  const _evRegs = regionsFromGeo(filters.geo);
   DATA.raw.forEach(r => {
-    if (r.region !== _evR) return;
+    if (!_evRegs.includes(r.region)) return;
     const p = yt === 'fy' ? r.fy : String(r.cal_year);
     if (byPeriod[p] !== undefined) {
       totalByPeriod[p] += r.registrations;
@@ -2670,9 +2748,9 @@ function buildGreenTrendChart(filters) {
   const greenFuels = ['EV','Strong Hybrid','CNG'];
   const by = {};
   periods.forEach(p => { by[p] = {}; greenFuels.forEach(f => by[p][f] = 0); });
-  const _greenR = filters.geo || 'All India';
+  const _greenRegs = regionsFromGeo(filters.geo);
   DATA.raw.forEach(r => {
-    if (r.region !== _greenR) return;
+    if (!_greenRegs.includes(r.region)) return;
     const p = yt === 'fy' ? r.fy : String(r.cal_year);
     if (by[p] && greenFuels.includes(r.fuel)) by[p][r.fuel] += r.registrations;
   });
@@ -2690,9 +2768,9 @@ function buildHybridChart(filters) {
     : DATA.meta.cal_years;
   const by = {};
   periods.forEach(p => by[p] = 0);
-  const _hybR = filters.geo || 'All India';
+  const _hybRegs = regionsFromGeo(filters.geo);
   DATA.raw.forEach(r => {
-    if (r.region !== _hybR) return;
+    if (!_hybRegs.includes(r.region)) return;
     const p = yt === 'fy' ? r.fy : String(r.cal_year);
     if (by[p] !== undefined && r.fuel === 'Strong Hybrid') by[p] += r.registrations;
   });
@@ -2973,15 +3051,23 @@ function commitUpload() {
   const r = window._pendingUpload;
   uploadedData = { raw: r.rows, stateName: r.stateName, calYear: r.calYear };
 
-  // Add to geo dropdown
-  const geo = document.getElementById('f-geo');
-  const existing = [...geo.options].find(o => o.value === r.stateName);
-  if (!existing) {
-    const opt = document.createElement('option');
-    opt.value = r.stateName; opt.textContent = r.stateName + ' (CY ' + r.calYear + ')';
-    geo.appendChild(opt);
-    geo.value = r.stateName;
+  let names = [...(window._INDIA_GEOGRAPHY_NAMES || [])];
+  if (!names.includes(r.stateName)) {
+    names.push(r.stateName);
+    names.sort((a, b) => a.localeCompare(b));
+    window._INDIA_GEOGRAPHY_NAMES = names;
+    populateMainGeoMS(names);
+    populateCmpGeoMS(names);
+    _fillGeoSelect(document.getElementById('fc-geo'), true, names, r.stateName);
+    _fillGeoSelect(document.getElementById('oem-dd-geo'), true, names, null);
+    _fillGeoSelect(document.getElementById('fuel-dd-geo'), true, names, null);
   }
+  MS_STATE.geo.clear();
+  MS_STATE.geo.add(r.stateName);
+  updateMSTrigger('geo');
+  CMP_MS_STATE.geo.clear();
+  CMP_MS_STATE.geo.add(r.stateName);
+  populateCmpGeoMS(names.length ? names : (window._INDIA_GEOGRAPHY_NAMES || []));
 
   document.getElementById('validation-area').innerHTML = `
     <div class="validation-panel" style="margin-top:16px">
@@ -3115,17 +3201,13 @@ document.querySelectorAll('.nav-tab').forEach(t => {
 
 // Filter change listeners
 // f-oem and f-fuel are now multi-select widgets — handled by toggleMSItem()
-['f-yeartype','f-geo'].forEach(id => {
-  const el = document.getElementById(id);
-  if (el) el.addEventListener('change', () => {
-    if (id === 'f-yeartype') {
-      populateYearDropdown();
-      const yt = document.getElementById('f-yeartype').value;
-      const yr = Array.from(MS_STATE.year).find(v => v !== 'all') || 'all';
-      populateMonthDropdown(yt, yr);
-    }
-    refreshCurrentPage();
-  });
+const _fyt = document.getElementById('f-yeartype');
+if (_fyt) _fyt.addEventListener('change', () => {
+  populateYearDropdown();
+  const yt = document.getElementById('f-yeartype').value;
+  const yr = Array.from(MS_STATE.year).find(v => v !== 'all') || 'all';
+  populateMonthDropdown(yt, yr);
+  refreshCurrentPage();
 });
 
 // Canonical states + UTs for geography filters (matches GET /data/states + India GeoJSON ST_NM)
@@ -3166,17 +3248,46 @@ async function loadIndiaGeographyNames() {
   }
 }
 
+function populateMainGeoMS(names) {
+  const el = document.getElementById('ms-geo-items');
+  if (!el) return;
+  const esc = (m) => String(m).replace(/'/g, "\\'");
+  el.innerHTML = `<div class="ms-item all-item selected" data-value="all" onclick="toggleMSItem('geo','all')">
+      <div class="ms-check">✓</div><span>All India</span></div>` +
+    names.map(m => {
+      const e = esc(m);
+      return `<div class="ms-item" data-value="${String(m).replace(/"/g, '&quot;')}" onclick="toggleMSItem('geo','${e}')">
+        <div class="ms-check"></div><span>${m}</span></div>`;
+    }).join('');
+  MS_STATE.geo = new Set(['all']);
+  updateMSTrigger('geo');
+}
+
+function populateCmpGeoMS(names) {
+  const el = document.getElementById('cmp-ms-geo-items');
+  if (!el || !names.length) return;
+  const esc = (m) => String(m).replace(/'/g, "\\'");
+  const valid = [...CMP_MS_STATE.geo].filter((x) => names.includes(x));
+  if (valid.length === 0) CMP_MS_STATE.geo = new Set([names[0]]);
+  else CMP_MS_STATE.geo = new Set(valid);
+  el.innerHTML = names.map(m => {
+    const e = esc(m);
+    const sel = CMP_MS_STATE.geo.has(m);
+    return `<div class="ms-item${sel ? ' selected' : ''}" data-value="${String(m).replace(/"/g, '&quot;')}" onclick="toggleCmpMSItem('geo','${e}')">
+      <div class="ms-check">${sel ? '✓' : ''}</div><span>${m}</span></div>`;
+  }).join('');
+  updateCmpMSTrigger('geo');
+}
+
 function populateGeographyDropdownsFromNames(names) {
   window._INDIA_GEOGRAPHY_NAMES = names;
   if (!names.length) return;
-  const prevMain = document.getElementById('f-geo')?.value;
   const prevFc = document.getElementById('fc-geo')?.value;
-  const prevCmp = document.getElementById('cmp-state')?.value;
   const prevOem = document.getElementById('oem-dd-geo')?.value;
   const prevFuel = document.getElementById('fuel-dd-geo')?.value;
-  _fillGeoSelect(document.getElementById('f-geo'), true, names, prevMain);
+  populateMainGeoMS(names);
+  populateCmpGeoMS(names);
   _fillGeoSelect(document.getElementById('fc-geo'), true, names, prevFc);
-  _fillGeoSelect(document.getElementById('cmp-state'), false, names, prevCmp);
   _fillGeoSelect(document.getElementById('oem-dd-geo'), true, names, prevOem);
   _fillGeoSelect(document.getElementById('fuel-dd-geo'), true, names, prevFuel);
 }
@@ -3460,7 +3571,9 @@ function buildGeoMapPage() {
   if (!DATA) return;
   
   const filters = getFilters();
-  const geo = filters.geo; // 'All India', 'Andhra Pradesh', 'Gujarat', 'Uttar Pradesh'
+  const geo = filters.geo;
+  const geoSelLabel = primaryGeoLabel(geo);
+  const selTotal = sumRegs(getFilteredRaw(filters));
 
   // ── Current period rows for each region ────────────────────
   const aiRows    = getFilteredRaw(filters, 'All India');
@@ -3525,9 +3638,9 @@ function buildGeoMapPage() {
       <div class="kpi-value" style="font-size:18px">${statesWithData}</div>
       <div class="kpi-sub">of ${geoList.length} states/UTs</div>
     </div>
-    <div class="kpi-card"><div class="kpi-label">${geo !== 'All India' ? geo.toUpperCase() : 'SELECTED GEO'}</div>
-      <div class="kpi-value" style="font-size:14px">${geo !== 'All India' ? fmt(sumRegs(getFilteredRaw(filters, geo))) : fmt(aiTotal)}</div>
-      <div class="kpi-sub">${geo !== 'All India' ? ((sumRegs(getFilteredRaw(filters, geo))/aiTotal*100)||0).toFixed(1)+'% of AI' : 'National total'}</div>
+    <div class="kpi-card"><div class="kpi-label">${geoSelLabel !== 'All India' ? geoSelLabel.toUpperCase() : 'SELECTED GEO'}</div>
+      <div class="kpi-value" style="font-size:14px">${geoSelLabel !== 'All India' ? fmt(selTotal) : fmt(aiTotal)}</div>
+      <div class="kpi-sub">${geoSelLabel !== 'All India' ? ((selTotal/aiTotal*100)||0).toFixed(1)+'% of AI' : 'National total'}</div>
     </div>
   `;
 
@@ -3825,15 +3938,21 @@ function cmpPassesSliceFilters(r, slice) {
 }
 
 function getCompareFilters() {
-  const state = document.getElementById('cmp-state')?.value;
   const yt = document.getElementById('cmp-yeartype')?.value || 'fy';
+  let geo = getCmpMSValue('geo');
+  if (!Array.isArray(geo)) geo = geo ? [geo] : [];
+  const names = window._INDIA_GEOGRAPHY_NAMES || [];
+  if (!geo.length && names[0]) geo = [names[0]];
+  const geoNorm = geo.length === 1 ? geo[0] : geo;
+  const geoLabel = geo.length === 1 ? geo[0] : `${geo.length} states`;
   return {
     yeartype: yt,
     year: getCmpMSValue('year'),
     month: getCmpMSValue('month'),
     oem: getCmpMSValue('oem'),
     fuel: getCmpMSValue('fuel'),
-    geo: state || 'Andhra Pradesh',
+    geo: geoNorm,
+    geoLabel,
   };
 }
 
@@ -3866,35 +3985,35 @@ function buildComparePage() {
   if (!DATA) return;
 
   const filters = getCompareFilters();
-  const state = filters.geo;
   const yt = filters.yeartype;
+  const geoLabel = filters.geoLabel;
 
   const aiFilters = { ...filters, geo: 'All India' };
 
-  const stateRows = getFilteredRaw(filters, state);
-  const aiRows = getFilteredRaw(aiFilters, 'All India');
-  const statePrior = getPriorPeriodRaw(filters, state);
-  const aiPrior = getPriorPeriodRaw(aiFilters, 'All India');
+  const stateRows = getFilteredRaw(filters);
+  const aiRows = getFilteredRaw(aiFilters);
+  const statePrior = getPriorPeriodRaw(filters);
+  const aiPrior = getPriorPeriodRaw(aiFilters);
 
-  // Update titles
+  const titlePrefix = geoLabel.toUpperCase();
   ['cmp-vol-title-state','cmp-fuel-title-state','cmp-oem-title-state','cmp-oem-tbl-title','cmp-fuel-tbl-title'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.textContent = el.textContent.replace(/^[A-Z0-9 /]+—/i, state.toUpperCase() + ' —');
+    if (el) el.textContent = el.textContent.replace(/^[A-Z0-9 /]+—/i, titlePrefix + ' —');
   });
 
-  buildCmpKPIStrip(state, stateRows, aiRows, statePrior, aiPrior);
-  buildCmpVolCharts(state, yt, filters, aiFilters);
-  buildCmpFuelCharts(state, yt, filters, aiFilters);
+  buildCmpKPIStrip(geoLabel, stateRows, aiRows, statePrior, aiPrior);
+  buildCmpVolCharts(geoLabel, yt, filters, aiFilters);
+  buildCmpFuelCharts(geoLabel, yt, filters, aiFilters);
   buildCmpOEMCharts(stateRows, aiRows);
   buildOEMAnalysisTable(stateRows, statePrior, 'cmp-oem-table-state');
   buildOEMAnalysisTable(aiRows, aiPrior, 'cmp-oem-table-ai');
   buildFuelAnalysisTable(stateRows, statePrior, 'cmp-fuel-table-state');
   buildFuelAnalysisTable(aiRows, aiPrior, 'cmp-fuel-table-ai');
-  buildContributionChart(state, yt, filters);
-  buildDivergenceChart(state, yt, filters);
+  buildContributionChart(geoLabel, yt, filters);
+  buildDivergenceChart(yt, filters);
 }
 
-function buildCmpKPIStrip(state, stateRows, aiRows, statePrior, aiPrior) {
+function buildCmpKPIStrip(geoLabel, stateRows, aiRows, statePrior, aiPrior) {
   const sv = sumRegs(stateRows), av = sumRegs(aiRows);
   const sp = sumRegs(statePrior), ap2 = sumRegs(aiPrior);
   const contrib = av ? sv/av*100 : 0;
@@ -3906,7 +4025,7 @@ function buildCmpKPIStrip(state, stateRows, aiRows, statePrior, aiPrior) {
   const aEV = av ? (aiByFuel['EV']||0)/av*100 : 0;
 
   const kpis = [
-    { label: state.toUpperCase()+' VOLUME', value: fmt(sv), sub: fmtFull(sv)+' units', delta: sGrowth, cls:'' },
+    { label: geoLabel.toUpperCase()+' VOLUME', value: fmt(sv), sub: fmtFull(sv)+' units', delta: sGrowth, cls:'' },
     { label: 'ALL INDIA VOLUME', value: fmt(av), sub: fmtFull(av)+' units', delta: aGrowth, cls:'' },
     { label: 'STATE CONTRIBUTION', value: contrib.toFixed(2)+'%', sub: 'of national total', delta: null, cls:'warn' },
     { label: 'EV: STATE vs INDIA', value: sEV.toFixed(1)+'% vs '+aEV.toFixed(1)+'%', sub: `${(sEV-aEV)>=0?'+':''}${(sEV-aEV).toFixed(2)}pp vs national`, delta: null, cls:'ev' },
@@ -3922,18 +4041,20 @@ function buildCmpKPIStrip(state, stateRows, aiRows, statePrior, aiPrior) {
     </div>`).join('');
 }
 
-function buildCmpVolCharts(state, yt, filters, aiFilters) {
+function buildCmpVolCharts(geoLabel, yt, filters, aiFilters) {
   const periods = yt==='fy'
     ? (DATA.meta.ai_financial_years||DATA.meta.financial_years)
     : DATA.meta.cal_years;
 
   const slice = { month: filters.month, oem: filters.oem, fuel: filters.fuel };
+  const stRegs = regionsFromGeo(filters.geo);
 
-  function getVolByPeriod(region) {
+  function getVolByRegions(regionList) {
+    const rl = Array.isArray(regionList) ? regionList : [regionList];
     const by = {};
     periods.forEach(p => by[p]=0);
     DATA.raw.forEach(r => {
-      if (r.region !== region) return;
+      if (!rl.includes(r.region)) return;
       if (!cmpPassesSliceFilters(r, slice)) return;
       const p = yt==='fy' ? r.fy : String(r.cal_year);
       if (by[p] === undefined) return;
@@ -3943,12 +4064,12 @@ function buildCmpVolCharts(state, yt, filters, aiFilters) {
     return periods.map(p=>by[p]||0);
   }
 
-  const stVals = getVolByPeriod(state);
-  const aiVals = getVolByPeriod('All India');
+  const stVals = getVolByRegions(stRegs);
+  const aiVals = getVolByRegions(['All India']);
 
   const color = '#22d3ee';
   updateChart('chart-cmp-state-vol','line',periods,[{
-    label:state, data:stVals, borderColor:color, backgroundColor:color+'22',
+    label: geoLabel, data:stVals, borderColor:color, backgroundColor:color+'22',
     fill:true, tension:0.3, pointRadius:3
   }],{});
   updateChart('chart-cmp-ai-vol','line',periods,[{
@@ -3957,7 +4078,7 @@ function buildCmpVolCharts(state, yt, filters, aiFilters) {
   }],{});
 }
 
-function buildCmpFuelCharts(state, yt, filters, aiFilters) {
+function buildCmpFuelCharts(geoLabel, yt, filters, aiFilters) {
   const periods = yt==='fy'
     ? (DATA.meta.ai_financial_years||DATA.meta.financial_years)
     : DATA.meta.cal_years;
@@ -3968,12 +4089,14 @@ function buildCmpFuelCharts(state, yt, filters, aiFilters) {
   if (!fuels.length) fuels = allFuels.slice();
   const isPct = cmpFuelViewMode==='pct';
   const slice = { month: filters.month, oem: filters.oem, fuel: 'all' };
+  const stRegs = regionsFromGeo(filters.geo);
 
-  function getFuelByPeriod(region) {
+  function getFuelByRegions(regionList) {
+    const rl = Array.isArray(regionList) ? regionList : [regionList];
     const by = {};
     periods.forEach(p => { by[p]={}; fuels.forEach(f=>by[p][f]=0); });
     DATA.raw.forEach(r => {
-      if (r.region !== region) return;
+      if (!rl.includes(r.region)) return;
       if (!cmpPassesSliceFilters(r, slice)) return;
       const p = yt==='fy'?r.fy:String(r.cal_year);
       if (!by[p] || !fuels.includes(r.fuel)) return;
@@ -3996,8 +4119,8 @@ function buildCmpFuelCharts(state, yt, filters, aiFilters) {
     }));
   }
 
-  const stBy = getFuelByPeriod(state);
-  const aiBy = getFuelByPeriod('All India');
+  const stBy = getFuelByRegions(stRegs);
+  const aiBy = getFuelByRegions(['All India']);
   updateChart('chart-cmp-state-fuel','bar',periods,makeDatasets(stBy),{stacked:true,suffix:isPct?'%':''});
   updateChart('chart-cmp-ai-fuel','bar',periods,makeDatasets(aiBy),{stacked:true,suffix:isPct?'%':''});
 }
@@ -4019,12 +4142,13 @@ function buildCmpOEMCharts(stateRows, aiRows) {
   }],{indexAxis:'y'});
 }
 
-function buildContributionChart(state, yt, filters) {
+function buildContributionChart(geoLabel, yt, filters) {
   const periods = yt==='fy'
     ? (DATA.meta.ai_financial_years||DATA.meta.financial_years)
     : DATA.meta.cal_years;
 
   const slice = { month: filters.month, oem: filters.oem, fuel: filters.fuel };
+  const stRegs = new Set(regionsFromGeo(filters.geo));
   const stBy={}, aiBy={};
   periods.forEach(p=>{stBy[p]=0;aiBy[p]=0;});
   DATA.raw.forEach(r=>{
@@ -4032,28 +4156,27 @@ function buildContributionChart(state, yt, filters) {
     const p = yt==='fy'?r.fy:String(r.cal_year);
     if (stBy[p]===undefined) return;
     if (!cmpYearPeriodMatches(p, yt, filters.year)) return;
-    if(r.region===state) stBy[p]+=r.registrations;
+    if(stRegs.has(r.region)) stBy[p]+=r.registrations;
     if(r.region==='All India') aiBy[p]+=r.registrations;
   });
   const contrib = periods.map(p=>aiBy[p]?parseFloat((stBy[p]/aiBy[p]*100).toFixed(3)):0);
 
   updateChart('chart-cmp-contribution','line',periods,[{
-    label:'State % of All India', data:contrib,
+    label: geoLabel + ' % of All India', data:contrib,
     borderColor:'#fbbf24', backgroundColor:'rgba(251,191,36,0.1)',
     fill:true, tension:0.3, pointRadius:3, pointBackgroundColor:'#fbbf24'
   }],{suffix:'%'});
 }
 
-function buildDivergenceChart(state, yt, filters) {
+function buildDivergenceChart(yt, filters) {
   const allFuels = ['Petrol','Diesel','CNG','EV','Strong Hybrid'];
   let fuels = filters.fuel === 'all'
     ? allFuels.slice()
     : (Array.isArray(filters.fuel) ? filters.fuel : [filters.fuel]).filter(f => allFuels.includes(f));
   if (!fuels.length) fuels = allFuels.slice();
-  const fState = { ...filters, geo: state };
   const fAi = { ...filters, geo: 'All India' };
-  const stRows = getFilteredRaw(fState, state);
-  const aiRows = getFilteredRaw(fAi, 'All India');
+  const stRows = getFilteredRaw(filters);
+  const aiRows = getFilteredRaw(fAi);
 
   const stTotal = sumRegs(stRows), aiTotal = sumRegs(aiRows);
   const stByFuel = groupBy(stRows,'fuel'), aiByFuel = groupBy(aiRows,'fuel');
@@ -4080,7 +4203,7 @@ function setCmpFuelView(mode, btn) {
   if(DATA) {
     const f = getCompareFilters();
     const aiF = { ...f, geo: 'All India' };
-    buildCmpFuelCharts(f.geo, f.yeartype, f, aiF);
+    buildCmpFuelCharts(f.geoLabel, f.yeartype, f, aiF);
   }
 }
 
@@ -4099,12 +4222,6 @@ document.addEventListener('DOMContentLoaded', () => {
     populateCmpMonthDropdown();
     if (typeof DATA !== 'undefined' && DATA) buildComparePage();
   });
-  const cmpSt = document.getElementById('cmp-state');
-  if (cmpSt) {
-    cmpSt.addEventListener('change', () => {
-      if (typeof DATA !== 'undefined' && DATA) buildComparePage();
-    });
-  }
   const cmpView = document.getElementById('cmp-view');
   if (cmpView) cmpView.addEventListener('change', () => {
     if (typeof DATA !== 'undefined' && DATA && currentPage === 'compare') buildComparePage();
@@ -4140,9 +4257,14 @@ const METHOD_DESC = {
 function getForecastSeries(metric, fuel, oem) {
   if (!DATA) return [];
   const series = {};
-  // Read from forecast sidebar geo (fc-geo), fallback to global bar (f-geo)
-  const _fcGeoEl = document.getElementById('fc-geo') || document.getElementById('f-geo');
-  const _fcGeo = _fcGeoEl ? (_fcGeoEl.value || 'All India') : 'All India';
+  let _fcGeo = 'All India';
+  const fcGeoEl = document.getElementById('fc-geo');
+  if (fcGeoEl && fcGeoEl.value) _fcGeo = fcGeoEl.value;
+  else {
+    const g = getFilters().geo;
+    const regs = regionsFromGeo(g);
+    _fcGeo = regs[0] || 'All India';
+  }
   DATA.raw.forEach(r => {
     if (r.region !== _fcGeo) return;
     if (metric === 'fuel' && fuel !== 'all' && r.fuel !== fuel) return;
@@ -5445,7 +5567,9 @@ function getEventAnnotationsForChart(labels, yeartype, options={}) {
 
 // ── AP Bifurcation guard ─────────────────────────────────────
 function checkAPBifurcationWarning(filters) {
-  if (filters.geo !== 'Andhra Pradesh') return null;
+  const g = filters.geo;
+  const touchesAP = g === 'Andhra Pradesh' || (Array.isArray(g) && g.includes('Andhra Pradesh'));
+  if (!touchesAP) return null;
   const year = parseInt(filters.year);
   const yeartype = filters.yeartype;
   // If showing data that spans 2014 for AP — warn
