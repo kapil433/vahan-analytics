@@ -17,7 +17,11 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
+      # Clone into `source/` so workspace root has no .git — avoids git worktree conflict with
+      # JamesIves action when it checks out branch `main` of the target repo.
       - uses: actions/checkout@v4
+        with:
+          path: source
 
       - name: Build publish folder
         env:
@@ -25,17 +29,17 @@ jobs:
         run: |
           mkdir -p _public/data _public/dashboard _public/legacy
           touch _public/.nojekyll
-          cp deploy/github-pages/index.html _public/index.html
-          cp deploy/github-pages/legacy/README.md _public/legacy/README.md
-          if [ -f deploy/github-pages/CNAME ]; then cp deploy/github-pages/CNAME _public/CNAME; fi
+          cp source/deploy/github-pages/index.html _public/index.html
+          cp source/deploy/github-pages/legacy/README.md _public/legacy/README.md
+          if [ -f source/deploy/github-pages/CNAME ]; then cp source/deploy/github-pages/CNAME _public/CNAME; fi
           if [ -n "$API_BASE" ]; then
             {
               printf '%s\n' "<script>window.__VAHAN_API_BASE__='${API_BASE}';</script>"
-              cat api/static/dashboard/index.html
+              cat source/api/static/dashboard/index.html
             } > _public/dashboard/index.html
           fi
-          if [ -f docs/data/vahan_master.json ]; then
-            cp docs/data/vahan_master.json _public/data/vahan_master.json
+          if [ -f source/docs/data/vahan_master.json ]; then
+            cp source/docs/data/vahan_master.json _public/data/vahan_master.json
           fi
 
       - name: Push to ALL-India-Vahan-Analytics-Dashboard
