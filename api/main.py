@@ -1175,17 +1175,60 @@ def _fetch_monthly_data(
 
 @app.get("/data/states")
 def data_states():
-    """State codes and canonical names for dashboard filters (from pipeline STATE_MAP)."""
-    from scripts.config import STATE_MAP
+    """
+    State list for dashboard geography filters.
 
-    seen: set[str] = set()
-    out: list[dict[str, str]] = []
+    Merges (1) STATE_MAP canonical names with (2) every distinct ``state_name`` actually
+    present in ``vahan_registrations`` (f1 / merged ingest). The master bundle uses DB
+    ``state_name`` as ``region``; without (2), filters built only from the map often do
+    not match row keys and charts look empty.
+    """
+    from scripts.config import STATE_MAP, normalize_state
+
+    seen_lower: set[str] = set()
+    names: list[str] = []
+
+    def add_name(nm: str) -> None:
+        s = str(nm).strip()
+        if not s:
+            return
+        low = s.lower()
+        if low in ("all india", "all vahan4 running states (36/36)"):
+            return
+        if low in seen_lower:
+            return
+        seen_lower.add(low)
+        names.append(s)
+
     for _portal_name, (code, cname) in STATE_MAP.items():
-        if code in seen or code in EXCLUDED_STATE_CODES:
+        if code in EXCLUDED_STATE_CODES or code == "ALL":
             continue
-        seen.add(code)
-        out.append({"state_code": code, "state_name": cname})
-    out.sort(key=lambda x: x["state_name"])
+        add_name(cname)
+
+    conn, dialect = _connect_data()
+    if conn:
+        try:
+            cur = conn.cursor()
+            q = (
+                "SELECT DISTINCT state_name FROM vahan_registrations WHERE 1=1"
+                " AND UPPER(TRIM(COALESCE(state_code, ''))) != 'ALL'"
+                " AND state_name IS NOT NULL AND TRIM(state_name) != ''"
+            )
+            params: list = []
+            q = append_exclude_state_codes_sql(q, params)
+            _exec(cur, dialect, q, params)
+            for row in cur.fetchall():
+                d = dict(row)
+                add_name(d.get("state_name") or "")
+        finally:
+            conn.close()
+
+    names.sort(key=lambda x: x.lower())
+    out: list[dict[str, str]] = []
+    for nm in names:
+        pair = normalize_state(nm)
+        code = pair[0] if pair else ""
+        out.append({"state_code": code, "state_name": nm})
     return {
         "states": out,
         "excluded_from_analytics": [

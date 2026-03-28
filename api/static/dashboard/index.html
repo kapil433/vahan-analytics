@@ -1412,6 +1412,30 @@ function getFilters() {
   };
 }
 
+/** Build lowercase → exact r.region map so API/folder labels match bundle rows (f1 ingest spelling). */
+function rebuildBundleRegionMatchers() {
+  window._BUNDLE_REGIONS_EXACT = new Set();
+  window._REGION_BY_LOWER = new Map();
+  if (!DATA || !DATA.raw) return;
+  DATA.raw.forEach((row) => {
+    const r = row.region;
+    if (!r || r === 'All India') return;
+    window._BUNDLE_REGIONS_EXACT.add(r);
+    const low = String(r).toLowerCase().trim();
+    if (!window._REGION_BY_LOWER.has(low)) window._REGION_BY_LOWER.set(low, r);
+  });
+}
+
+function matchBundleRegion(name) {
+  if (!name || name === 'All India') return name;
+  const s = String(name).trim();
+  if (window._BUNDLE_REGIONS_EXACT && window._BUNDLE_REGIONS_EXACT.has(s)) return s;
+  const low = s.toLowerCase();
+  if (window._REGION_BY_LOWER && window._REGION_BY_LOWER.has(low))
+    return window._REGION_BY_LOWER.get(low);
+  return s;
+}
+
 /** Normalize filters.geo / overrides to a list of region names present in DATA.raw (exact r.region strings). */
 function regionsFromGeo(geo) {
   let list;
@@ -1419,7 +1443,7 @@ function regionsFromGeo(geo) {
   else if (geo === 'all') list = ['All India'];
   else if (Array.isArray(geo)) list = geo.length ? geo.slice() : ['All India'];
   else list = [geo];
-  const cleaned = list.map((g) => (g === 'All India' ? 'All India' : String(g).trim()));
+  const cleaned = list.map((g) => (g === 'All India' ? 'All India' : matchBundleRegion(String(g).trim())));
   return [...new Set(cleaned)];
 }
 
@@ -3831,6 +3855,7 @@ async function init() {
       maker: _raw.makers[r[4]], fuel: _raw.fuels[r[5]],
       registrations: r[6]
     }));
+    rebuildBundleRegionMatchers();
     document.getElementById('dataBadge').textContent = `● ${DATA.meta.total_records.toLocaleString()} RECORDS · ${DATA.meta.cal_years[0]}–${DATA.meta.cal_years[DATA.meta.cal_years.length-1]}`;
     let geoNames = await loadIndiaGeographyNames();
     geoNames = mergeGeographyNamesWithData(geoNames);

@@ -69,4 +69,13 @@ STATE_MAP = {
 def normalize_state(name: str):
     """Return (state_code, canonical_name) or None if unknown."""
     cleaned = str(name).strip()
-    return STATE_MAP.get(cleaned) or STATE_MAP.get(cleaned.replace("  ", " "))
+    if not cleaned:
+        return None
+    hit = STATE_MAP.get(cleaned) or STATE_MAP.get(cleaned.replace("  ", " "))
+    if hit:
+        return hit
+    low = cleaned.lower()
+    for k, v in STATE_MAP.items():
+        if k.lower() == low:
+            return v
+    return None
