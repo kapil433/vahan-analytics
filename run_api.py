@@ -36,4 +36,10 @@ if __name__ == "__main__":
     # reload=True spawns a child process on Windows and often breaks Ctrl+C / clean shutdown.
     # Enable dev reload with: set VAHAN_UVICORN_RELOAD=1  (or run: uvicorn api.main:app --reload)
     _reload = os.environ.get("VAHAN_UVICORN_RELOAD", "").strip().lower() in ("1", "true", "yes")
-    uvicorn.run("api.main:app", host="0.0.0.0", port=8000, reload=_reload)
+    uvicorn.run(
+        "api.main:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=_reload,
+        server_header=False,
+    )

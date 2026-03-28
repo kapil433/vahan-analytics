@@ -30,6 +30,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, Response
 from starlette.middleware.gzip import GZipMiddleware
+
+from api.middleware_security import RateLimitMiddleware, SecurityHeadersMiddleware
 from fastapi.openapi.docs import get_swagger_ui_html
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field, field_validator
 
@@ -177,11 +179,33 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.add_middleware(GZipMiddleware, minimum_size=1_000)
+app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(RateLimitMiddleware)
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 DASHBOARD_DIR = STATIC_DIR / "dashboard"
 if STATIC_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+
+
+@app.get("/robots.txt", include_in_schema=False)
+def serve_robots_txt():
+    p = STATIC_DIR / "robots.txt"
+    if p.is_file():
+        return FileResponse(str(p), media_type="text/plain")
+    return Response("User-agent: *\nAllow: /\n", media_type="text/plain")
+
+
+@app.get("/sitemap.xml", include_in_schema=False)
+def serve_sitemap_xml():
+    p = STATIC_DIR / "sitemap.xml"
+    if p.is_file():
+        return FileResponse(str(p), media_type="application/xml")
+    return Response(
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>',
+        media_type="application/xml",
+    )
 
 
 @app.get("/health")
