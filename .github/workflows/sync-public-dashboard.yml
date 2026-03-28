@@ -12,6 +12,7 @@ on:
       - "api/static/dashboard/index.html"
       - "deploy/github-pages/**"
       - "docs/data/vahan_master.json"
+      - "scripts/inject_pages_api_base.py"
 
 jobs:
   publish:
@@ -28,12 +29,12 @@ jobs:
           cp deploy/github-pages/index.html _public/index.html
           cp deploy/github-pages/legacy/README.md _public/legacy/README.md
           if [ -f deploy/github-pages/CNAME ]; then cp deploy/github-pages/CNAME _public/CNAME; fi
-          if [ -n "$API_BASE" ]; then
-            {
-              printf '%s\n' "<script>window.__VAHAN_API_BASE__='${API_BASE}';</script>"
-              cat api/static/dashboard/index.html
-            } > _public/dashboard/index.html
-          fi
+          API_EFFECTIVE="${API_BASE:-https://vahan-intelligence-api.onrender.com}"
+          API_EFFECTIVE="${API_EFFECTIVE%/}"
+          python3 scripts/inject_pages_api_base.py \
+            --api-base "$API_EFFECTIVE" \
+            --input api/static/dashboard/index.html \
+            --output _public/dashboard/index.html
           if [ -f docs/data/vahan_master.json ]; then
             cp docs/data/vahan_master.json _public/data/vahan_master.json
           fi

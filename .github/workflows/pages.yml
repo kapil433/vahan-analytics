@@ -37,12 +37,14 @@ jobs:
             cp docs/data/vahan_master.json _site/data/vahan_master.json
           fi
           # Default API = render.yaml service name (override with repo variable VAHAN_API_BASE_URL).
+          # Must inject inside <head>, not before DOCTYPE — otherwise browsers may show raw script as text.
           API_EFFECTIVE="${API_BASE:-https://vahan-intelligence-api.onrender.com}"
           API_EFFECTIVE="${API_EFFECTIVE%/}"
-          {
-            printf '%s\n' "<script>window.__VAHAN_API_BASE__='${API_EFFECTIVE}';</script>"
-            cat api/static/dashboard/index.html
-          } | tee _site/index.html > _site/dashboard/index.html
+          python3 scripts/inject_pages_api_base.py \
+            --api-base "$API_EFFECTIVE" \
+            --input api/static/dashboard/index.html \
+            --output _site/index.html \
+            --output _site/dashboard/index.html
           cp deploy/github-pages/index.html _site/welcome.html
 
       - uses: actions/upload-pages-artifact@v3
