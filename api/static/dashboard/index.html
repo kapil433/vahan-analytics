@@ -351,11 +351,6 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
   font-size:11px;color:var(--text-dim);max-width:100%;line-height:1.45;
 }
 .filter-active-summary:empty{display:none}
-.section-rail--inline{
-  display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;
-  padding:10px 0 14px;border-bottom:1px solid var(--border);margin-bottom:16px;
-}
-.section-rail--inline .section-rail-title{margin:0 8px 0 0;font-size:9px}
 
 /* HEATMAP */
 .heatmap-wrap{overflow-x:auto}
@@ -564,7 +559,7 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
   font-family:var(--mono);white-space:nowrap;padding:4px 0;
 }
 
-/* Overview hero + section rail */
+/* Overview hero */
 .hero-intro{
   background:linear-gradient(135deg,var(--surface) 0%,var(--surface2) 100%);
   border:1px solid var(--border);border-radius:10px;
@@ -574,23 +569,6 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
 .hero-intro p{font-size:12px;color:var(--text-mid);max-width:820px}
 .hero-tour-hint{font-size:11px;color:var(--text-dim);margin-top:10px}
 .hero-tour-hint kbd{font-family:var(--mono);font-size:10px;background:var(--surface2);border:1px solid var(--border);padding:1px 5px;border-radius:3px}
-
-.overview-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:start}
-@media(min-width:1100px){
-  .overview-layout{grid-template-columns:148px minmax(0,1fr)}
-}
-.section-rail{
-  display:none;position:sticky;top:124px;align-self:start;
-  padding:10px 12px;background:var(--surface);border:1px solid var(--border);
-  border-radius:8px;font-size:11px;
-}
-@media(min-width:1100px){.section-rail{display:block}}
-.section-rail-title{font-size:9px;font-weight:700;color:var(--text-dim);letter-spacing:1px;margin-bottom:8px}
-.section-rail a{
-  display:block;color:var(--text-mid);text-decoration:none;padding:5px 0;border-bottom:1px solid var(--border);
-}
-.section-rail a:hover{color:var(--blue)}
-.overview-main{min-width:0}
 
 .chart-skeleton{
   min-height:200px;border-radius:6px;
@@ -737,14 +715,6 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
 
   <!-- OVERVIEW PAGE -->
   <div class="page active" id="page-overview" role="tabpanel" aria-labelledby="tab-overview">
-    <div class="overview-layout">
-      <aside class="section-rail" aria-label="On this page">
-        <div class="section-rail-title">ON THIS PAGE</div>
-        <a href="#sec-overview-kpi" onclick="document.getElementById('sec-overview-kpi')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">KPIs</a>
-        <a href="#sec-overview-trend" onclick="document.getElementById('sec-overview-trend')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">Trend &amp; mix</a>
-        <a href="#sec-overview-yoy" onclick="document.getElementById('sec-overview-yoy')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">YoY &amp; OEMs</a>
-      </aside>
-      <div class="overview-main">
     <div class="hero-intro" id="sec-overview-hero">
       <h1>What you are seeing</h1>
       <p>This dashboard turns published VAHAN-class four-wheeler passenger registrations into comparable views: totals, fuel mix, and top OEMs. Use the geography and year filters above to change the slice; every chart on Overview follows those same selections.</p>
@@ -796,17 +766,10 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
         <div class="chart-wrap"><canvas id="chart-topoem" role="img" aria-label="Top OEMs by registration volume for the selected period"></canvas></div>
       </div>
     </div>
-      </div><!-- /.overview-main -->
-    </div><!-- /.overview-layout -->
   </div>
 
   <!-- GEO MAP PAGE -->
   <div class="page" id="page-geomap" role="tabpanel" aria-labelledby="tab-geomap">
-    <nav class="section-rail section-rail--inline" aria-label="On this page">
-      <span class="section-rail-title">ON THIS PAGE</span>
-      <a href="#sec-gm-map" onclick="document.getElementById('sec-gm-map')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">Map</a>
-      <a href="#sec-gm-side" onclick="document.getElementById('sec-gm-side')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">KPIs &amp; mix</a>
-    </nav>
     <div class="geomap-layout">
       <!-- Map Panel -->
       <div class="geomap-map-panel" id="sec-gm-map">
@@ -858,13 +821,6 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
 
   <!-- FUEL TRENDS PAGE -->
   <div class="page" id="page-fuel" role="tabpanel" aria-labelledby="tab-fuel">
-    <nav class="section-rail section-rail--inline" aria-label="On this page">
-      <span class="section-rail-title">ON THIS PAGE</span>
-      <a href="#kpi-fuel" onclick="document.getElementById('kpi-fuel')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">KPIs</a>
-      <a href="#sec-fuel-trend" onclick="document.getElementById('sec-fuel-trend')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">Fuel trend</a>
-      <a href="#sec-fuel-monthly" onclick="document.getElementById('sec-fuel-monthly')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">Monthly</a>
-      <a href="#sec-fuel-heat" onclick="document.getElementById('sec-fuel-heat')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">Heatmap</a>
-    </nav>
     <div class="kpi-row" id="kpi-fuel"></div>
     <div class="chart-grid-full">
       <div class="chart-card full" id="sec-fuel-trend">
@@ -924,13 +880,6 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
 
   <!-- OEM PAGE -->
   <div class="page" id="page-oem" role="tabpanel" aria-labelledby="tab-oem">
-    <nav class="section-rail section-rail--inline" aria-label="On this page">
-      <span class="section-rail-title">ON THIS PAGE</span>
-      <a href="#kpi-oem" onclick="document.getElementById('kpi-oem')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">KPIs</a>
-      <a href="#sec-oem-share" onclick="document.getElementById('sec-oem-share')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">Share &amp; pie</a>
-      <a href="#sec-oem-trend" onclick="document.getElementById('sec-oem-trend')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">Trends</a>
-      <a href="#sec-oem-tables" onclick="document.getElementById('sec-oem-tables')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">Tables</a>
-    </nav>
     <div class="kpi-row" id="kpi-oem"></div>
     <div class="chart-grid" id="sec-oem-share">
       <div class="chart-card">
@@ -997,12 +946,6 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
 
   <!-- EV PAGE -->
   <div class="page" id="page-ev" role="tabpanel" aria-labelledby="tab-ev">
-    <nav class="section-rail section-rail--inline" aria-label="On this page">
-      <span class="section-rail-title">ON THIS PAGE</span>
-      <a href="#kpi-ev" onclick="document.getElementById('kpi-ev')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">KPIs</a>
-      <a href="#sec-ev-core" onclick="document.getElementById('sec-ev-core')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">EV volume</a>
-      <a href="#sec-ev-green" onclick="document.getElementById('sec-ev-green')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">Green mix</a>
-    </nav>
     <div class="kpi-row" id="kpi-ev"></div>
     <div class="chart-grid-3" id="sec-ev-core">
       <div class="chart-card">
@@ -1051,15 +994,6 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
 
   <!-- STATE vs ALL INDIA PAGE -->
   <div class="page" id="page-compare" role="tabpanel" aria-labelledby="tab-compare">
-    <nav class="section-rail section-rail--inline" aria-label="On this page">
-      <span class="section-rail-title">ON THIS PAGE</span>
-      <a href="#cmp-kpi-strip" onclick="document.getElementById('cmp-kpi-strip')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">KPIs</a>
-      <a href="#sec-cmp-vol" onclick="document.getElementById('sec-cmp-vol')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">Volume</a>
-      <a href="#sec-cmp-fuel" onclick="document.getElementById('sec-cmp-fuel')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">Fuel mix</a>
-      <a href="#sec-cmp-oem" onclick="document.getElementById('sec-cmp-oem')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">OEMs</a>
-      <a href="#sec-cmp-tables" onclick="document.getElementById('sec-cmp-tables')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">Tables</a>
-      <a href="#sec-cmp-extra" onclick="document.getElementById('sec-cmp-extra')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">Contribution</a>
-    </nav>
     <div class="cmp-filter-bar">
       <div class="cmp-filter-row">
         <div class="filter-group"><span class="filter-label">GEOGRAPHY</span>
@@ -1217,13 +1151,6 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
 
   <!-- FORECAST PAGE -->
   <div class="page" id="page-forecast" role="tabpanel" aria-labelledby="tab-forecast">
-    <nav class="section-rail section-rail--inline" aria-label="On this page">
-      <span class="section-rail-title">ON THIS PAGE</span>
-      <a href="#sec-fc-controls" onclick="document.getElementById('sec-fc-controls')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">Settings</a>
-      <a href="#sec-fc-main" onclick="document.getElementById('sec-fc-main')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">Forecast chart</a>
-      <a href="#sec-fc-decomp" onclick="document.getElementById('sec-fc-decomp')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">Seasonality</a>
-      <a href="#fc-table" onclick="document.getElementById('fc-table')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">Table</a>
-    </nav>
     <div style="display:grid;grid-template-columns:300px 1fr;gap:16px;align-items:start">
 
       <!-- CONTROLS PANEL -->
