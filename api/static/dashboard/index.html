@@ -1412,15 +1412,15 @@ function getFilters() {
   };
 }
 
-/** Normalize filters.geo / overrides to a list of region names present in DATA.raw */
+/** Normalize filters.geo / overrides to a list of region names present in DATA.raw (exact r.region strings). */
 function regionsFromGeo(geo) {
   let list;
   if (geo == null || geo === '') list = ['All India'];
   else if (geo === 'all') list = ['All India'];
   else if (Array.isArray(geo)) list = geo.length ? geo.slice() : ['All India'];
   else list = [geo];
-  const resolved = list.map((g) => (g === 'All India' ? 'All India' : resolveToRawRegion(g)));
-  return [...new Set(resolved)];
+  const cleaned = list.map((g) => (g === 'All India' ? 'All India' : String(g).trim()));
+  return [...new Set(cleaned)];
 }
 
 function primaryGeoLabel(geo) {
@@ -1576,6 +1576,43 @@ function getMSValue(key) {
   return Array.from(s);
 }
 
+/** Decode geography multiselect data-value (encodeURIComponent in DOM). */
+function geoMsDecodeDataValue(raw) {
+  if (raw == null || raw === '' || raw === 'all') return raw;
+  try { return decodeURIComponent(String(raw)); } catch (e) { return String(raw); }
+}
+
+function installMainGeoMsClickDelegation() {
+  if (window._mainGeoMsClickInstalled) return;
+  window._mainGeoMsClickInstalled = true;
+  document.addEventListener('click', (ev) => {
+    const root = ev.target.closest('#ms-geo-items');
+    if (!root) return;
+    const item = ev.target.closest('.ms-item');
+    if (!item || !root.contains(item)) return;
+    const raw = item.getAttribute('data-value');
+    if (raw === 'all') toggleMSItem('geo', 'all');
+    else toggleMSItem('geo', geoMsDecodeDataValue(raw));
+  });
+}
+
+function installCmpGeoMsClickDelegation() {
+  if (window._cmpGeoMsClickInstalled) return;
+  window._cmpGeoMsClickInstalled = true;
+  document.addEventListener('click', (ev) => {
+    const root = ev.target.closest('#cmp-ms-geo-items');
+    if (!root) return;
+    const item = ev.target.closest('.ms-item');
+    if (!item || !root.contains(item)) return;
+    const raw = item.getAttribute('data-value');
+    toggleCmpMSItem('geo', geoMsDecodeDataValue(raw));
+  });
+}
+
+function escapeHtmlText(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+}
+
 function toggleMS(key) {
   const dropdown = document.getElementById(`ms-${key}-dropdown`);
   const trigger = document.getElementById(`ms-${key}-trigger`);
@@ -1603,6 +1640,7 @@ function filterMSItems(key, query) {
 
 function toggleMSItem(key, value) {
   const s = MS_STATE[key];
+  if (key === 'geo' && value !== 'all' && value != null) value = String(value).trim();
   if (value === 'all') {
     s.clear(); s.add('all');
   } else {
@@ -1621,7 +1659,8 @@ function updateMSTrigger(key) {
   const items = document.querySelectorAll(`#ms-${key}-items .ms-item`);
   // Update checkmarks
   items.forEach(item => {
-    const val = item.dataset.value;
+    let val = item.dataset.value;
+    if (key === 'geo' && val !== 'all') val = geoMsDecodeDataValue(val);
     const isSelected = s.has('all') ? val === 'all' : s.has(val);
     item.classList.toggle('selected', isSelected);
     const ch = item.querySelector('.ms-check');
@@ -1660,8 +1699,9 @@ function updateCmpMSTrigger(key) {
   if (!trigger) return;
   const items = document.querySelectorAll(`#cmp-ms-${key}-items .ms-item`);
   items.forEach(item => {
-    const val = item.dataset.value;
-    const isSelected = s.has('all') ? val === 'all' : s.has(val);
+    let val = item.dataset.value;
+    if (key === 'geo') val = geoMsDecodeDataValue(val);
+    const isSelected = key === 'geo' ? s.has(val) : (s.has('all') ? val === 'all' : s.has(val));
     item.classList.toggle('selected', isSelected);
     const ch = item.querySelector('.ms-check');
     if (ch) ch.textContent = isSelected ? '✓' : '';
@@ -1711,6 +1751,7 @@ function filterCmpMSItems(key, query) {
 
 function toggleCmpMSItem(key, value) {
   const s = CMP_MS_STATE[key];
+  if (key === 'geo' && value != null) value = String(value).trim();
   if (key === 'geo') {
     if (s.has(value)) {
       if (s.size <= 1) return;
@@ -1722,7 +1763,7 @@ function toggleCmpMSItem(key, value) {
     if (s.size === 0 && _gn[0]) s.add(_gn[0]);
     updateCmpMSTrigger('geo');
     document.querySelectorAll('#cmp-ms-geo-items .ms-item').forEach(item => {
-      const v = item.dataset.value;
+      const v = geoMsDecodeDataValue(item.getAttribute('data-value'));
       const sel = s.has(v);
       item.classList.toggle('selected', sel);
       const ch = item.querySelector('.ms-check');
@@ -3270,33 +3311,39 @@ function mergeGeographyNamesWithData(apiNames) {
   return [...out].sort((a, b) => a.localeCompare(b));
 }
 
+/** Dedupe / sort geography labels (exact strings as in DATA.raw region column). */
+function canonicalizeGeoNameList(names) {
+  if (!names || !names.length) return [];
+  return [...new Set((names || []).map((n) => String(n).trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+}
+
 function populateMainGeoMS(names) {
+  installMainGeoMsClickDelegation();
   const el = document.getElementById('ms-geo-items');
   if (!el) return;
-  const esc = (m) => String(m).replace(/'/g, "\\'");
-  el.innerHTML = `<div class="ms-item all-item selected" data-value="all" onclick="toggleMSItem('geo','all')">
+  el.innerHTML = `<div class="ms-item all-item selected" data-value="all">
       <div class="ms-check">✓</div><span>All India</span></div>` +
-    names.map(m => {
-      const e = esc(m);
-      return `<div class="ms-item" data-value="${String(m).replace(/"/g, '&quot;')}" onclick="toggleMSItem('geo','${e}')">
-        <div class="ms-check"></div><span>${m}</span></div>`;
+    names.map((m) => {
+      const enc = encodeURIComponent(m);
+      return `<div class="ms-item" data-value="${enc.replace(/"/g, '&quot;')}">
+        <div class="ms-check"></div><span>${escapeHtmlText(m)}</span></div>`;
     }).join('');
   MS_STATE.geo = new Set(['all']);
   updateMSTrigger('geo');
 }
 
 function populateCmpGeoMS(names) {
+  installCmpGeoMsClickDelegation();
   const el = document.getElementById('cmp-ms-geo-items');
   if (!el || !names.length) return;
-  const esc = (m) => String(m).replace(/'/g, "\\'");
   const valid = [...CMP_MS_STATE.geo].filter((x) => names.includes(x));
   if (valid.length === 0) CMP_MS_STATE.geo = new Set([names[0]]);
   else CMP_MS_STATE.geo = new Set(valid);
-  el.innerHTML = names.map(m => {
-    const e = esc(m);
+  el.innerHTML = names.map((m) => {
+    const enc = encodeURIComponent(m);
     const sel = CMP_MS_STATE.geo.has(m);
-    return `<div class="ms-item${sel ? ' selected' : ''}" data-value="${String(m).replace(/"/g, '&quot;')}" onclick="toggleCmpMSItem('geo','${e}')">
-      <div class="ms-check">${sel ? '✓' : ''}</div><span>${m}</span></div>`;
+    return `<div class="ms-item${sel ? ' selected' : ''}" data-value="${enc.replace(/"/g, '&quot;')}">
+      <div class="ms-check">${sel ? '✓' : ''}</div><span>${escapeHtmlText(m)}</span></div>`;
   }).join('');
   updateCmpMSTrigger('geo');
 }
@@ -3382,41 +3429,6 @@ function _geoNorm(name) {
   };
   if (map[lower]) return map[lower];
   return _titleCaseStateName(name);
-}
-
-/** After DATA.raw exists: set of exact r.region strings + first raw name per _geoNorm() key. */
-function rebuildGeoRegionIndices() {
-  window._RAW_REGIONS_SET = new Set();
-  window._RAW_REGION_BY_NORM = new Map();
-  if (!DATA || !DATA.raw) return;
-  const seen = new Set();
-  DATA.raw.forEach((row) => {
-    const reg = row.region;
-    if (!reg || reg === 'All India') return;
-    window._RAW_REGIONS_SET.add(reg);
-    if (seen.has(reg)) return;
-    seen.add(reg);
-    const nk = _geoNorm(reg);
-    if (!window._RAW_REGION_BY_NORM.has(nk)) window._RAW_REGION_BY_NORM.set(nk, reg);
-  });
-}
-
-/** Map API / UI / GeoJSON-style labels to the exact region string used in DATA.raw rows. */
-function resolveToRawRegion(name) {
-  if (!name || name === 'All India') return name;
-  if (!DATA || !DATA.raw) return name;
-  if (window._RAW_REGIONS_SET && window._RAW_REGIONS_SET.has(name)) return name;
-  const nk = _geoNorm(name);
-  if (window._RAW_REGION_BY_NORM && window._RAW_REGION_BY_NORM.has(nk))
-    return window._RAW_REGION_BY_NORM.get(nk);
-  return name;
-}
-
-/** Dedupe merged geography names to one entry per state as stored in raw rows. */
-function canonicalizeGeoNameList(names) {
-  if (!names || !names.length) return [];
-  rebuildGeoRegionIndices();
-  return [...new Set(names.map(resolveToRawRegion))].sort((a, b) => a.localeCompare(b));
 }
 
 // Canonical state short codes for compact display
