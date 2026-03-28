@@ -40,10 +40,12 @@ On **this** (`vahan-analytics`) repository, add **Secrets**:
 Workflow **Sync public dashboard** (`.github/workflows/sync-public-dashboard.yml`) builds:
 
 - **`index.html`** at site root — same full dashboard as `dashboard/index.html` (canonical public URL is `/`)
-- **`welcome.html`** — optional launcher from `deploy/github-pages/index.html` (**`noindex`**; use for dev links only)
 - **`dashboard/index.html`** — same UI (duplicate path for relative asset links); injected `window.__VAHAN_API_BASE__` and `<noscript>` SEO extract
+- **`og-image.png`** at site root (Open Graph preview; source `api/static/og-image.png`)
 - **`robots.txt`** / **`sitemap.xml`** at site root (from `api/static/`)
 - `legacy/README.md`, optional `docs/data/vahan_master.json`
+
+**Removing old `welcome.html`:** If the public repo still has `welcome.html` from an earlier sync, delete it in that repo (or run a one-off commit) so crawlers do not find a duplicate entry page. New syncs no longer publish `welcome.html`.
 
 Push to `main` / `master` (or run **Actions → Sync public dashboard → Run workflow**).
 
@@ -63,10 +65,30 @@ Move the old static site into **`legacy/`** on the public repo (previous `index.
 
 ---
 
-## 5. Custom domain
+## 5. Custom domain and **www** (DNS + CNAME)
 
-- **Render:** Web Service → **Custom Domains**.
-- **GitHub Pages:** keep **`CNAME`**; configure DNS as GitHub documents.
+Canonical host: **`https://www.vahanintelligence.in`**. The dashboard HTML uses absolute `https://www…` URLs for canonical, Open Graph, and sitemap.
+
+### GitHub Pages (`deploy/github-pages/CNAME`)
+
+The repo ships **`deploy/github-pages/CNAME`** with:
+
+```text
+www.vahanintelligence.in
+```
+
+1. In the **GitHub Pages** repository (or this repo if Pages is enabled here): **Settings → Pages → Custom domain** → enter **`www.vahanintelligence.in`**, save, wait for DNS check, enable **Enforce HTTPS**.
+2. At your **DNS provider**, create:
+   - **`www`** → **CNAME** → **`<your-github-username>.github.io`** (exact target is shown in GitHub’s custom-domain UI for your account).
+   - **Apex** **`vahanintelligence.in`**: either  
+     - **A** records to GitHub Pages’ current IPs (see [Managing a custom domain for your GitHub Pages site](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site)), **or**  
+     - Prefer **redirect apex → www** using your DNS/registrar “redirect” / **ALIAS** to `www` / a **Cloudflare** single redirect rule, so only **`www`** serves the site.
+
+After DNS propagates, **`https://www.vahanintelligence.in/`** should load the Pages site; avoid linking the apex if it still shows duplicate content without a redirect.
+
+### Render (API)
+
+**Settings → Custom Domains:** add **`www.vahanintelligence.in`** (and apex only if you need it). The app’s **`ApexToWwwRedirectMiddleware`** returns **301** from **`vahanintelligence.in`** → **`www.vahanintelligence.in`** when the request hits this service (disable with `APEX_WWW_REDIRECT=0` if needed).
 
 ---
 
@@ -78,6 +100,7 @@ Move the old static site into **`legacy/`** on the public repo (previous `index.
 - The same files are copied to the **site root** in GitHub Actions for **Sync public dashboard** and **Deploy GitHub Pages** (`_public/` / `_site/`).
 - Mirrors for visibility in git: `deploy/github-pages/robots.txt`, `deploy/github-pages/sitemap.xml` (keep in sync with `api/static/` when URLs change).
 - Google Search Console **HTML file** verification: `api/static/google5332b27a4f971584.html` → served at **`/google5332b27a4f971584.html`** on the API origin and copied to the static site root in CI.
+- Open Graph image: `api/static/og-image.png` — served at **`/og-image.png`** on the API (`api/main.py`) and copied to the static site root in CI; referenced in dashboard `<meta property="og:image" …>`.
 
 **Google Search Console (you complete in the browser)**
 

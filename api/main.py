@@ -218,6 +218,19 @@ def serve_google_search_console_verification():
     return Response(status_code=404)
 
 
+@app.get("/og-image.png", include_in_schema=False)
+def serve_og_image():
+    """Social preview image at site root (same path as GitHub Pages build)."""
+    p = STATIC_DIR / "og-image.png"
+    if p.is_file():
+        return FileResponse(
+            str(p),
+            media_type="image/png",
+            headers={"Cache-Control": "public, max-age=86400"},
+        )
+    return Response(status_code=404)
+
+
 @app.get("/health")
 def health():
     """Quick health check for UI to verify API is reachable."""

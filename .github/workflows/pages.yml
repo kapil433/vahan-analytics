@@ -1,4 +1,4 @@
-# GitHub Pages: full analytics dashboard at / and /dashboard/; optional noindex launcher at /welcome.html.
+# GitHub Pages: full analytics dashboard at / and /dashboard/; CNAME targets www (see DEPLOY.md § DNS).
 # Optional repo variable VAHAN_API_BASE_URL overrides the default Render URL below.
 name: Deploy GitHub Pages
 
@@ -53,7 +53,6 @@ jobs:
           for f in _site/index.html _site/dashboard/index.html; do
             python3 scripts/prerender_dashboard_seo.py --input "$f" --output "$f"
           done
-          cp deploy/github-pages/index.html _site/welcome.html
 
       - uses: actions/upload-pages-artifact@v3
         with:

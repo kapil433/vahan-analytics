@@ -6,19 +6,12 @@
    Create folder **`legacy/`** on the default branch. Move the **old** site into it (previous `index.html`, `lander/`, etc.). Keep this **`legacy/README.md`** for context.
 
 2. **Automated layout (recommended)**  
-   Workflow **Sync public dashboard** publishes the **full dashboard** as repo root **`index.html`** and copies this file to **`welcome.html`** only (launcher is **`noindex`**). You normally do **not** hand-copy `index.html` from this folder to the public repo root.
+   Workflow **Sync public dashboard** in the main **`vahan-analytics`** repo publishes the **full dashboard** as **`index.html`** at the site root (plus **`dashboard/index.html`**, **`og-image.png`**, robots/sitemap). You do **not** maintain a separate launcher page here.
 
-3. **Point to Render (welcome / manual use)**  
-   In `index.html` here, replace `https://YOUR-SERVICE.onrender.com/` with your real Render origin, or set:
-   ```html
-   <script>window.RENDER_DASHBOARD_URL='https://your-app.onrender.com/';</script>
-   ```
-   before the closing `</body>` (the template already reads this).
+3. **GitHub Pages**  
+   Use **root** `/` or **`/docs`** as configured in the Pages repo. Keep **`CNAME`** for **`www.vahanintelligence.in`** and follow **`DEPLOY.md` § 5** in the main `vahan-analytics` repo for DNS (www CNAME + apex redirect).
 
-4. **GitHub Pages**  
-   Use **root** `/` or **`/docs`** as today; **`CNAME`** can stay for your custom domain.
-
-## Optional: full dashboard on Pages
+## Optional: full dashboard on Pages (manual)
 
 Copy `api/static/dashboard/index.html` from the main repo and add **above** its main `<script>`:
 
