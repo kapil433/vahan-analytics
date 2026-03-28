@@ -1414,10 +1414,13 @@ function getFilters() {
 
 /** Normalize filters.geo / overrides to a list of region names present in DATA.raw */
 function regionsFromGeo(geo) {
-  if (geo == null || geo === '') return ['All India'];
-  if (geo === 'all') return ['All India'];
-  if (Array.isArray(geo)) return geo.length ? geo : ['All India'];
-  return [geo];
+  let list;
+  if (geo == null || geo === '') list = ['All India'];
+  else if (geo === 'all') list = ['All India'];
+  else if (Array.isArray(geo)) list = geo.length ? geo.slice() : ['All India'];
+  else list = [geo];
+  const resolved = list.map((g) => (g === 'All India' ? 'All India' : resolveToRawRegion(g)));
+  return [...new Set(resolved)];
 }
 
 function primaryGeoLabel(geo) {
@@ -3365,9 +3368,55 @@ function _geoNorm(name) {
     'ladakh': 'Ladakh',
     'lakshadweep': 'Lakshadweep',
     'goa': 'Goa',
+    'daman & diu': 'Dadra and Nagar Haveli and Daman and Diu',
+    'daman and diu': 'Dadra and Nagar Haveli and Daman and Diu',
+    'andhra pradesh': 'Andhra Pradesh',
+    'arunachal pradesh': 'Arunachal Pradesh',
+    'himachal pradesh': 'Himachal Pradesh',
+    'madhya pradesh': 'Madhya Pradesh',
+    'tamil nadu': 'Tamil Nadu',
+    'west bengal': 'West Bengal',
+    'uttar pradesh': 'Uttar Pradesh',
+    'jammu & kashmir (ut)': 'Jammu and Kashmir',
+    'the dadra and nagar haveli and daman and diu': 'Dadra and Nagar Haveli and Daman and Diu',
   };
   if (map[lower]) return map[lower];
   return _titleCaseStateName(name);
+}
+
+/** After DATA.raw exists: set of exact r.region strings + first raw name per _geoNorm() key. */
+function rebuildGeoRegionIndices() {
+  window._RAW_REGIONS_SET = new Set();
+  window._RAW_REGION_BY_NORM = new Map();
+  if (!DATA || !DATA.raw) return;
+  const seen = new Set();
+  DATA.raw.forEach((row) => {
+    const reg = row.region;
+    if (!reg || reg === 'All India') return;
+    window._RAW_REGIONS_SET.add(reg);
+    if (seen.has(reg)) return;
+    seen.add(reg);
+    const nk = _geoNorm(reg);
+    if (!window._RAW_REGION_BY_NORM.has(nk)) window._RAW_REGION_BY_NORM.set(nk, reg);
+  });
+}
+
+/** Map API / UI / GeoJSON-style labels to the exact region string used in DATA.raw rows. */
+function resolveToRawRegion(name) {
+  if (!name || name === 'All India') return name;
+  if (!DATA || !DATA.raw) return name;
+  if (window._RAW_REGIONS_SET && window._RAW_REGIONS_SET.has(name)) return name;
+  const nk = _geoNorm(name);
+  if (window._RAW_REGION_BY_NORM && window._RAW_REGION_BY_NORM.has(nk))
+    return window._RAW_REGION_BY_NORM.get(nk);
+  return name;
+}
+
+/** Dedupe merged geography names to one entry per state as stored in raw rows. */
+function canonicalizeGeoNameList(names) {
+  if (!names || !names.length) return [];
+  rebuildGeoRegionIndices();
+  return [...new Set(names.map(resolveToRawRegion))].sort((a, b) => a.localeCompare(b));
 }
 
 // Canonical state short codes for compact display
@@ -3518,9 +3567,10 @@ function _geoShowTip(ev, d, stateData, nameProp, metric) {
   const tt = document.getElementById('gm-tooltip');
   const sName = _geoNorm(d.properties[nameProp]);
   const sd = stateData[sName];
-  const code = STATE_CODES[sName] || '';
+  const disp = (sd && sd.name) ? sd.name : sName;
+  const code = STATE_CODES[disp] || STATE_CODES[sName] || '';
   
-  let html = `<div class="gtt-name">${sName}${code ? ` (${code})` : ''}</div>`;
+  let html = `<div class="gtt-name">${disp}${code ? ` (${code})` : ''}</div>`;
   
   if (sd && sd.total > 0) {
     html += `<div class="gtt-row"><span>Registrations</span><span class="gtt-val">${fmtFull(sd.total)}</span></div>`;
@@ -3604,28 +3654,29 @@ function buildGeoMapPage() {
   const aiCtxRows  = getFilteredRaw(ctxFilters, 'All India');
   const aiCtxPrior = getPriorPeriodRaw(ctxFilters, 'All India');
 
-  // Build state-level data for every state/UT (so map polygons join even when volume is 0)
+  // Build state-level data for every state/UT (map keys = _geoNorm so polygons join GeoJSON ST_NM)
   let geoList = mergeGeographyNamesWithData(window._INDIA_GEOGRAPHY_NAMES || []);
+  geoList = canonicalizeGeoNameList(geoList);
   if (!geoList.length) {
     geoList = (DATA.regions || []).filter((r) => r && r !== 'All India').sort((a, b) => a.localeCompare(b));
+    geoList = canonicalizeGeoNameList(geoList);
   }
   const stateData = {};
-  geoList.forEach(region => {
-    const rows  = getFilteredRaw(filters, region);
-    const prior = getPriorPeriodRaw(filters, region);
+  geoList.forEach((rawR) => {
+    const mapKey = _geoNorm(rawR);
+    const rows  = getFilteredRaw(filters, rawR);
+    const prior = getPriorPeriodRaw(filters, rawR);
     const total = sumRegs(rows);
     const priorTotal = sumRegs(prior);
 
-    // Fuel breakdown
     const fuelBreak = {};
     (DATA.fuels || []).forEach(f => {
       fuelBreak[f] = rows.filter(r => r.fuel === f).reduce((s,r)=>s+r.registrations,0);
     });
-    // OEM breakdown for tooltip
     const oemBreak = {};
     rows.forEach(r => { oemBreak[r.maker] = (oemBreak[r.maker]||0) + r.registrations; });
 
-    stateData[region] = { total, priorTotal, fuelBreak, oemBreak, name: region };
+    stateData[mapKey] = { total, priorTotal, fuelBreak, oemBreak, name: rawR };
   });
 
   // ── Title ─────────────────────────────────────────────────
@@ -3650,7 +3701,7 @@ function buildGeoMapPage() {
       <div class="kpi-sub">${aiYoY !== null ? deltaArrow(aiYoY) : ''} vs prior</div>
     </div>
     <div class="kpi-card green"><div class="kpi-label">TOP STATE</div>
-      <div class="kpi-value" style="font-size:14px">${sorted.length > 0 ? sorted[0][0] : '—'}</div>
+      <div class="kpi-value" style="font-size:14px">${sorted.length > 0 ? sorted[0][1].name : '—'}</div>
       <div class="kpi-sub">${sorted.length > 0 ? fmt(sorted[0][1].total) + ' · ' + ((sorted[0][1].total/aiTotal*100)||0).toFixed(1)+'% share' : ''}</div>
     </div>
     <div class="kpi-card ev"><div class="kpi-label">STATES W/ DATA</div>
@@ -3715,7 +3766,7 @@ function buildGeoMapPage() {
     const yoy = val.priorTotal > 0 ? pct(val.total, val.priorTotal) : null;
     return `<div class="geomap-rank-row">
       <span class="rk-n">${i+1}</span>
-      <span class="rk-name">${name}</span>
+      <span class="rk-name">${val.name || name}</span>
       <div style="display:flex;align-items:center;gap:4px">
         <div class="rk-bar"><div class="rk-fill" style="width:${pctW}%;background:var(--blue)"></div></div>
         <span class="rk-val">${fmt(val.total)} ${yoy !== null ? _gmPctDelta(yoy) : ''}</span>
@@ -3771,8 +3822,10 @@ async function init() {
     document.getElementById('dataBadge').textContent = `● ${DATA.meta.total_records.toLocaleString()} RECORDS · ${DATA.meta.cal_years[0]}–${DATA.meta.cal_years[DATA.meta.cal_years.length-1]}`;
     let geoNames = await loadIndiaGeographyNames();
     geoNames = mergeGeographyNamesWithData(geoNames);
+    geoNames = canonicalizeGeoNameList(geoNames);
     if (!geoNames.length) {
       geoNames = (DATA.regions || []).filter((r) => r && r !== 'All India').sort((a, b) => a.localeCompare(b));
+      geoNames = canonicalizeGeoNameList(geoNames);
     }
     populateGeographyDropdownsFromNames(geoNames);
     populateYearDropdown();
