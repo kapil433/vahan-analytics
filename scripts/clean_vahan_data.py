@@ -635,10 +635,15 @@ def iter_merged_csv_files(raw_dir: Path, *, recursive: bool = True) -> list[Path
     return sorted(found, key=lambda p: str(p.relative_to(raw_dir).as_posix()))
 
 
-def iter_raw_vahan_csv_files(raw_dir: Path, *, recursive: bool = True) -> list[Path]:
+def iter_raw_vahan_csv_files(
+    raw_dir: Path, *, recursive: bool = True, f1_only: bool = False
+) -> list[Path]:
     """
-    All portal files to clean: *_merged.csv (flat + subdirs), any *.csv under f1/,
-    and any *.xlsx under f1/ (FUELWISE / CY-suffix workbooks). De-duplicated by path.
+    Portal files to clean. Default: *_merged.csv (flat + subdirs) plus any *.csv / *.xlsx
+    under f1/ (FUELWISE workbooks). De-duplicated by path.
+
+    When f1_only=True, only ``raw_dir/f1/**/*.csv`` and ``raw_dir/f1/**/*.xlsx`` are used
+    (no top-level merged scrapes / All-Vahan aggregates).
     """
     raw_dir = raw_dir.resolve()
     seen: set[Path] = set()
@@ -653,12 +658,13 @@ def iter_raw_vahan_csv_files(raw_dir: Path, *, recursive: bool = True) -> list[P
         seen.add(rp)
         ordered.append(rp)
 
-    if recursive:
-        for p in raw_dir.rglob("*_merged.csv"):
-            add(p)
-    else:
-        for p in raw_dir.glob("*_merged.csv"):
-            add(p)
+    if not f1_only:
+        if recursive:
+            for p in raw_dir.rglob("*_merged.csv"):
+                add(p)
+        else:
+            for p in raw_dir.glob("*_merged.csv"):
+                add(p)
 
     f1 = raw_dir / "f1"
     if f1.is_dir():
@@ -683,17 +689,24 @@ def cleaned_csv_basename(raw_root: Path, merged_file: Path) -> str:
     return f"{parent}__{stem}_cleaned.csv"
 
 
-def clean_all(input_dir: Path, output_dir: Path, *, recursive: bool = True) -> list[Path]:
+def clean_all(
+    input_dir: Path,
+    output_dir: Path,
+    *,
+    recursive: bool = True,
+    f1_only: bool = False,
+) -> list[Path]:
     """
-    Clean all merged CSVs in input_dir, write to output_dir.
-    Works for any state including All India. When recursive=True, includes e.g. f1/<state>/*.csv.
+    Clean portal exports in input_dir, write to output_dir.
+    When recursive=True and not f1_only, includes top-level *_merged.csv and f1/**.
+    When f1_only=True, only input_dir/f1/** is scanned.
     """
     output_dir.mkdir(parents=True, exist_ok=True)
-    files = iter_raw_vahan_csv_files(input_dir, recursive=recursive)
+    files = iter_raw_vahan_csv_files(input_dir, recursive=recursive, f1_only=f1_only)
     if not files and input_dir.name != "vahan_data":
         vahan = input_dir / "vahan_data" if (input_dir / "vahan_data").exists() else input_dir.parent / "vahan_data"
         if vahan.is_dir():
-            files = iter_raw_vahan_csv_files(vahan, recursive=recursive)
+            files = iter_raw_vahan_csv_files(vahan, recursive=recursive, f1_only=f1_only)
 
     all_dfs = []
     for f in files:
@@ -760,5 +773,15 @@ if __name__ == "__main__":
         action="store_true",
         help="Only scan raw-dir top level (no subfolders)",
     )
+    ap.add_argument(
+        "--f1-only",
+        action="store_true",
+        help="Only ingest output/vahan_data/f1/** (skip top-level *_merged.csv and All-Vahan files)",
+    )
     args = ap.parse_args()
-    clean_all(args.raw_dir.resolve(), args.output_dir.resolve(), recursive=not args.no_recurse)
+    clean_all(
+        args.raw_dir.resolve(),
+        args.output_dir.resolve(),
+        recursive=not args.no_recurse,
+        f1_only=args.f1_only,
+    )

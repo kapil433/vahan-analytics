@@ -12,9 +12,10 @@ venv/
 .idea/
 .vscode/
 
-# Large / generated data (keep DB out of git unless you intentionally ship a small demo DB)
+# Large / generated data (raw scrapes stay local; ship curated SQLite for offline API)
 output/
 *.db
+!data/vahan_local.db
 !**/data/.gitkeep
 
 # OS
