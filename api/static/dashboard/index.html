@@ -2274,7 +2274,7 @@ function buildTrendChart(filters) {
   }
 
   const sub = document.getElementById('trend-subtitle');
-  if (sub) sub.innerHTML = `Annual volume · ${region}` +
+  if (sub) sub.innerHTML = `Annual volume · ${primaryGeoLabel(filters.geo)}` +
     (partials.size > 0 ? ' &nbsp;<span style="color:#fbbf24;font-size:10px">● dotted = partial year (annualised to full year)</span>' : '');
 }
 
