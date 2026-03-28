@@ -53,6 +53,8 @@ def load_cleaned_csv(conn, csv_path: Path, upsert: bool = True) -> int:
             lambda r: month_to_fy(int(r["year"]), int(r["month"])),
             axis=1,
         )
+    key_cols = ["state_code", "state_name", "year", "fuel_type", "maker", "month"]
+    df = df.groupby(key_cols, as_index=False).agg(count=("count", "sum"), fy=("fy", "first"))
     df["source"] = "vahan_parivahan"
 
     cols = ["state_code", "state_name", "year", "fuel_type", "maker", "month", "count", "fy", "source"]

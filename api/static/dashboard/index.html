@@ -1367,7 +1367,7 @@ let heatFuelFilter = 'all';
 
 // Returns last calendar year with complete 12-month data
 function getLatestFullYear(region) {
-  const reg = region || 'All India';
+  const reg = !region || region === 'All India' ? 'All India' : matchBundleRegion(String(region).trim());
   const years = [...new Set(DATA.raw.filter(r=>r.region===reg&&r.registrations>0).map(r=>r.cal_year))].sort((a,b)=>b-a);
   for (const yr of years) {
     const months = new Set(DATA.raw.filter(r=>r.region===reg&&r.cal_year===yr&&r.registrations>0).map(r=>r.month));
@@ -1562,11 +1562,12 @@ function rebuildDDWidget(stateObj, key) {
 // Get filtered rows from modal state
 function getOEMDDRows(makerName) {
   const region = OEM_DD.geo;
+  const wantRegion = !region || region === 'All India' ? 'All India' : matchBundleRegion(String(region).trim());
   const yt     = OEM_DD.yeartype;
   const yrs    = OEM_DD.year;
   const fuels  = OEM_DD.fuel;
   return DATA.raw.filter(r => {
-    if (r.region !== region) return false;
+    if (r.region !== wantRegion) return false;
     if (r.maker !== makerName) return false;
     if (!yrs.has('all')) {
       const match = yt === 'fy' ? yrs.has(r.fy) : yrs.has(String(r.cal_year));
@@ -1579,11 +1580,12 @@ function getOEMDDRows(makerName) {
 
 function getFuelDDRows(fuelName) {
   const region = FUEL_DD.geo;
+  const wantRegion = !region || region === 'All India' ? 'All India' : matchBundleRegion(String(region).trim());
   const yt     = FUEL_DD.yeartype;
   const yrs    = FUEL_DD.year;
   const oems   = FUEL_DD.oem;
   return DATA.raw.filter(r => {
-    if (r.region !== region) return false;
+    if (r.region !== wantRegion) return false;
     if (r.fuel !== fuelName) return false;
     if (!yrs.has('all')) {
       const match = yt === 'fy' ? yrs.has(r.fy) : yrs.has(String(r.cal_year));
@@ -1600,12 +1602,7 @@ function getMSValue(key) {
   return Array.from(s);
 }
 
-/** Decode geography multiselect data-value (encodeURIComponent in DOM). */
-function geoMsDecodeDataValue(raw) {
-  if (raw == null || raw === '' || raw === 'all') return raw;
-  try { return decodeURIComponent(String(raw)); } catch (e) { return String(raw); }
-}
-
+/** Geography multiselect uses data-geo-i / data-cmp-geo-i indexes → these arrays (exact bundle region strings). */
 function installMainGeoMsClickDelegation() {
   if (window._mainGeoMsClickInstalled) return;
   window._mainGeoMsClickInstalled = true;
@@ -1614,9 +1611,12 @@ function installMainGeoMsClickDelegation() {
     if (!root) return;
     const item = ev.target.closest('.ms-item');
     if (!item || !root.contains(item)) return;
-    const raw = item.getAttribute('data-value');
-    if (raw === 'all') toggleMSItem('geo', 'all');
-    else toggleMSItem('geo', geoMsDecodeDataValue(raw));
+    const di = item.getAttribute('data-geo-i');
+    if (di === 'all') toggleMSItem('geo', 'all');
+    else {
+      const lab = window._MAIN_GEO_LABELS && window._MAIN_GEO_LABELS[parseInt(di, 10)];
+      if (lab != null) toggleMSItem('geo', lab);
+    }
   });
 }
 
@@ -1628,8 +1628,9 @@ function installCmpGeoMsClickDelegation() {
     if (!root) return;
     const item = ev.target.closest('.ms-item');
     if (!item || !root.contains(item)) return;
-    const raw = item.getAttribute('data-value');
-    toggleCmpMSItem('geo', geoMsDecodeDataValue(raw));
+    const di = item.getAttribute('data-cmp-geo-i');
+    const lab = window._CMP_GEO_LABELS && window._CMP_GEO_LABELS[parseInt(di, 10)];
+    if (lab != null) toggleCmpMSItem('geo', lab);
   });
 }
 
@@ -1657,8 +1658,14 @@ function toggleMS(key) {
 
 function filterMSItems(key, query) {
   const items = document.querySelectorAll(`#ms-${key}-items .ms-item:not(.all-item)`);
+  const q = query.toLowerCase();
   items.forEach(item => {
-    item.style.display = item.dataset.value.toLowerCase().includes(query.toLowerCase()) ? 'flex' : 'none';
+    if (key === 'geo') {
+      const t = (item.querySelector('span') && item.querySelector('span').textContent) || '';
+      item.style.display = t.toLowerCase().includes(q) ? 'flex' : 'none';
+    } else {
+      item.style.display = item.dataset.value.toLowerCase().includes(q) ? 'flex' : 'none';
+    }
   });
 }
 
@@ -1683,9 +1690,21 @@ function updateMSTrigger(key) {
   const items = document.querySelectorAll(`#ms-${key}-items .ms-item`);
   // Update checkmarks
   items.forEach(item => {
-    let val = item.dataset.value;
-    if (key === 'geo' && val !== 'all') val = geoMsDecodeDataValue(val);
-    const isSelected = s.has('all') ? val === 'all' : s.has(val);
+    let val;
+    let isSelected;
+    if (key === 'geo') {
+      const di = item.getAttribute('data-geo-i');
+      if (di === 'all') {
+        val = 'all';
+        isSelected = s.has('all');
+      } else {
+        val = window._MAIN_GEO_LABELS && window._MAIN_GEO_LABELS[parseInt(di, 10)];
+        isSelected = val != null && s.has(val);
+      }
+    } else {
+      val = item.dataset.value;
+      isSelected = s.has('all') ? val === 'all' : s.has(val);
+    }
     item.classList.toggle('selected', isSelected);
     const ch = item.querySelector('.ms-check');
     if (ch && key === 'geo') ch.textContent = isSelected ? '✓' : '';
@@ -1709,7 +1728,9 @@ function getCmpMSValue(key) {
   const s = CMP_MS_STATE[key];
   if (key === 'geo') {
     const arr = Array.from(s).filter(Boolean);
-    const names = window._INDIA_GEOGRAPHY_NAMES || [];
+    const names = (window._CMP_GEO_LABELS && window._CMP_GEO_LABELS.length)
+      ? window._CMP_GEO_LABELS
+      : (window._INDIA_GEOGRAPHY_NAMES || []);
     if (!arr.length && names[0]) return [names[0]];
     return arr.length ? arr : (names[0] ? [names[0]] : []);
   }
@@ -1723,9 +1744,16 @@ function updateCmpMSTrigger(key) {
   if (!trigger) return;
   const items = document.querySelectorAll(`#cmp-ms-${key}-items .ms-item`);
   items.forEach(item => {
-    let val = item.dataset.value;
-    if (key === 'geo') val = geoMsDecodeDataValue(val);
-    const isSelected = key === 'geo' ? s.has(val) : (s.has('all') ? val === 'all' : s.has(val));
+    let val;
+    let isSelected;
+    if (key === 'geo') {
+      const di = item.getAttribute('data-cmp-geo-i');
+      val = window._CMP_GEO_LABELS && window._CMP_GEO_LABELS[parseInt(di, 10)];
+      isSelected = val != null && s.has(val);
+    } else {
+      val = item.dataset.value;
+      isSelected = s.has('all') ? val === 'all' : s.has(val);
+    }
     item.classList.toggle('selected', isSelected);
     const ch = item.querySelector('.ms-check');
     if (ch) ch.textContent = isSelected ? '✓' : '';
@@ -1768,8 +1796,14 @@ function toggleCmpMS(key) {
 
 function filterCmpMSItems(key, query) {
   const items = document.querySelectorAll(`#cmp-ms-${key}-items .ms-item:not(.all-item)`);
+  const q = query.toLowerCase();
   items.forEach(item => {
-    item.style.display = item.dataset.value.toLowerCase().includes(query.toLowerCase()) ? 'flex' : 'none';
+    if (key === 'geo') {
+      const t = (item.querySelector('span') && item.querySelector('span').textContent) || '';
+      item.style.display = t.toLowerCase().includes(q) ? 'flex' : 'none';
+    } else {
+      item.style.display = item.dataset.value.toLowerCase().includes(q) ? 'flex' : 'none';
+    }
   });
 }
 
@@ -1787,8 +1821,9 @@ function toggleCmpMSItem(key, value) {
     if (s.size === 0 && _gn[0]) s.add(_gn[0]);
     updateCmpMSTrigger('geo');
     document.querySelectorAll('#cmp-ms-geo-items .ms-item').forEach(item => {
-      const v = geoMsDecodeDataValue(item.getAttribute('data-value'));
-      const sel = s.has(v);
+      const di = item.getAttribute('data-cmp-geo-i');
+      const v = window._CMP_GEO_LABELS && window._CMP_GEO_LABELS[parseInt(di, 10)];
+      const sel = v != null && s.has(v);
       item.classList.toggle('selected', sel);
       const ch = item.querySelector('.ms-check');
       if (ch) ch.textContent = sel ? '✓' : '';
@@ -2026,6 +2061,31 @@ function getPartialCYs() {
   return new Set(Object.keys(mths).filter(y => mths[y].size < 12).map(Number));
 }
 
+/** FY labels excluded from year multiselects (incomplete / transitional). */
+function excludedFYFromYearSelectors() {
+  return new Set(['2012-13', '2013-14', '2026-27']);
+}
+
+/** FY labels excluded from time-series volume charts (aligns with selectors + lead-in FY). */
+function excludedFYFromVolumeCharts() {
+  return new Set(['2011-12', '2012-13', '2013-14', '2026-27']);
+}
+
+/** FY options for OEM/Fuel modal dropdowns (newest first). */
+function selectableFinancialYearsDesc() {
+  if (!DATA || !DATA.meta.financial_years) return [];
+  const ex = excludedFYFromYearSelectors();
+  return DATA.meta.financial_years.filter((y) => !ex.has(y)).slice().reverse();
+}
+
+/** Latest FY shown in the main year multiselect. */
+function latestSelectableFY() {
+  if (!DATA || !DATA.meta.financial_years) return '';
+  const ex = excludedFYFromYearSelectors();
+  const ok = DATA.meta.financial_years.filter((y) => !ex.has(y));
+  return ok.length ? ok[ok.length - 1] : '';
+}
+
 function populateYearDropdown() {
   if (!DATA) return;
   const yt = document.getElementById('f-yeartype').value;
@@ -2035,10 +2095,10 @@ function populateYearDropdown() {
     ? DATA.meta.financial_years.slice().reverse()
     : DATA.meta.cal_years.slice().reverse();
 
-  // Filter out partial/incomplete years
+  const fyExcl = excludedFYFromYearSelectors();
   const filtered = years.filter(y => {
-    if (yt === 'fy') return !['2012-13','2013-14','2026-27'].includes(y);
-        return !partialCYs.has(y);
+    if (yt === 'fy') return !fyExcl.has(y);
+    return !partialCYs.has(y);
   });
 
   const el = document.getElementById('ms-year-items');
@@ -2244,9 +2304,11 @@ function annualise(val, months) {
 function buildTrendChart(filters) {
   const yt = filters.yeartype;
   const regs = regionsFromGeo(filters.geo);
+  const fyVolExcl = excludedFYFromVolumeCharts();
+  const partialCYs = getPartialCYs();
   const periods = yt === 'fy'
-    ? DATA.meta.financial_years.filter(y => y !== '2011-12' && y !== '2026-27')
-    : DATA.meta.cal_years;
+    ? DATA.meta.financial_years.filter(y => !fyVolExcl.has(y))
+    : DATA.meta.cal_years.filter(y => !partialCYs.has(y));
 
   // Sum registrations per period for this region
   const byPeriod = {};
@@ -2385,9 +2447,11 @@ function buildDonutChart(rows, filters) {
 function buildYoYChart(filters) {
   const yt = filters.yeartype;
   const regs = regionsFromGeo(filters.geo);
+  const fyVolExcl = excludedFYFromVolumeCharts();
+  const partialCYs = getPartialCYs();
   const periods = yt === 'fy'
-    ? DATA.meta.financial_years.filter(y => y !== '2011-12' && y !== '2026-27')
-    : DATA.meta.cal_years;
+    ? DATA.meta.financial_years.filter(y => !fyVolExcl.has(y))
+    : DATA.meta.cal_years.filter(y => !partialCYs.has(y));
 
   const byPeriod = {}, mthCount = {};
   periods.forEach(p => { byPeriod[p] = 0; mthCount[p] = new Set(); });
@@ -2448,10 +2512,11 @@ function buildFuelPage() {
 
 function buildFuelStackChart(filters) {
   const yt = filters.yeartype;
-  const PARTIAL_CY = new Set(['2026']);
+  const fyVolExcl = excludedFYFromVolumeCharts();
+  const partialCYs = getPartialCYs();
   const periods = yt === 'fy'
-    ? DATA.meta.financial_years.filter(y => y !== '2012-13' && y !== '2026-27')
-    : DATA.meta.cal_years.filter(y => !PARTIAL_CY.has(String(y)));
+    ? DATA.meta.financial_years.filter(y => !fyVolExcl.has(y))
+    : DATA.meta.cal_years.filter(y => !partialCYs.has(y));
 
   const fuels = ['Petrol','Diesel','CNG','EV','Strong Hybrid'];
   const byPeriodFuel = {};
@@ -2551,9 +2616,11 @@ function buildFuelShareTable(rows) {
 function buildHeatmap() {
   const fuelF = heatFuelFilter;
   const yt = document.getElementById('f-yeartype').value;
+  const fyVolExcl = excludedFYFromVolumeCharts();
+  const partialCYs = getPartialCYs();
   const years = yt === 'fy'
-    ? DATA.meta.financial_years.filter(y => y !== '2012-13' && y !== '2026-27')
-    : DATA.meta.cal_years.filter(y => String(y) !== '2026');
+    ? DATA.meta.financial_years.filter(y => !fyVolExcl.has(y))
+    : DATA.meta.cal_years.filter(y => !partialCYs.has(y));
 
   // Build month×year matrix
   const grid = {};
@@ -2654,9 +2721,11 @@ function buildOEMPieChart(rows) {
 
 function buildOEMTrendChart(filters) {
   const yt = filters.yeartype;
+  const fyVolExcl = excludedFYFromVolumeCharts();
+  const partialCYs = getPartialCYs();
   const periods = yt === 'fy'
-    ? DATA.meta.financial_years.filter(y => y !== '2012-13' && y !== '2026-27')
-    : DATA.meta.cal_years;
+    ? DATA.meta.financial_years.filter(y => !fyVolExcl.has(y))
+    : DATA.meta.cal_years.filter(y => !partialCYs.has(y));
 
   // Top 6 OEMs by total
   const _oemRegs = regionsFromGeo(filters.geo);
@@ -2754,9 +2823,11 @@ function buildEVPage() {
 
 function buildEVTrendChart(filters) {
   const yt = filters.yeartype;
+  const fyVolExcl = excludedFYFromVolumeCharts();
+  const partialCYs = getPartialCYs();
   const periods = yt === 'fy'
-    ? DATA.meta.financial_years.filter(y => y !== '2012-13' && y !== '2026-27')
-    : DATA.meta.cal_years;
+    ? DATA.meta.financial_years.filter(y => !fyVolExcl.has(y))
+    : DATA.meta.cal_years.filter(y => !partialCYs.has(y));
 
   const byPeriod = {};
   const totalByPeriod = {};
@@ -2810,9 +2881,11 @@ function buildEVOEMChart(rows) {
 
 function buildGreenTrendChart(filters) {
   const yt = filters.yeartype;
+  const fyVolExcl = excludedFYFromVolumeCharts();
+  const partialCYs = getPartialCYs();
   const periods = yt === 'fy'
-    ? DATA.meta.financial_years.filter(y => y !== '2012-13' && y !== '2026-27')
-    : DATA.meta.cal_years;
+    ? DATA.meta.financial_years.filter(y => !fyVolExcl.has(y))
+    : DATA.meta.cal_years.filter(y => !partialCYs.has(y));
   const greenFuels = ['EV','Strong Hybrid','CNG'];
   const by = {};
   periods.forEach(p => { by[p] = {}; greenFuels.forEach(f => by[p][f] = 0); });
@@ -2831,9 +2904,11 @@ function buildGreenTrendChart(filters) {
 
 function buildHybridChart(filters) {
   const yt = filters.yeartype;
+  const fyVolExcl = excludedFYFromVolumeCharts();
+  const partialCYs = getPartialCYs();
   const periods = yt === 'fy'
-    ? DATA.meta.financial_years.filter(y => y !== '2012-13' && y !== '2026-27')
-    : DATA.meta.cal_years;
+    ? DATA.meta.financial_years.filter(y => !fyVolExcl.has(y))
+    : DATA.meta.cal_years.filter(y => !partialCYs.has(y));
   const by = {};
   periods.forEach(p => by[p] = 0);
   const _hybRegs = regionsFromGeo(filters.geo);
@@ -3308,15 +3383,22 @@ async function loadIndiaGeographyNames() {
     if (!r.ok) return [];
     const j = await r.json();
     return (j.states || [])
-      .filter((s) => s.state_code && s.state_code !== 'ALL')
-      .map((s) => s.state_name)
+      .filter((s) => {
+        if (!s || !String(s.state_name || '').trim()) return false;
+        const c = String(s.state_code || '').toUpperCase();
+        return c !== 'ALL';
+      })
+      .map((s) => String(s.state_name).trim())
       .sort((a, b) => a.localeCompare(b));
   } catch (e) {
     return [];
   }
 }
 
-/** Union API names with every region string in the loaded bundle so filters/map keys match r.region. */
+/**
+ * Union geography labels: every region present in the loaded bundle (meta.regions + DATA.raw)
+ * plus optional API names. Bundle strings are authoritative for matching r.region.
+ */
 function mergeGeographyNamesWithData(apiNames) {
   const out = new Set();
   (apiNames || []).forEach((n) => {
@@ -3343,46 +3425,51 @@ function canonicalizeGeoNameList(names) {
 
 function populateMainGeoMS(names) {
   installMainGeoMsClickDelegation();
+  window._MAIN_GEO_LABELS = (names || []).map((n) => String(n).trim()).filter(Boolean);
   const el = document.getElementById('ms-geo-items');
   if (!el) return;
-  el.innerHTML = `<div class="ms-item all-item selected" data-value="all">
+  el.innerHTML = `<div class="ms-item all-item selected" data-geo-i="all">
       <div class="ms-check">✓</div><span>All India</span></div>` +
-    names.map((m) => {
-      const enc = encodeURIComponent(m);
-      return `<div class="ms-item" data-value="${enc.replace(/"/g, '&quot;')}">
-        <div class="ms-check"></div><span>${escapeHtmlText(m)}</span></div>`;
-    }).join('');
+    window._MAIN_GEO_LABELS.map((m, i) =>
+      `<div class="ms-item" data-geo-i="${i}">
+        <div class="ms-check"></div><span>${escapeHtmlText(m)}</span></div>`
+    ).join('');
   MS_STATE.geo = new Set(['all']);
   updateMSTrigger('geo');
 }
 
 function populateCmpGeoMS(names) {
   installCmpGeoMsClickDelegation();
+  window._CMP_GEO_LABELS = (names || []).map((n) => String(n).trim()).filter(Boolean);
   const el = document.getElementById('cmp-ms-geo-items');
-  if (!el || !names.length) return;
-  const valid = [...CMP_MS_STATE.geo].filter((x) => names.includes(x));
-  if (valid.length === 0) CMP_MS_STATE.geo = new Set([names[0]]);
+  if (!el || !window._CMP_GEO_LABELS.length) return;
+  const valid = [...CMP_MS_STATE.geo].filter((x) => window._CMP_GEO_LABELS.includes(x));
+  if (valid.length === 0) CMP_MS_STATE.geo = new Set([window._CMP_GEO_LABELS[0]]);
   else CMP_MS_STATE.geo = new Set(valid);
-  el.innerHTML = names.map((m) => {
-    const enc = encodeURIComponent(m);
+  el.innerHTML = window._CMP_GEO_LABELS.map((m, i) => {
     const sel = CMP_MS_STATE.geo.has(m);
-    return `<div class="ms-item${sel ? ' selected' : ''}" data-value="${enc.replace(/"/g, '&quot;')}">
+    return `<div class="ms-item${sel ? ' selected' : ''}" data-cmp-geo-i="${i}">
       <div class="ms-check">${sel ? '✓' : ''}</div><span>${escapeHtmlText(m)}</span></div>`;
   }).join('');
   updateCmpMSTrigger('geo');
 }
 
 function populateGeographyDropdownsFromNames(names) {
-  window._INDIA_GEOGRAPHY_NAMES = names;
-  if (!names.length) return;
+  const list = Array.isArray(names) ? names.filter(Boolean) : [];
+  window._INDIA_GEOGRAPHY_NAMES = list;
+  populateMainGeoMS(list);
   const prevFc = document.getElementById('fc-geo')?.value;
   const prevOem = document.getElementById('oem-dd-geo')?.value;
   const prevFuel = document.getElementById('fuel-dd-geo')?.value;
-  populateMainGeoMS(names);
-  populateCmpGeoMS(names);
-  _fillGeoSelect(document.getElementById('fc-geo'), true, names, prevFc);
-  _fillGeoSelect(document.getElementById('oem-dd-geo'), true, names, prevOem);
-  _fillGeoSelect(document.getElementById('fuel-dd-geo'), true, names, prevFuel);
+  if (!list.length) {
+    const el = document.getElementById('cmp-ms-geo-items');
+    if (el) el.innerHTML = '';
+    return;
+  }
+  populateCmpGeoMS(list);
+  _fillGeoSelect(document.getElementById('fc-geo'), true, list, prevFc);
+  _fillGeoSelect(document.getElementById('oem-dd-geo'), true, list, prevOem);
+  _fillGeoSelect(document.getElementById('fuel-dd-geo'), true, list, prevFuel);
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -3390,6 +3477,9 @@ function populateGeographyDropdownsFromNames(names) {
 // ═══════════════════════════════════════════════════════════════
 
 const INDIA_GEO_URL = 'https://gist.githubusercontent.com/jbrobst/56c13bbbf9d97d187fea01ca62ea5112/raw/e388c4cae20aa53cb5090210a42ebb9b765c0a36/india_states.geojson';
+
+/** Bumps when geomap is rebuilt so stale async GeoJSON fetches do not paint over a newer view. */
+let _geoMapRenderGen = 0;
 
 let _geoJSON = null;   // cached GeoJSON
 let _geoSvg  = null;   // D3 SVG selection
@@ -3811,11 +3901,17 @@ function buildGeoMapPage() {
   }).join('');
 
   // ── Map rendering ─────────────────────────────────────────
+  const _gmGen = ++_geoMapRenderGen;
   (async () => {
-    const indiaGeoJson = await _loadIndiaGeo();
-    _geoJSON = indiaGeoJson;
-    _initGeoSvg();
-    _geoRenderStates(stateData, _geoMetric);
+    try {
+      const indiaGeoJson = await _loadIndiaGeo();
+      if (_gmGen !== _geoMapRenderGen) return;
+      _geoJSON = indiaGeoJson;
+      _initGeoSvg();
+      _geoRenderStates(stateData, _geoMetric);
+    } catch (e) {
+      console.warn('Geo map load failed', e);
+    }
   })();
 }
 
@@ -3857,9 +3953,11 @@ async function init() {
     }));
     rebuildBundleRegionMatchers();
     document.getElementById('dataBadge').textContent = `● ${DATA.meta.total_records.toLocaleString()} RECORDS · ${DATA.meta.cal_years[0]}–${DATA.meta.cal_years[DATA.meta.cal_years.length-1]}`;
-    let geoNames = await loadIndiaGeographyNames();
-    geoNames = mergeGeographyNamesWithData(geoNames);
-    geoNames = canonicalizeGeoNameList(geoNames);
+    let geoNames = canonicalizeGeoNameList(mergeGeographyNamesWithData([]));
+    const apiGeo = await loadIndiaGeographyNames();
+    if (apiGeo && apiGeo.length) {
+      geoNames = canonicalizeGeoNameList(geoNames.concat(apiGeo));
+    }
     if (!geoNames.length) {
       geoNames = (DATA.regions || []).filter((r) => r && r !== 'All India').sort((a, b) => a.localeCompare(b));
       geoNames = canonicalizeGeoNameList(geoNames);
@@ -4073,8 +4171,9 @@ function populateCmpYearMultiselect() {
   const years = yt === 'fy'
     ? (DATA.meta.ai_financial_years || DATA.meta.financial_years).slice().reverse()
     : DATA.meta.cal_years.slice().reverse();
+  const fySelExcl = excludedFYFromYearSelectors();
   const filtered = years.filter((y) => {
-    if (yt === 'fy') return !['2012-13', '2013-14', '2026-27'].includes(y);
+    if (yt === 'fy') return !fySelExcl.has(y);
     return !partialCYs.has(y);
   });
   const el = document.getElementById('cmp-ms-year-items');
@@ -5786,7 +5885,7 @@ function initOEMDDFilters(makerName) {
   const partials = getPartialCYs();
 
   const yearList = yt === 'fy'
-    ? DATA.meta.financial_years.filter(y => !['2012-13','2013-14','2026-27'].includes(y)).slice().reverse()
+    ? selectableFinancialYearsDesc()
     : DATA.meta.cal_years.filter(y => !partials.has(String(y))).slice().reverse();
 
   const oemFuels = [...new Set(DATA.raw
@@ -5794,7 +5893,7 @@ function initOEMDDFilters(makerName) {
     .map(r => r.fuel))].sort();
 
   const defYear = yt === 'fy'
-    ? DATA.meta.financial_years.filter(y => y !== '2026-27').slice(-1)[0]
+    ? latestSelectableFY()
     : String(getLatestFullYear(OEM_DD.geo));
   OEM_DD.year = new Set([defYear]);
   OEM_DD.fuel = new Set(['all']);
@@ -5814,10 +5913,10 @@ function initOEMDDYear() {
   const yt = OEM_DD.yeartype;
   const partials = getPartialCYs();
   const yearList = yt === 'fy'
-    ? DATA.meta.financial_years.filter(y => !['2012-13','2013-14','2026-27'].includes(y)).slice().reverse()
+    ? selectableFinancialYearsDesc()
     : DATA.meta.cal_years.filter(y => !partials.has(String(y))).slice().reverse();
   const defYear = yt === 'fy'
-    ? DATA.meta.financial_years.filter(y => y !== '2026-27').slice(-1)[0]
+    ? latestSelectableFY()
     : String(getLatestFullYear(OEM_DD.geo));
   OEM_DD.year = new Set([defYear]);
   const yCon = document.getElementById('oem-dd-year-container');
@@ -5842,7 +5941,7 @@ function initFuelDDFilters(fuelName) {
   const partials = getPartialCYs();
 
   const yearList = yt === 'fy'
-    ? DATA.meta.financial_years.filter(y => !['2012-13','2013-14','2026-27'].includes(y)).slice().reverse()
+    ? selectableFinancialYearsDesc()
     : DATA.meta.cal_years.filter(y => !partials.has(String(y))).slice().reverse();
 
   const fuelOEMs = [...new Set(DATA.raw
@@ -5850,7 +5949,7 @@ function initFuelDDFilters(fuelName) {
     .map(r => r.maker))].sort();
 
   const defYear = yt === 'fy'
-    ? DATA.meta.financial_years.filter(y => y !== '2026-27').slice(-1)[0]
+    ? latestSelectableFY()
     : String(getLatestFullYear(FUEL_DD.geo));
   FUEL_DD.year = new Set([defYear]);
   FUEL_DD.oem  = new Set(['all']);
@@ -5870,10 +5969,10 @@ function initFuelDDYear() {
   const yt = FUEL_DD.yeartype;
   const partials = getPartialCYs();
   const yearList = yt === 'fy'
-    ? DATA.meta.financial_years.filter(y => !['2012-13','2013-14','2026-27'].includes(y)).slice().reverse()
+    ? selectableFinancialYearsDesc()
     : DATA.meta.cal_years.filter(y => !partials.has(String(y))).slice().reverse();
   const defYear = yt === 'fy'
-    ? DATA.meta.financial_years.filter(y => y !== '2026-27').slice(-1)[0]
+    ? latestSelectableFY()
     : String(getLatestFullYear(FUEL_DD.geo));
   FUEL_DD.year = new Set([defYear]);
   const yCon = document.getElementById('fuel-dd-year-container');
