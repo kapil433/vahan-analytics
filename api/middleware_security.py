@@ -10,7 +10,7 @@ from collections import defaultdict
 
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
-from starlette.responses import JSONResponse, Response
+from starlette.responses import JSONResponse, RedirectResponse, Response
 
 
 def _csp_value() -> str:
@@ -26,6 +26,28 @@ def _csp_value() -> str:
         "base-uri 'self'; "
         "form-action 'self' mailto:;"
     )
+
+
+class ApexToWwwRedirectMiddleware(BaseHTTPMiddleware):
+    """301 apex → www for the public marketing host (SEO canonical). Disable with APEX_WWW_REDIRECT=0."""
+
+    def __init__(self, app, apex_host: str = "vahanintelligence.in", www_host: str = "www.vahanintelligence.in"):
+        super().__init__(app)
+        self._apex = apex_host.lower()
+        self._www = www_host.lower()
+
+    async def dispatch(self, request: Request, call_next):
+        if os.getenv("APEX_WWW_REDIRECT", "1").strip().lower() in ("0", "false", "no"):
+            return await call_next(request)
+        host = (request.headers.get("host") or "").split(":")[0].lower()
+        if host == self._apex:
+            path = request.url.path or "/"
+            q = request.url.query
+            loc = f"https://{self._www}{path}"
+            if q:
+                loc = f"{loc}?{q}"
+            return RedirectResponse(loc, status_code=301)
+        return await call_next(request)
 
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):

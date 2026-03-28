@@ -1,5 +1,5 @@
 """
-Vahan Scraper API — Serves HTML UI (api/static/index.html) + Swagger.
+Vahan Scraper API — Dashboard at GET /, scraper UI at GET /scraper (api/static/index.html), Swagger.
 Uses vahan_scraper_master for batch scrape. Output: output/vahan_data/.
 """
 
@@ -28,10 +28,10 @@ from typing import Annotated, Any, Optional
 from fastapi import FastAPI, BackgroundTasks, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, Response
+from fastapi.responses import FileResponse, RedirectResponse, Response
 from starlette.middleware.gzip import GZipMiddleware
 
-from api.middleware_security import RateLimitMiddleware, SecurityHeadersMiddleware
+from api.middleware_security import ApexToWwwRedirectMiddleware, RateLimitMiddleware, SecurityHeadersMiddleware
 from fastapi.openapi.docs import get_swagger_ui_html
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field, field_validator
 
@@ -181,6 +181,7 @@ app.add_middleware(
 app.add_middleware(GZipMiddleware, minimum_size=1_000)
 app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(RateLimitMiddleware)
+app.add_middleware(ApexToWwwRedirectMiddleware)
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 DASHBOARD_DIR = STATIC_DIR / "dashboard"
@@ -236,8 +237,15 @@ def health():
 
 
 @app.get("/")
-def serve_ui():
-    """Serve the multiselect UI (linked to vahan_scraper_master via /scrape)."""
+def serve_root_dashboard():
+    """Canonical public URL: full analytics dashboard (same HTML as legacy /dashboard path)."""
+    dash = DASHBOARD_DIR / "index.html"
+    if dash.is_file():
+        return FileResponse(
+            dash,
+            media_type="text/html",
+            headers={"Cache-Control": "no-cache, no-store"},
+        )
     index_path = STATIC_DIR / "index.html"
     if index_path.exists():
         return FileResponse(
@@ -246,6 +254,19 @@ def serve_ui():
             headers={"Cache-Control": "no-cache, no-store"},
         )
     return {"message": "UI not found. Use /docs for Swagger."}
+
+
+@app.get("/scraper", include_in_schema=False)
+def serve_scraper_ui():
+    """Vahan multiselect scraper UI (moved from / for SEO — canonical dashboard is /)."""
+    index_path = STATIC_DIR / "index.html"
+    if index_path.exists():
+        return FileResponse(
+            index_path,
+            media_type="text/html",
+            headers={"Cache-Control": "no-cache, no-store"},
+        )
+    raise HTTPException(404, "scraper UI not found")
 
 
 class ScrapeRequest(BaseModel):
@@ -572,16 +593,9 @@ def serve_analytics_platform():
 
 
 @app.get("/dashboard", include_in_schema=False)
-def serve_legacy_dashboard():
-    """Full legacy GitHub dashboard UI; data from GET /data/vahan_master_compat (PostgreSQL)."""
-    path = DASHBOARD_DIR / "index.html"
-    if path.is_file():
-        return FileResponse(
-            path,
-            media_type="text/html",
-            headers={"Cache-Control": "no-cache, no-store"},
-        )
-    raise HTTPException(404, "dashboard/index.html not found")
+def redirect_dashboard_to_canonical_root():
+    """301 to / — dashboard HTML is served at the site root for a single canonical URL."""
+    return RedirectResponse(url="/", status_code=301)
 
 
 @app.get("/data/vahan_master_compat")
@@ -639,7 +653,7 @@ def vahan_master_compat():
 
 @app.get("/data/vahan_master.json")
 def vahan_master_json_file():
-    """Same bundle as compat static fallback; helps relative fetch(`data/vahan_master.json`) from /dashboard."""
+    """Same bundle as compat static fallback; helps relative fetch(`data/vahan_master.json`) from `/` or `/dashboard/`."""
     if STATIC_MASTER_JSON.is_file():
         return FileResponse(
             str(STATIC_MASTER_JSON),
@@ -1571,7 +1585,7 @@ def get_data_enriched(year: int, state_code: str | None = None):
         raise HTTPException(
             503,
             "Enriched data requires PostgreSQL with migration 001 tables (population, PCI, CNG, EV). "
-            "SQLite mode serves /data/kpis and /dashboard only.",
+            "SQLite mode serves /data/kpis and the dashboard at / only.",
         )
     pci_fy = _pci_fy_key_for_calendar_year(year)
     try:

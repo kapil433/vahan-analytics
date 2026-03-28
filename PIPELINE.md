@@ -32,7 +32,7 @@ python scripts/load_vahan_to_db.py
 
 ## Dashboard & lab export
 
-- **Dashboard (legacy UI):** `GET /dashboard` — needs data; uses PostgreSQL if `DATABASE_URL` works, else **`data/vahan_local.db`** after `python scripts/setup_local_sqlite.py`.
+- **Dashboard:** `GET /` — needs data; uses PostgreSQL if `DATABASE_URL` works, else **`data/vahan_local.db`** after `python scripts/setup_local_sqlite.py`. `GET /dashboard` → **301** to **`/`**.
 - **Lighter UI:** `GET /platform`.
 - **Parquet snapshot for Complexity Lab:** `python scripts/export_snapshot.py` → `exports/` + `manifest.json` (PostgreSQL only; use SQLite → export from CSV/DuckDB separately if needed).
 

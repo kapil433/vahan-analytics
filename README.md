@@ -80,7 +80,7 @@ See **[VAHAN_SITE_ARCHITECTURE.md](./VAHAN_SITE_ARCHITECTURE.md)** for site tech
 
 ## Analytics dashboard
 
-With PostgreSQL loaded and `python run_api.py` running, open **http://localhost:8000/dashboard** for the full analytics UI (data from `/data/vahan_master_compat`). Lighter API-only UI: **http://localhost:8000/platform**.
+With PostgreSQL loaded and `python run_api.py` running, open **http://localhost:8000/** for the full analytics UI (data from `/data/vahan_master_compat`). **`/dashboard`** redirects to **`/`**. Scraper batch UI: **http://localhost:8000/scraper**. Lighter API-only UI: **http://localhost:8000/platform**.
 
 **Production:** deploy the API to [Render](https://dashboard.render.com/) and optionally keep a small GitHub Pages site that links to it or embeds the dashboard with `window.__VAHAN_API_BASE__` — see **[DEPLOY.md](./DEPLOY.md)** and **`deploy/github-pages/`**.
 

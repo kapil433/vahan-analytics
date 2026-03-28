@@ -6,12 +6,12 @@
 <!-- Google Search Console: add HTML tag verification, e.g. <meta name="google-site-verification" content="…"/> (see DEPLOY.md section 6) -->
 <title>Vahan Intelligence — India PV Registration Analytics</title>
 <meta name="description" content="Explore India four-wheeler passenger vehicle registrations: fuel mix, OEM share, state drill-down, forecasts, and policy-context blog notes from VAHAN-class data."/>
-<link rel="canonical" href="https://vahanintelligence.in/dashboard"/>
+<link rel="canonical" href="https://www.vahanintelligence.in/"/>
 <meta property="og:type" content="website"/>
 <meta property="og:site_name" content="Vahan Intelligence"/>
 <meta property="og:title" content="Vahan Intelligence — India PV Registration Analytics"/>
 <meta property="og:description" content="Explore India four-wheeler passenger vehicle registrations: fuel mix, OEM share, state drill-down, forecasts, and policy-context blog notes from VAHAN-class data."/>
-<meta property="og:url" content="https://vahanintelligence.in/dashboard"/>
+<meta property="og:url" content="https://www.vahanintelligence.in/"/>
 <meta property="og:locale" content="en_IN"/>
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Vahan Intelligence — India PV Registration Analytics"/>
@@ -25,21 +25,21 @@
     {
       "@type": "Organization",
       "name": "Vahan Intelligence",
-      "url": "https://vahanintelligence.in/",
+      "url": "https://www.vahanintelligence.in/",
       "email": "info@vahanintelligence.in"
     },
     {
       "@type": "WebSite",
       "name": "Vahan Intelligence",
-      "url": "https://vahanintelligence.in/",
+      "url": "https://www.vahanintelligence.in/",
       "description": "India passenger vehicle registration analytics from VAHAN-class data."
     },
     {
       "@type": "Dataset",
-      "@id": "https://vahanintelligence.in/dashboard#dataset",
+      "@id": "https://www.vahanintelligence.in/#dataset",
       "name": "India passenger vehicle registration analytics (VAHAN-derived)",
       "description": "Aggregated four-wheeler passenger vehicle registrations by region, period, fuel, maker, and month for analytics and research. Includes a curated timeline of market and policy events for interpretation.",
-      "url": "https://vahanintelligence.in/dashboard",
+      "url": "https://www.vahanintelligence.in/",
       "isAccessibleForFree": true,
       "keywords": ["VAHAN", "Parivahan", "vehicle registration", "India", "passenger vehicle", "EV", "CNG", "OEM market share", "state registrations"],
       "spatialCoverage": {"@type": "Place", "name": "India"},
@@ -50,7 +50,7 @@
         {
           "@type": "DataDownload",
           "encodingFormat": "application/json",
-          "contentUrl": "https://vahanintelligence.in/data/vahan_master.json"
+          "contentUrl": "https://www.vahanintelligence.in/data/vahan_master.json"
         }
       ]
     }
@@ -1343,7 +1343,7 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
     <div>
       <h4>Contact</h4>
       <p><a href="mailto:info@vahanintelligence.in">info@vahanintelligence.in</a></p>
-      <p style="margin-top:10px"><a href="#" onclick="document.querySelector('.nav-tab[data-page=blog]')?.click();location.hash='blog';return false;">Blog</a> · <a href="#" onclick="document.querySelector('.nav-tab[data-page=info]')?.click();return false;">Info &amp; subscription</a> · <a href="#" onclick="document.querySelector('.nav-tab[data-page=about]')?.click();return false;">About</a></p>
+      <p style="margin-top:10px"><a href="#blog">Blog</a> · <a href="#info">Info &amp; subscription</a> · <a href="#about">About</a></p>
     </div>
   </div>
 </footer>
@@ -3337,8 +3337,9 @@ function setHeatFuel(fuel, btn) {
 // ─────────────────────────────────────────────────────────────
 function switchPage(page) {
   currentPage = page;
-  if (page === 'blog') {
-    try { history.replaceState(null, '', '#blog'); } catch (e) { location.hash = 'blog'; }
+  const hashPages = new Set(['blog', 'info', 'about']);
+  if (hashPages.has(page)) {
+    try { history.replaceState(null, '', '#' + page); } catch (e) { location.hash = page; }
   } else {
     try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { location.hash = ''; }
   }
@@ -3382,10 +3383,11 @@ document.querySelectorAll('.nav-tab').forEach(t => {
 });
 window.addEventListener('hashchange', () => {
   const h = (location.hash || '').replace(/^#/, '');
-  if (h === 'blog') switchPage('blog');
+  if (['blog', 'info', 'about'].includes(h)) switchPage(h);
 });
-if ((location.hash || '').replace(/^#/, '') === 'blog') {
-  setTimeout(() => switchPage('blog'), 0);
+{
+  const h0 = (location.hash || '').replace(/^#/, '');
+  if (['blog', 'info', 'about'].includes(h0)) setTimeout(() => switchPage(h0), 0);
 }
 
 // Filter change listeners
@@ -4030,7 +4032,7 @@ async function init() {
         <div style="color:var(--red);font-size:14px;margin-bottom:12px">⚠ Could not load dashboard data</div>
         <div style="color:var(--text-dim);font-size:11px;text-align:center;max-width:520px;line-height:1.8">
           <strong style="color:var(--text)">Error:</strong> ${e.message}<br><br>
-          <strong style="color:var(--text)">API:</strong> Deploy backend on Render and open <code style="color:var(--blue)">/dashboard</code> there, or host this HTML on GitHub Pages with <code style="color:var(--blue)">window.__VAHAN_API_BASE__</code> set to your Render URL (see <code style="color:var(--blue)">DEPLOY.md</code>).<br><br>
+          <strong style="color:var(--text)">API:</strong> Deploy backend on Render and open the site root <code style="color:var(--blue)">/</code> there (<code style="color:var(--blue)">/dashboard</code> → 301), or host this HTML on GitHub Pages with <code style="color:var(--blue)">window.__VAHAN_API_BASE__</code> set to your Render URL (see <code style="color:var(--blue)">DEPLOY.md</code>).<br><br>
           <strong style="color:var(--text)">Static fallback:</strong> Place <code style="color:var(--blue)">vahan_master.json</code> under <code style="color:var(--blue)">data/</code> next to this file.
         </div>
       </div>`;
@@ -7509,56 +7511,5 @@ function buildEventImpactSummary(ev) {
   </div>
 </div>
 
-<!-- SEO-PRERENDER-START -->
-<noscript id="seo-static-fallback">
-<main>
-<h1>Vahan Intelligence — India passenger vehicle registrations (VAHAN-class)</h1>
-<p>Interactive dashboard: use a JavaScript-enabled browser for charts and filters.</p>
-<section aria-label="Blog articles">
-<h2>Blog</h2>
-<h3>Telangana formation: when a state split looks like a demand crash</h3>
-<p>On 2 June 2014, Telangana separated from Andhra Pradesh. Hyderabad, Rangareddy, and related RTOs—roughly 45–53% of undivided AP registrations—moved to the new state. Legacy &quot;Andhra Pradesh&quot; time series show a structural step-down that is not a collapse in car buying; it is a boundary change in what geography the label covers.</p>
-<p>Reading the data: avoid YoY comparisons that straddle June 2014 for old AP labels; use consistent post-split geographies or All India.</p>
-<h3>Diesel from deregulation to BS6: why PV diesel share fell for years</h3>
-<p>October 2014 ended diesel price administration; diesel lost much of its rupee-per-km edge over petrol by 2015. BS6 from April 2020 raised compliance cost; Maruti Suzuki and Honda exiting diesel removed a large share of diesel SKUs in one stroke. Together these explain a multi-year fall in diesel share of passenger registrations—not a single-month blip.</p>
-<p>Reading the data: separate one-off BS4/BS6 inventory spikes from the slower share shift visible in SIAM-style fuel mix.</p>
-<h3>EV subsidies: FAME I and II, the 2024 cliff, EMPS, and PM E-DRIVE</h3>
-<p>FAME I (April 2015) seeded a tiny EV base. FAME II (April 2019, ₹10,000 crore) aligned with credible four-wheel EV launches and visible step-up in volumes. FAME II&#x27;s March 2024 end produced a classic front-load then cliff ; EMPS (April 2024) limited the gap, then PM E-DRIVE (October 2024, ₹10,900 crore) set the next policy horizon.</p>
-<p>Reading the data: expect Feb–Mar spikes and April softness around scheme boundaries; compare to pre-subsidy trend, not only prior month.</p>
-<h3>March–April 2020: BS4 clearance collided with the COVID lockdown</h3>
-<p>BS6 enforcement from 1 April 2020 forced a March rush to register remaining BS4 stock. Days later, the national lockdown (23 March onward) drove April registrations toward zero. The overlap is one of the largest distortions in many VAHAN series— high YoY growth right after can be mostly base effects, not organic acceleration.</p>
-<p>Reading the data: use level vs trend and avoid naive YoY% for months anchored to April 2020.</p>
-<h3>April–July 2017: BS4, pre-GST inventory, and GST go-live in one window</h3>
-<p>April 2017 brought nationwide BS4 for the relevant segments; June saw dealers clearing stock ahead of GST; July introduced new invoicing and short operational disruption. Registration bumps and dips in this window blend emission rules, tax incidence, and reporting —they cannot be cleanly attributed to a single lever in the chart.</p>
-<p>Reading the data: treat Apr–Jul 2017 as one annotated band in your head; prefer adjacent clean quarters for OEM or fuel attribution.</p>
-<h3>CNG: city gas expansion, then the 2021–22 price shock</h3>
-<p>PNGRB&#x27;s 9th CGD round and later build-out expanded CNG into many new districts—CNG car registrations tend to follow station availability . From 2021, global energy stress (including Russia–Ukraine) fed through to sharply higher CNG tariffs in several cities; growth rates cooled even where CNG retained total-cost advantage vs petrol.</p>
-<p>Reading the data: distinguish level (still often cheaper km-cost) from YoY registration momentum.</p>
-<h3>When registrations understate demand: NBFC stress and the chip shortage</h3>
-<p>The IL&amp;FS default (September 2018) tightened NBFC liquidity; two-wheelers and entry segments financed outside prime bank channels were hit hardest. From mid-2021, a global semiconductor shortage capped OEM output—retail waitlists rose while VAHAN counts looked soft. Easing from late 2022 mainly reflected supply catching backlog , not a pure demand surge.</p>
-<p>Reading the data: pair registration series with SIAM wholesale or OEM commentary when supply binds.</p>
-<h3>Cab aggregators: fleet registrations as a proxy, not ride demand</h3>
-<p>Ola and Uber scaling in 2014–2017 lifted motor-cab class registrations (often CNG or diesel) in several cities—visible when you slice commercial or geography correctly. From 2018, incentive cuts hit driver economics and new partner additions slowed; fleet registration momentum eased. This is a structural fleet cycle, not the same as app trip growth.</p>
-<p>Reading the data: use motor-cab or state-level series; do not map directly to All India PV passenger totals.</p>
-</section>
-<section aria-label="About">
-<h2>About</h2>
-<h3>About Vahan Intelligence</h3>
-<h3>What this is</h3>
-<h3>Mission</h3>
-<h3>What we focus on</h3>
-<h3>Data &amp; methodology</h3>
-<h3>Independence</h3>
-<p>Vahan Intelligence is an independent analytics product built on India’s published vehicle registration statistics (VAHAN / Parivahan class data). It turns raw and semi-structured registration flows into explorable views of the four-wheeler passenger vehicle market: volumes over time, fuel mix, OEM structure, and geography — with filters for calendar year (CY) and Indian financial year (FY) , and support for state/UT-level drill-down where the underlying extract allows.</p>
-<p>Our mission is to make national and state-level registration trends easier to understand for analysts, policy teams, researchers, and industry — without replacing official sources. We prioritise clarity, consistent labelling, and repeatable methodology so comparisons across years and regions are meaningful.</p>
-<p>Inputs are cleaned into a long-format model (region, period, fuel, maker, month, registrations) with canonical state, fuel, and maker labels. “All India” and similar aggregates follow the scope of the extracts we ingest. Processing choices (for example deduplication or summation rules) are applied consistently so dashboard totals reconcile with the loaded dataset.</p>
-<p>Vahan Intelligence is not affiliated with the Government of India . It interprets published statistics only. For statutory, compliance, or official reporting, always cite original VAHAN / MoRTH / Parivahan sources.</p>
-<p>• Market structure: who sells what, where, and in which fuel categories.</p>
-<p>• Time and seasonality: annual and monthly patterns, including partial-year handling where relevant.</p>
-<p>• Transparency: we describe limitations of the source data; users should always verify critical numbers against official releases.</p>
-</section>
-</main>
-</noscript>
-<!-- SEO-PRERENDER-END -->
 </body>
 </html>

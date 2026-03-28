@@ -11,4 +11,4 @@ This folder holds the **previous** GitHub Pages build (the older single-file / s
 
 2. Add an `index.html` inside **`legacy/`** if the old site was at repo root — so visitors can open **`/legacy/`** and see the archived UI.
 
-3. The **current** product is the dashboard served from **Render** (`/dashboard`) or a copy of `api/static/dashboard/index.html` with `window.__VAHAN_API_BASE__` set (see **`DEPLOY.md`** in the main analytics repo).
+3. The **current** product is the dashboard served from **Render** at **`/`** (legacy **`/dashboard`** → 301) or a copy of `api/static/dashboard/index.html` with `window.__VAHAN_API_BASE__` set (see **`DEPLOY.md`** in the main analytics repo).

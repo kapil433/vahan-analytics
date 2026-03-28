@@ -30,7 +30,7 @@ jobs:
         run: |
           mkdir -p _public/data _public/dashboard _public/legacy
           touch _public/.nojekyll
-          cp deploy/github-pages/index.html _public/index.html
+          cp deploy/github-pages/index.html _public/welcome.html
           cp deploy/github-pages/legacy/README.md _public/legacy/README.md
           cp api/static/robots.txt _public/robots.txt
           cp api/static/sitemap.xml _public/sitemap.xml
@@ -47,6 +47,7 @@ jobs:
           python3 scripts/prerender_dashboard_seo.py \
             --input _public/dashboard/index.html \
             --output _public/dashboard/index.html
+          cp _public/dashboard/index.html _public/index.html
           if [ -f docs/data/vahan_master.json ]; then
             cp docs/data/vahan_master.json _public/data/vahan_master.json
           fi

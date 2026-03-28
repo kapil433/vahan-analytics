@@ -11,7 +11,7 @@
 5. **Database**
    - **SQLite:** run `python scripts/setup_local_sqlite.py` locally, add a **persistent disk** on Render mounted at `/app/data`, upload `vahan_local.db` or rebuild in a **release command** (see Render docs). Ephemeral disk alone loses the DB on redeploy.
    - **PostgreSQL (recommended):** create **PostgreSQL** on Render → set env **`DATABASE_URL`** to the **Internal** URL → run migrations / `scripts/load_vahan_to_db.py` as appropriate.
-6. Live app: **`https://<service>.onrender.com/dashboard`**
+6. Live app: **`https://<service>.onrender.com/`** (analytics dashboard). **`/dashboard`** redirects to **`/`** (301). Scraper UI: **`/scraper`**.
 
 **Note:** `POST /scrape` returns **501** on this slim install (no Chrome). Use full `requirements.txt` locally for scraping.
 
@@ -39,8 +39,9 @@ On **this** (`vahan-analytics`) repository, add **Secrets**:
 
 Workflow **Sync public dashboard** (`.github/workflows/sync-public-dashboard.yml`) builds:
 
-- Landing: `deploy/github-pages/index.html` (published as site root `index.html`)
-- **`dashboard/index.html`** — full UI with `window.__VAHAN_API_BASE__` injected from the secret, plus build-time `<noscript>` SEO extract
+- **`index.html`** at site root — same full dashboard as `dashboard/index.html` (canonical public URL is `/`)
+- **`welcome.html`** — optional launcher from `deploy/github-pages/index.html` (**`noindex`**; use for dev links only)
+- **`dashboard/index.html`** — same UI (duplicate path for relative asset links); injected `window.__VAHAN_API_BASE__` and `<noscript>` SEO extract
 - **`robots.txt`** / **`sitemap.xml`** at site root (from `api/static/`)
 - `legacy/README.md`, optional `docs/data/vahan_master.json`
 
@@ -80,13 +81,13 @@ Move the old static site into **`legacy/`** on the public repo (previous `index.
 
 **Google Search Console (you complete in the browser)**
 
-1. Add a **URL-prefix** or **Domain** property for `https://vahanintelligence.in/` (and/or your `*.github.io` host if used).
+1. Add a **URL-prefix** or **Domain** property for **`https://www.vahanintelligence.in/`** (preferred canonical). Apex **`https://vahanintelligence.in/`** should 301 to `www` when served by the API (`ApexToWwwRedirectMiddleware`). For `*.github.io`, use that origin if applicable.
 2. Verify using one of:
    - **HTML file:** Download `google….html` from Google and place it as `api/static/google….html` (same filename). The API serves it at `https://<your-origin>/google….html`; GitHub Actions also copies it to the Pages site root. Then click **Verify** in Search Console.
    - **HTML tag:** In `api/static/dashboard/index.html`, add inside `<head>`:  
      `<meta name="google-site-verification" content="PASTE_TOKEN_HERE"/>`
 3. Commit and deploy so the file or meta is live, then click **Verify** in Search Console.
-4. In Search Console → **Sitemaps**, submit: `https://vahanintelligence.in/sitemap.xml` (or the equivalent origin you use).
+4. In Search Console → **Sitemaps**, submit: **`https://www.vahanintelligence.in/sitemap.xml`** (must match `robots.txt`).
 
 ---
 

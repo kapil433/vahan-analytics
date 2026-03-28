@@ -5,13 +5,13 @@
 1. **Legacy**  
    Create folder **`legacy/`** on the default branch. Move the **old** site into it (previous `index.html`, `lander/`, etc.). Keep this **`legacy/README.md`** for context.
 
-2. **New home page**  
-   Copy **`index.html`** from this folder to the **repository root** (replace the old root `index.html`).
+2. **Automated layout (recommended)**  
+   Workflow **Sync public dashboard** publishes the **full dashboard** as repo root **`index.html`** and copies this file to **`welcome.html`** only (launcher is **`noindex`**). You normally do **not** hand-copy `index.html` from this folder to the public repo root.
 
-3. **Point to Render**  
-   In that `index.html`, replace `https://YOUR-SERVICE.onrender.com/dashboard` with your real Render URL, or set:
+3. **Point to Render (welcome / manual use)**  
+   In `index.html` here, replace `https://YOUR-SERVICE.onrender.com/` with your real Render origin, or set:
    ```html
-   <script>window.RENDER_DASHBOARD_URL='https://your-app.onrender.com/dashboard';</script>
+   <script>window.RENDER_DASHBOARD_URL='https://your-app.onrender.com/';</script>
    ```
    before the closing `</body>` (the template already reads this).
 

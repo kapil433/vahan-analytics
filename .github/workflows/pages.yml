@@ -1,4 +1,4 @@
-# GitHub Pages: full analytics dashboard at / (and /dashboard/); marketing launcher at /welcome.html.
+# GitHub Pages: full analytics dashboard at / and /dashboard/; optional noindex launcher at /welcome.html.
 # Optional repo variable VAHAN_API_BASE_URL overrides the default Render URL below.
 name: Deploy GitHub Pages
 
