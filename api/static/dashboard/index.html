@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+(function(){var h=location.hostname;if(h==='vahanintelligence.in'){location.replace('https://www.vahanintelligence.in'+location.pathname+location.search+location.hash);}})();
+</script>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <!-- Google Search Console: add HTML tag verification, e.g. <meta name="google-site-verification" content="…"/> (see DEPLOY.md section 6) -->
@@ -21,6 +24,7 @@
 <meta name="twitter:title" content="Vahan Intelligence — India PV Registration Analytics"/>
 <meta name="twitter:description" content="India passenger vehicle registration analytics from VAHAN-class data: fuels, OEMs, states, forecasts."/>
 <meta name="twitter:image" content="https://www.vahanintelligence.in/og-image.png"/>
+<meta property="og:image:type" content="image/png"/>
 <!-- GitHub Pages: no custom response headers — CSP + referrer via meta only (partial vs full header CSP). -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https: http:; base-uri 'self'; form-action 'self' mailto:; frame-ancestors 'none';"/>
 <meta name="referrer" content="strict-origin-when-cross-origin"/>
@@ -124,6 +128,7 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
   background:#ecfdf5;border:1px solid #a7f3d0;
   padding:3px 8px;border-radius:4px;
 }
+.data-badge.is-error{color:var(--red);background:#fef2f2;border-color:#fecaca}
 
 /* NAV TABS */
 .nav{
@@ -135,8 +140,11 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
   padding:10px 18px;font-size:13px;font-weight:500;color:var(--text-dim);
   cursor:pointer;border-bottom:2px solid transparent;
   transition:all 0.2s;white-space:nowrap;letter-spacing:0.02em;
+  font:inherit;background:transparent;border:0;border-bottom:2px solid transparent;border-radius:0;
+  text-align:left;line-height:inherit;
 }
 .nav-tab:hover{color:var(--text)}
+.nav-tab:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
 .nav-tab.active{color:var(--blue);border-bottom-color:var(--blue)}
 
 /* FILTER BAR */
@@ -635,16 +643,16 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
 <!-- Sticky: primary nav + global filters (under main header) -->
 <div class="sticky-toolbar">
 <div class="nav" role="tablist" aria-label="Main sections">
-  <div class="nav-tab active" data-page="overview" role="tab" aria-selected="true" tabindex="0"><span aria-hidden="true">📊</span> Overview</div>
-  <div class="nav-tab" data-page="geomap" role="tab" aria-selected="false" tabindex="-1"><span aria-hidden="true">🗺️</span> India Map</div>
-  <div class="nav-tab" data-page="fuel" role="tab" aria-selected="false" tabindex="-1"><span aria-hidden="true">⛽</span> Fuel Analysis</div>
-  <div class="nav-tab" data-page="oem" role="tab" aria-selected="false" tabindex="-1"><span aria-hidden="true">🏭</span> OEM Analysis</div>
-  <div class="nav-tab" data-page="ev" role="tab" aria-selected="false" tabindex="-1"><span aria-hidden="true">⚡</span> EV &amp; Green</div>
-  <div class="nav-tab" data-page="compare" role="tab" aria-selected="false" tabindex="-1"><span aria-hidden="true">🗺</span> State drill-down</div>
-  <div class="nav-tab" data-page="forecast" role="tab" aria-selected="false" tabindex="-1"><span aria-hidden="true">📈</span> Forecast</div>
-  <div class="nav-tab" data-page="blog" role="tab" aria-selected="false" tabindex="-1"><span aria-hidden="true">📰</span> Blog</div>
-  <div class="nav-tab" data-page="info" role="tab" aria-selected="false" tabindex="-1"><span aria-hidden="true">ℹ️</span> Info</div>
-  <div class="nav-tab" data-page="about" role="tab" aria-selected="false" tabindex="-1">About</div>
+  <button type="button" class="nav-tab active" data-page="overview" role="tab" aria-selected="true" id="tab-overview" aria-controls="page-overview" tabindex="0"><span aria-hidden="true">📊</span> Overview</button>
+  <button type="button" class="nav-tab" data-page="geomap" role="tab" aria-selected="false" id="tab-geomap" aria-controls="page-geomap" tabindex="-1"><span aria-hidden="true">🗺️</span> India Map</button>
+  <button type="button" class="nav-tab" data-page="fuel" role="tab" aria-selected="false" id="tab-fuel" aria-controls="page-fuel" tabindex="-1"><span aria-hidden="true">⛽</span> Fuel Analysis</button>
+  <button type="button" class="nav-tab" data-page="oem" role="tab" aria-selected="false" id="tab-oem" aria-controls="page-oem" tabindex="-1"><span aria-hidden="true">🏭</span> OEM Analysis</button>
+  <button type="button" class="nav-tab" data-page="ev" role="tab" aria-selected="false" id="tab-ev" aria-controls="page-ev" tabindex="-1"><span aria-hidden="true">⚡</span> EV &amp; Green</button>
+  <button type="button" class="nav-tab" data-page="compare" role="tab" aria-selected="false" id="tab-compare" aria-controls="page-compare" tabindex="-1"><span aria-hidden="true">🗺</span> State drill-down</button>
+  <button type="button" class="nav-tab" data-page="forecast" role="tab" aria-selected="false" id="tab-forecast" aria-controls="page-forecast" tabindex="-1"><span aria-hidden="true">📈</span> Forecast</button>
+  <button type="button" class="nav-tab" data-page="blog" role="tab" aria-selected="false" id="tab-blog" aria-controls="page-blog" tabindex="-1"><span aria-hidden="true">📰</span> Blog</button>
+  <button type="button" class="nav-tab" data-page="info" role="tab" aria-selected="false" id="tab-info" aria-controls="page-info" tabindex="-1"><span aria-hidden="true">ℹ️</span> Info</button>
+  <button type="button" class="nav-tab" data-page="about" role="tab" aria-selected="false" id="tab-about" aria-controls="page-about" tabindex="-1">About</button>
 </div>
 
 <!-- FILTER BAR -->
@@ -728,7 +736,7 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
   </div>
 
   <!-- OVERVIEW PAGE -->
-  <div class="page active" id="page-overview">
+  <div class="page active" id="page-overview" role="tabpanel" aria-labelledby="tab-overview">
     <div class="overview-layout">
       <aside class="section-rail" aria-label="On this page">
         <div class="section-rail-title">ON THIS PAGE</div>
@@ -793,7 +801,7 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
   </div>
 
   <!-- GEO MAP PAGE -->
-  <div class="page" id="page-geomap">
+  <div class="page" id="page-geomap" role="tabpanel" aria-labelledby="tab-geomap">
     <nav class="section-rail section-rail--inline" aria-label="On this page">
       <span class="section-rail-title">ON THIS PAGE</span>
       <a href="#sec-gm-map" onclick="document.getElementById('sec-gm-map')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">Map</a>
@@ -849,7 +857,7 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
   </div>
 
   <!-- FUEL TRENDS PAGE -->
-  <div class="page" id="page-fuel">
+  <div class="page" id="page-fuel" role="tabpanel" aria-labelledby="tab-fuel">
     <nav class="section-rail section-rail--inline" aria-label="On this page">
       <span class="section-rail-title">ON THIS PAGE</span>
       <a href="#kpi-fuel" onclick="document.getElementById('kpi-fuel')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">KPIs</a>
@@ -915,7 +923,7 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
   </div>
 
   <!-- OEM PAGE -->
-  <div class="page" id="page-oem">
+  <div class="page" id="page-oem" role="tabpanel" aria-labelledby="tab-oem">
     <nav class="section-rail section-rail--inline" aria-label="On this page">
       <span class="section-rail-title">ON THIS PAGE</span>
       <a href="#kpi-oem" onclick="document.getElementById('kpi-oem')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">KPIs</a>
@@ -988,7 +996,7 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
   </div>
 
   <!-- EV PAGE -->
-  <div class="page" id="page-ev">
+  <div class="page" id="page-ev" role="tabpanel" aria-labelledby="tab-ev">
     <nav class="section-rail section-rail--inline" aria-label="On this page">
       <span class="section-rail-title">ON THIS PAGE</span>
       <a href="#kpi-ev" onclick="document.getElementById('kpi-ev')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">KPIs</a>
@@ -1042,7 +1050,7 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
 
 
   <!-- STATE vs ALL INDIA PAGE -->
-  <div class="page" id="page-compare">
+  <div class="page" id="page-compare" role="tabpanel" aria-labelledby="tab-compare">
     <nav class="section-rail section-rail--inline" aria-label="On this page">
       <span class="section-rail-title">ON THIS PAGE</span>
       <a href="#cmp-kpi-strip" onclick="document.getElementById('cmp-kpi-strip')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">KPIs</a>
@@ -1208,7 +1216,7 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
   </div>
 
   <!-- FORECAST PAGE -->
-  <div class="page" id="page-forecast">
+  <div class="page" id="page-forecast" role="tabpanel" aria-labelledby="tab-forecast">
     <nav class="section-rail section-rail--inline" aria-label="On this page">
       <span class="section-rail-title">ON THIS PAGE</span>
       <a href="#sec-fc-controls" onclick="document.getElementById('sec-fc-controls')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">Settings</a>
@@ -1320,7 +1328,7 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
   </div>
 
 <!-- BLOG — articles grounded in the 47 timeline events in the VAHAN master bundle -->
-<div class="page" id="page-blog">
+<div class="page" id="page-blog" role="tabpanel" aria-labelledby="tab-blog">
   <div style="margin-bottom:20px">
     <div style="font-size:11px;color:var(--text-dim);letter-spacing:2px;margin-bottom:4px">INSIGHTS</div>
     <div style="font-size:20px;font-weight:700;color:var(--text)">Blog — from the market events timeline</div>
@@ -1393,7 +1401,7 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
   </div>
 </div>
 
-  <div class="page" id="page-info">
+  <div class="page" id="page-info" role="tabpanel" aria-labelledby="tab-info">
     <div class="static-page">
       <h2>Info &amp; contact</h2>
       <p><strong>Vahan Intelligence</strong> publishes analytics derived from public VAHAN / Parivahan registration statistics — cleaned, aggregated views of four-wheeler passenger vehicle registrations.</p>
@@ -1417,7 +1425,7 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
     </div>
   </div>
 
-  <div class="page" id="page-about">
+  <div class="page" id="page-about" role="tabpanel" aria-labelledby="tab-about">
     <div class="static-page">
       <h2>About Vahan Intelligence</h2>
 
@@ -1461,7 +1469,7 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
     <div>
       <h4>Contact</h4>
       <p><a href="mailto:info@vahanintelligence.in">info@vahanintelligence.in</a></p>
-      <p style="margin-top:10px"><a href="#blog" onclick="switchPage('blog');return false;">Blog</a> · <a href="#info" onclick="switchPage('info');return false;">Info &amp; subscription</a> · <a href="#about" onclick="switchPage('about');return false;">About</a> · <a href="#privacy-policy" onclick="switchPage('info');setTimeout(function(){document.getElementById('privacy-policy')?.scrollIntoView({behavior:'smooth',block:'start'});},0);return false;">Privacy</a></p>
+      <p style="margin-top:10px"><a href="#blog">Blog</a> · <a href="#info">Info &amp; subscription</a> · <a href="#about">About</a> · <a href="#privacy-policy">Privacy</a></p>
     </div>
   </div>
 </footer>
@@ -3535,7 +3543,11 @@ function switchPage(page) {
     t.setAttribute('aria-selected', on ? 'true' : 'false');
     t.tabIndex = on ? 0 : -1;
   });
-  document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-' + page));
+  document.querySelectorAll('.page').forEach(p => {
+    const on = p.id === 'page-' + page;
+    p.classList.toggle('active', on);
+    p.setAttribute('aria-hidden', on ? 'false' : 'true');
+  });
 
   const filterBar = document.querySelector('.filter-bar');
   const oemG   = document.getElementById('ms-oem-wrapper')?.closest('.filter-group');
@@ -3572,13 +3584,38 @@ function refreshCurrentPage() {
 document.querySelectorAll('.nav-tab').forEach(t => {
   t.addEventListener('click', () => switchPage(t.dataset.page));
 });
-window.addEventListener('hashchange', () => {
+(function setupNavTabsKeyboard() {
+  const nav = document.querySelector('.nav[role="tablist"]');
+  if (!nav) return;
+  const tabs = () => [...nav.querySelectorAll('.nav-tab[role="tab"]')];
+  nav.addEventListener('keydown', (e) => {
+    const list = tabs();
+    const i = list.indexOf(document.activeElement);
+    if (i < 0) return;
+    let next = i;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); next = (i + 1) % list.length; }
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); next = (i - 1 + list.length) % list.length; }
+    else if (e.key === 'Home') { e.preventDefault(); next = 0; }
+    else if (e.key === 'End') { e.preventDefault(); next = list.length - 1; }
+    else return;
+    const t = list[next];
+    t.focus();
+    switchPage(t.dataset.page);
+  });
+})();
+function applyHashToPage() {
   const h = (location.hash || '').replace(/^#/, '');
+  if (h === 'privacy-policy') {
+    switchPage('info');
+    setTimeout(() => document.getElementById('privacy-policy')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0);
+    return;
+  }
   if (['blog', 'info', 'about'].includes(h)) switchPage(h);
-});
+}
+window.addEventListener('hashchange', applyHashToPage);
 {
   const h0 = (location.hash || '').replace(/^#/, '');
-  if (['blog', 'info', 'about'].includes(h0)) setTimeout(() => switchPage(h0), 0);
+  if (h0 === 'privacy-policy' || ['blog', 'info', 'about'].includes(h0)) setTimeout(applyHashToPage, 0);
 }
 
 // Filter change listeners
@@ -4196,12 +4233,15 @@ async function init() {
       registrations: r[6]
     }));
     rebuildBundleRegionMatchers();
-    const recN = DATA.meta.total_records;
-    const yrLo = DATA.meta.cal_years[0];
-    const yrHi = DATA.meta.cal_years[DATA.meta.cal_years.length - 1];
+    const meta = DATA.meta || {};
+    const recN = Number(meta.total_records != null ? meta.total_records : (Array.isArray(DATA.raw) ? DATA.raw.length : 0));
+    const cy = Array.isArray(meta.cal_years) && meta.cal_years.length ? meta.cal_years : null;
+    const yrLo = cy ? cy[0] : '—';
+    const yrHi = cy ? cy[cy.length - 1] : '—';
     const db = document.getElementById('dataBadge');
     if (db) {
-      db.innerHTML = `<span style="font-size:12px;color:var(--text);font-family:var(--mono)">● ${recN.toLocaleString()} records · ${yrLo}–${yrHi}</span>`;
+      db.classList.remove('is-error');
+      db.textContent = `● ${Number.isFinite(recN) ? recN.toLocaleString() : '—'} records · ${yrLo}–${yrHi}`;
     }
     topLoadBar?.classList.add('is-hidden');
     topLoadBar?.setAttribute('aria-hidden', 'true');
@@ -4241,7 +4281,11 @@ async function init() {
     topLoadBar?.setAttribute('aria-hidden', 'true');
     loadShell?.classList.add('dashboard-load-shell--done');
     loadShell?.setAttribute('aria-busy', 'false');
-    document.getElementById('dataBadge').innerHTML = '<span style="color:var(--red)">● DATA LOAD ERROR</span>';
+    const _db = document.getElementById('dataBadge');
+    if (_db) {
+      _db.classList.add('is-error');
+      _db.textContent = '● Data load error';
+    }
     document.querySelector('.main').innerHTML = `
       <div class="loading">
         <div style="color:var(--red);font-size:14px;margin-bottom:12px">⚠ Could not load dashboard data</div>
@@ -5257,6 +5301,10 @@ function initForecastPage() {
   });
 }
 
+
+document.querySelectorAll('.page').forEach(p => {
+  p.setAttribute('aria-hidden', p.classList.contains('active') ? 'false' : 'true');
+});
 
 init();
 

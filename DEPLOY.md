@@ -19,6 +19,8 @@
 
 **GitHub Pages vs headers:** Pages cannot set `Content-Security-Policy`, `Strict-Transport-Security`, `X-Frame-Options`, etc. as HTTP headers. The dashboard ships a **CSP `<meta>`** and **`referrer`** meta for partial mitigation; for full header control use **Cloudflare** (or another reverse proxy) in front of Pages or serve the app from **Render** where `SecurityHeadersMiddleware` applies.
 
+**Apex → `www` on static hosting:** The built HTML includes a tiny inline script (also prepended by `scripts/inject_pages_api_base.py`) that replaces `https://vahanintelligence.in/…` with `https://www.vahanintelligence.in/…` in the browser, so GitHub Pages visitors hitting the apex hostname still land on `www` for canonical SEO. The Render API also applies `ApexToWwwRedirectMiddleware` when traffic hits the service directly.
+
 ---
 
 ## 2. Full install locally (scraping + API)

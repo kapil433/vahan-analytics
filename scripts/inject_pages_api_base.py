@@ -22,7 +22,14 @@ def main() -> int:
     if idx == -1:
         print("error: no <head> in input", file=sys.stderr)
         return 1
-    inject = f"<script>window.__VAHAN_API_BASE__={json.dumps(api)};</script>\n"
+    # Apex → www for custom domain on static hosts (GitHub Pages has no server redirect).
+    apex_redirect = (
+        "<script>(function(){var h=location.hostname;"
+        "if(h==='vahanintelligence.in'){"
+        "location.replace('https://www.vahanintelligence.in'+location.pathname+location.search+location.hash);"
+        "}})();</script>\n"
+    )
+    inject = apex_redirect + f"<script>window.__VAHAN_API_BASE__={json.dumps(api)};</script>\n"
     insert_at = idx + len(needle)
     out = src[:insert_at] + inject + src[insert_at:]
 
