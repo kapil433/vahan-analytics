@@ -3248,6 +3248,25 @@ async function loadIndiaGeographyNames() {
   }
 }
 
+/** Union API names with every region string in the loaded bundle so filters/map keys match r.region. */
+function mergeGeographyNamesWithData(apiNames) {
+  const out = new Set();
+  (apiNames || []).forEach((n) => {
+    if (n != null && String(n).trim()) out.add(String(n).trim());
+  });
+  if (!DATA) return [...out].sort((a, b) => a.localeCompare(b));
+  (DATA.regions || []).forEach((r) => {
+    if (r && r !== 'All India') out.add(String(r).trim());
+  });
+  if (DATA.raw) {
+    DATA.raw.forEach((row) => {
+      const reg = row.region;
+      if (reg && reg !== 'All India') out.add(String(reg).trim());
+    });
+  }
+  return [...out].sort((a, b) => a.localeCompare(b));
+}
+
 function populateMainGeoMS(names) {
   const el = document.getElementById('ms-geo-items');
   if (!el) return;
@@ -3571,8 +3590,7 @@ function buildGeoMapPage() {
   if (!DATA) return;
   
   const filters = getFilters();
-  const geo = filters.geo;
-  const geoSelLabel = primaryGeoLabel(geo);
+  const geoSelLabel = primaryGeoLabel(filters.geo);
   const selTotal = sumRegs(getFilteredRaw(filters));
 
   // ── Current period rows for each region ────────────────────
@@ -3587,9 +3605,10 @@ function buildGeoMapPage() {
   const aiCtxPrior = getPriorPeriodRaw(ctxFilters, 'All India');
 
   // Build state-level data for every state/UT (so map polygons join even when volume is 0)
-  const geoList = (window._INDIA_GEOGRAPHY_NAMES && window._INDIA_GEOGRAPHY_NAMES.length)
-    ? window._INDIA_GEOGRAPHY_NAMES
-    : (DATA.regions || []).filter((r) => r && r !== 'All India');
+  let geoList = mergeGeographyNamesWithData(window._INDIA_GEOGRAPHY_NAMES || []);
+  if (!geoList.length) {
+    geoList = (DATA.regions || []).filter((r) => r && r !== 'All India').sort((a, b) => a.localeCompare(b));
+  }
   const stateData = {};
   geoList.forEach(region => {
     const rows  = getFilteredRaw(filters, region);
@@ -3706,8 +3725,8 @@ function buildGeoMapPage() {
 
   // ── Map rendering ─────────────────────────────────────────
   (async () => {
-    const geo = await _loadIndiaGeo();
-    _geoJSON = geo;
+    const indiaGeoJson = await _loadIndiaGeo();
+    _geoJSON = indiaGeoJson;
     _initGeoSvg();
     _geoRenderStates(stateData, _geoMetric);
   })();
@@ -3751,6 +3770,7 @@ async function init() {
     }));
     document.getElementById('dataBadge').textContent = `● ${DATA.meta.total_records.toLocaleString()} RECORDS · ${DATA.meta.cal_years[0]}–${DATA.meta.cal_years[DATA.meta.cal_years.length-1]}`;
     let geoNames = await loadIndiaGeographyNames();
+    geoNames = mergeGeographyNamesWithData(geoNames);
     if (!geoNames.length) {
       geoNames = (DATA.regions || []).filter((r) => r && r !== 'All India').sort((a, b) => a.localeCompare(b));
     }
