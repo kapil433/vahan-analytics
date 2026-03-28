@@ -657,7 +657,7 @@ def vahan_master_compat():
                     media_type="application/json; charset=utf-8",
                     headers={
                         "X-Vahan-Data-Source": "database-cache",
-                        "Cache-Control": "public, max-age=120",
+                        "Cache-Control": "public, max-age=300",
                     },
                 )
             bundle = build_vahan_master_bundle(conn, dialect=dialect)
@@ -670,7 +670,7 @@ def vahan_master_compat():
                 media_type="application/json; charset=utf-8",
                 headers={
                     "X-Vahan-Data-Source": "database",
-                    "Cache-Control": "public, max-age=120",
+                    "Cache-Control": "public, max-age=300",
                 },
             )
         except Exception as e:

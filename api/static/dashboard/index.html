@@ -4195,12 +4195,50 @@ function buildGeoMapPage() {
 // ─────────────────────────────────────────────────────────────
 // INIT — LOAD DATA
 // ─────────────────────────────────────────────────────────────
+function yieldToMain() {
+  if (typeof scheduler !== 'undefined' && typeof scheduler.yield === 'function') {
+    return scheduler.yield();
+  }
+  return new Promise((resolve) => setTimeout(resolve, 0));
+}
+
+/** Decode compact bundle rows without one long main-thread task (keeps UI responsive). */
+async function expandBundleRawRows(_raw) {
+  const rows = _raw.data || [];
+  const reg = _raw.regions;
+  const mk = _raw.makers;
+  const fl = _raw.fuels;
+  const n = rows.length;
+  if (n === 0) return [];
+  const out = new Array(n);
+  const CHUNK = 20000;
+  for (let i = 0; i < n; i += CHUNK) {
+    const end = Math.min(i + CHUNK, n);
+    for (let j = i; j < end; j++) {
+      const r = rows[j];
+      out[j] = {
+        region: reg ? reg[r[0]] : 'All India',
+        cal_year: r[1],
+        month: r[2],
+        fy: r[3],
+        maker: mk[r[4]],
+        fuel: fl[r[5]],
+        registrations: r[6],
+      };
+    }
+    if (end < n) await yieldToMain();
+  }
+  return out;
+}
+
 async function init() {
   const topLoadBar = document.getElementById('top-load-bar');
   const loadShell = document.getElementById('dashboard-load-shell');
   try {
     topLoadBar?.classList.remove('is-hidden');
     topLoadBar?.setAttribute('aria-hidden', 'false');
+    // Overlap small /data/states fetch with the large bundle download + parse.
+    const geoNamesPromise = loadIndiaGeographyNames();
     // Prefer FastAPI bundle (DB); remote API if __VAHAN_API_BASE__ set; else static JSON fallbacks
     let resp;
     const paths = [];
@@ -4226,12 +4264,14 @@ async function init() {
     if (!resp || !resp.ok) throw new Error('JSON not found. Tried all paths. Last: ' + lastErr);
     const _raw = await resp.json();
     DATA = _raw;
-    DATA.raw = (_raw.data || []).map(r => ({
-      region: _raw.regions ? _raw.regions[r[0]] : 'All India',
-      cal_year: r[1], month: r[2], fy: r[3],
-      maker: _raw.makers[r[4]], fuel: _raw.fuels[r[5]],
-      registrations: r[6]
-    }));
+    const encRows = _raw.data || [];
+    const encN = encRows.length;
+    const badgeEl = document.getElementById('dataBadge');
+    if (badgeEl && encN > 12000) {
+      badgeEl.classList.remove('is-error');
+      badgeEl.textContent = `● Expanding ${encN.toLocaleString()} rows for charts…`;
+    }
+    DATA.raw = await expandBundleRawRows(_raw);
     rebuildBundleRegionMatchers();
     const meta = DATA.meta || {};
     const recN = Number(meta.total_records != null ? meta.total_records : (Array.isArray(DATA.raw) ? DATA.raw.length : 0));
@@ -4256,7 +4296,7 @@ async function init() {
       footUp.textContent = 'Dataset last updated: ' + DATA.meta.last_updated;
     }
     let geoNames = canonicalizeGeoNameList(mergeGeographyNamesWithData([]));
-    const apiGeo = await loadIndiaGeographyNames();
+    const apiGeo = await geoNamesPromise;
     if (apiGeo && apiGeo.length) {
       geoNames = canonicalizeGeoNameList(geoNames.concat(apiGeo));
     }
