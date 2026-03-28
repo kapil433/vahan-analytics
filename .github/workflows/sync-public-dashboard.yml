@@ -12,6 +12,7 @@ on:
       - "api/static/dashboard/index.html"
       - "api/static/robots.txt"
       - "api/static/sitemap.xml"
+      - "api/static/google5332b27a4f971584.html"
       - "deploy/github-pages/**"
       - "docs/data/vahan_master.json"
       - "scripts/inject_pages_api_base.py"
@@ -33,6 +34,9 @@ jobs:
           cp deploy/github-pages/legacy/README.md _public/legacy/README.md
           cp api/static/robots.txt _public/robots.txt
           cp api/static/sitemap.xml _public/sitemap.xml
+          if [ -f api/static/google5332b27a4f971584.html ]; then
+            cp api/static/google5332b27a4f971584.html _public/google5332b27a4f971584.html
+          fi
           if [ -f deploy/github-pages/CNAME ]; then cp deploy/github-pages/CNAME _public/CNAME; fi
           API_EFFECTIVE="${API_BASE:-https://vahan-intelligence-api.onrender.com}"
           API_EFFECTIVE="${API_EFFECTIVE%/}"

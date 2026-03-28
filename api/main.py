@@ -208,6 +208,15 @@ def serve_sitemap_xml():
     )
 
 
+@app.get("/google5332b27a4f971584.html", include_in_schema=False)
+def serve_google_search_console_verification():
+    """Google Search Console HTML file verification (root URL)."""
+    p = STATIC_DIR / "google5332b27a4f971584.html"
+    if p.is_file():
+        return FileResponse(str(p), media_type="text/html")
+    return Response(status_code=404)
+
+
 @app.get("/health")
 def health():
     """Quick health check for UI to verify API is reachable."""

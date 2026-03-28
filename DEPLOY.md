@@ -76,14 +76,16 @@ Move the old static site into **`legacy/`** on the public repo (previous `index.
 - `api/static/robots.txt` and `api/static/sitemap.xml` — served at **`/robots.txt`** and **`/sitemap.xml`** by the FastAPI app (`api/main.py`).
 - The same files are copied to the **site root** in GitHub Actions for **Sync public dashboard** and **Deploy GitHub Pages** (`_public/` / `_site/`).
 - Mirrors for visibility in git: `deploy/github-pages/robots.txt`, `deploy/github-pages/sitemap.xml` (keep in sync with `api/static/` when URLs change).
+- Google Search Console **HTML file** verification: `api/static/google5332b27a4f971584.html` → served at **`/google5332b27a4f971584.html`** on the API origin and copied to the static site root in CI.
 
 **Google Search Console (you complete in the browser)**
 
 1. Add a **URL-prefix** or **Domain** property for `https://vahanintelligence.in/` (and/or your `*.github.io` host if used).
-2. Choose **HTML tag** verification → copy the `content` value Google gives you.
-3. In `api/static/dashboard/index.html`, add inside `<head>` (e.g. after viewport):  
-   `<meta name="google-site-verification" content="PASTE_TOKEN_HERE"/>`  
-   using the exact `content` value Google shows, then commit and deploy.
+2. Verify using one of:
+   - **HTML file:** Download `google….html` from Google and place it as `api/static/google….html` (same filename). The API serves it at `https://<your-origin>/google….html`; GitHub Actions also copies it to the Pages site root. Then click **Verify** in Search Console.
+   - **HTML tag:** In `api/static/dashboard/index.html`, add inside `<head>`:  
+     `<meta name="google-site-verification" content="PASTE_TOKEN_HERE"/>`
+3. Commit and deploy so the file or meta is live, then click **Verify** in Search Console.
 4. In Search Console → **Sitemaps**, submit: `https://vahanintelligence.in/sitemap.xml` (or the equivalent origin you use).
 
 ---

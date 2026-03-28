@@ -38,6 +38,9 @@ jobs:
           fi
           cp api/static/robots.txt _site/robots.txt
           cp api/static/sitemap.xml _site/sitemap.xml
+          if [ -f api/static/google5332b27a4f971584.html ]; then
+            cp api/static/google5332b27a4f971584.html _site/google5332b27a4f971584.html
+          fi
           # Default API = render.yaml service name (override with repo variable VAHAN_API_BASE_URL).
           # Must inject inside <head>, not before DOCTYPE — otherwise browsers may show raw script as text.
           API_EFFECTIVE="${API_BASE:-https://vahan-intelligence-api.onrender.com}"
