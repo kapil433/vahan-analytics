@@ -36,6 +36,8 @@ jobs:
           if [ -f docs/data/vahan_master.json ]; then
             cp docs/data/vahan_master.json _site/data/vahan_master.json
           fi
+          cp api/static/robots.txt _site/robots.txt
+          cp api/static/sitemap.xml _site/sitemap.xml
           # Default API = render.yaml service name (override with repo variable VAHAN_API_BASE_URL).
           # Must inject inside <head>, not before DOCTYPE — otherwise browsers may show raw script as text.
           API_EFFECTIVE="${API_BASE:-https://vahan-intelligence-api.onrender.com}"
@@ -45,6 +47,9 @@ jobs:
             --input api/static/dashboard/index.html \
             --output _site/index.html \
             --output _site/dashboard/index.html
+          for f in _site/index.html _site/dashboard/index.html; do
+            python3 scripts/prerender_dashboard_seo.py --input "$f" --output "$f"
+          done
           cp deploy/github-pages/index.html _site/welcome.html
 
       - uses: actions/upload-pages-artifact@v3

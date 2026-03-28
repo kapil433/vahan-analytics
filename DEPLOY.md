@@ -39,8 +39,9 @@ On **this** (`vahan-analytics`) repository, add **Secrets**:
 
 Workflow **Sync public dashboard** (`.github/workflows/sync-public-dashboard.yml`) builds:
 
-- Landing: `deploy/github-pages/index.html`
-- **`dashboard/index.html`** — full UI with `window.__VAHAN_API_BASE__` injected from the secret
+- Landing: `deploy/github-pages/index.html` (published as site root `index.html`)
+- **`dashboard/index.html`** — full UI with `window.__VAHAN_API_BASE__` injected from the secret, plus build-time `<noscript>` SEO extract
+- **`robots.txt`** / **`sitemap.xml`** at site root (from `api/static/`)
 - `legacy/README.md`, optional `docs/data/vahan_master.json`
 
 Push to `main` / `master` (or run **Actions → Sync public dashboard → Run workflow**).
@@ -65,3 +66,49 @@ Move the old static site into **`legacy/`** on the public repo (previous `index.
 
 - **Render:** Web Service → **Custom Domains**.
 - **GitHub Pages:** keep **`CNAME`**; configure DNS as GitHub documents.
+
+---
+
+## 6. SEO checklist (robots, sitemap, Search Console)
+
+**Already in this repo**
+
+- `api/static/robots.txt` and `api/static/sitemap.xml` — served at **`/robots.txt`** and **`/sitemap.xml`** by the FastAPI app (`api/main.py`).
+- The same files are copied to the **site root** in GitHub Actions for **Sync public dashboard** and **Deploy GitHub Pages** (`_public/` / `_site/`).
+- Mirrors for visibility in git: `deploy/github-pages/robots.txt`, `deploy/github-pages/sitemap.xml` (keep in sync with `api/static/` when URLs change).
+
+**Google Search Console (you complete in the browser)**
+
+1. Add a **URL-prefix** or **Domain** property for `https://vahanintelligence.in/` (and/or your `*.github.io` host if used).
+2. Choose **HTML tag** verification → copy the `content` value Google gives you.
+3. In `api/static/dashboard/index.html`, add inside `<head>` (e.g. after viewport):  
+   `<meta name="google-site-verification" content="PASTE_TOKEN_HERE"/>`  
+   using the exact `content` value Google shows, then commit and deploy.
+4. In Search Console → **Sitemaps**, submit: `https://vahanintelligence.in/sitemap.xml` (or the equivalent origin you use).
+
+---
+
+## 7. Cloudflare (optional) — security headers at the edge
+
+If you **proxy** `vahanintelligence.in` through [Cloudflare](https://www.cloudflare.com/) (free plan):
+
+1. Move DNS nameservers to Cloudflare and ensure the orange-cloud proxy is on for `A`/`CNAME` to GitHub Pages or Render, as appropriate.
+2. **SSL/TLS** → set mode to **Full (strict)** when the origin serves HTTPS.
+3. Add **Transform Rules** → **Modify response header** (or **Rules** → **Configuration** depending on UI) to append security headers the static host may not send, for example:
+   - `Strict-Transport-Security` = `max-age=31536000; includeSubDomains; preload`
+   - `X-Frame-Options` = `DENY`
+   - `X-Content-Type-Options` = `nosniff`
+   - `Referrer-Policy` = `strict-origin-when-cross-origin`
+   - `Permissions-Policy` = `geolocation=(), microphone=(), camera=()`
+
+The SPA also ships a **CSP** `<meta>` tag for static hosting; the API adds **Content-Security-Policy** via `SecurityHeadersMiddleware`. Align Cloudflare-added headers with those policies so you do not duplicate conflicting CSPs unless intentional.
+
+---
+
+## 8. Build-time SEO prerender (dashboard)
+
+`scripts/prerender_dashboard_seo.py` injects a `<noscript>` block with the Blog and About text so crawlers that execute little or no JavaScript still see indexable copy. It runs automatically in **Sync public dashboard** and **Deploy GitHub Pages** after `inject_pages_api_base.py`. To refresh locally after editing the dashboard:
+
+```bash
+python scripts/prerender_dashboard_seo.py -i api/static/dashboard/index.html -o api/static/dashboard/index.html
+```
