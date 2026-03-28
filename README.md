@@ -2,6 +2,8 @@
 
 Scrapes vehicle registration data from the [Vahan Parivahan Dashboard](https://vahan.parivahan.gov.in/vahan4dashboard/vahan/view/reportview.xhtml) for monthly analytics.
 
+**This repository ([kapil433/vahan-analytics](https://github.com/kapil433/vahan-analytics)) is the source of truth:** commit all changes here, connect **Render** to this repo, and clone from it for local work. [ALL-India-Vahan-Analytics-Dashboard](https://github.com/kapil433/ALL-India-Vahan-Analytics-Dashboard) is only an optional GitHub Pages mirror; the **Sync public dashboard** Action pushes a built copy there when `PUBLIC_DASHBOARD_TOKEN` is set.
+
 ## Workflow
 
 See **[SCRAPING_WORKFLOW.md](./SCRAPING_WORKFLOW.md)** for the full spec.
