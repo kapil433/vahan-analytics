@@ -423,27 +423,15 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
 }
 .cmp-filter-refresh-row{
   display:flex;
-  align-items:center;
   justify-content:flex-end;
-  flex-wrap:wrap;
-  gap:12px;
   width:100%;
-  padding-top:10px;
+  padding-top:4px;
   border-top:1px solid var(--border);
-  margin-top:2px;
+  margin-top:4px;
 }
-.cmp-view-actions{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-.cmp-view-actions .filter-label{margin:0;white-space:nowrap;line-height:1}
-.cmp-view-actions .filter-select{min-width:160px}
 .cmp-filter-refresh-row .btn{padding:8px 18px;display:inline-flex;align-items:center;gap:6px}
 @media(max-width:900px){
-  .cmp-filter-refresh-row{justify-content:stretch;flex-direction:column;align-items:stretch}
-  .cmp-view-actions{justify-content:space-between}
-  .cmp-view-actions .filter-select{flex:1;min-width:0}
+  .cmp-filter-refresh-row{justify-content:stretch}
   .cmp-filter-refresh-row .btn{width:100%;justify-content:center}
 }
 
@@ -873,15 +861,16 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
           </div>
         </div>
       </div>
-      <div class="cmp-filter-refresh-row">
-        <div class="cmp-view-actions">
-          <span class="filter-label">VIEW</span>
+      <div class="cmp-filter-row">
+        <div class="filter-group"><span class="filter-label">VIEW</span>
           <select class="filter-select" id="cmp-view">
             <option value="sidebyside">Side by Side</option>
             <option value="overlay">Overlaid</option>
             <option value="index">Index View (State as % of All India)</option>
           </select>
         </div>
+      </div>
+      <div class="cmp-filter-refresh-row">
         <button type="button" class="btn btn-primary" onclick="buildComparePage()">⟳ Refresh</button>
       </div>
     </div>
