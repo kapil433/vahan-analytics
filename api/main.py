@@ -171,10 +171,32 @@ async def custom_swagger_ui():
         swagger_js_url="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js",
         swagger_css_url="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css",
     )
+
+
+def _cors_allow_origins() -> list[str]:
+    """
+    Browser origins allowed to call this API (dashboard on www + local dev).
+    Set CORS_ALLOW_ORIGINS to a comma-separated list, or * for any origin (not recommended in production).
+    """
+    raw = (os.getenv("CORS_ALLOW_ORIGINS") or "").strip()
+    if raw == "*":
+        return ["*"]
+    if raw:
+        return [o.strip() for o in raw.split(",") if o.strip()]
+    return [
+        "https://www.vahanintelligence.in",
+        "https://vahanintelligence.in",
+        "https://kapil433.github.io",
+        "http://127.0.0.1:8000",
+        "http://localhost:8000",
+    ]
+
+
+_cors_origins = _cors_allow_origins()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=_cors_origins,
+    allow_credentials=_cors_origins != ["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )

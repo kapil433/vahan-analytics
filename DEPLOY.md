@@ -15,6 +15,10 @@
 
 **Note:** `POST /scrape` returns **501** on this slim install (no Chrome). Use full `requirements.txt` locally for scraping.
 
+**CORS:** By default the API allows browser `fetch` from **`https://www.vahanintelligence.in`**, apex **`https://vahanintelligence.in`**, **`https://kapil433.github.io`**, and local dev (`localhost` / `127.0.0.1` on port 8000). To allow another GitHub Pages origin or staging host, set env **`CORS_ALLOW_ORIGINS`** to a comma-separated list (no spaces), e.g. `https://www.example.com,https://staging.example.com`. Use **`CORS_ALLOW_ORIGINS=*`** only for debugging (not recommended in production).
+
+**GitHub Pages vs headers:** Pages cannot set `Content-Security-Policy`, `Strict-Transport-Security`, `X-Frame-Options`, etc. as HTTP headers. The dashboard ships a **CSP `<meta>`** and **`referrer`** meta for partial mitigation; for full header control use **Cloudflare** (or another reverse proxy) in front of Pages or serve the app from **Render** where `SecurityHeadersMiddleware` applies.
+
 ---
 
 ## 2. Full install locally (scraping + API)

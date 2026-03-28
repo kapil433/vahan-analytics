@@ -17,7 +17,7 @@ def _csp_value() -> str:
     """Allow inline scripts/styles (dashboard is a single HTML file with inline JS/CSS)."""
     return (
         "default-src 'self'; "
-        "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; "
+        "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://unpkg.com https://cdn.jsdelivr.net; "
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
         "font-src 'self' https://fonts.gstatic.com data:; "
         "img-src 'self' data: blob: https:; "
@@ -74,8 +74,8 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
 # path prefix -> max requests per window
 _default_limits: dict[str, tuple[int, float]] = {
-    "/data/vahan_master_compat": (45, 60.0),
-    "/data/vahan_master.json": (45, 60.0),
+    "/data/vahan_master_compat": (60, 60.0),
+    "/data/vahan_master.json": (60, 60.0),
     "/scrape": (8, 60.0),
 }
 

@@ -13,3 +13,6 @@ services:
     # envVars:
     #   - key: DATABASE_URL
     #     sync: false   # set to your Render PostgreSQL Internal URL
+    #   - key: CORS_ALLOW_ORIGINS
+    #     value: https://www.vahanintelligence.in,https://your-staging.example
+    #     # optional; defaults include www + apex + kapil433.github.io + localhost
