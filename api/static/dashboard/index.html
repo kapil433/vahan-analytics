@@ -505,6 +505,9 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
 .blog-meta{font-size:10px;color:var(--text-dim);font-family:var(--mono);margin-bottom:12px}
 .blog-list article p{font-size:13px;color:var(--text-mid);line-height:1.65;margin-bottom:10px}
 .blog-list article p:last-child{margin-bottom:0}
+.blog-reading{font-size:12px;color:var(--text-dim);font-style:italic;border-left:3px solid var(--blue);padding:8px 0 8px 12px;margin:10px 0;background:var(--surface2);border-radius:0 6px 6px 0}
+.blog-sources{font-size:11px;color:var(--text-dim);font-family:var(--mono);line-height:1.5;margin-top:8px;padding-top:10px;border-top:1px solid var(--border)}
+.blog-sources strong{color:var(--text-mid);font-family:var(--font);font-weight:600}
 
 /* Narrow screens: stack chart grids */
 @media(max-width:768px){
@@ -1160,43 +1163,76 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
     </div>
   </div>
 
-<!-- BLOG (static HTML for crawlers + readers) -->
+<!-- BLOG — articles grounded in the 47 timeline events in the VAHAN master bundle -->
 <div class="page" id="page-blog">
   <div style="margin-bottom:20px">
     <div style="font-size:11px;color:var(--text-dim);letter-spacing:2px;margin-bottom:4px">INSIGHTS</div>
-    <div style="font-size:20px;font-weight:700;color:var(--text)">Blog — India PV registrations</div>
-    <div style="font-size:12px;color:var(--text-dim);margin-top:6px;max-width:720px">Short, data-grounded notes on how to read VAHAN-class trends: EV share, fuel mix, geography, and reporting periods. These complement the interactive dashboard; always verify critical figures against official releases.</div>
+    <div style="font-size:20px;font-weight:700;color:var(--text)">Blog — from the market events timeline</div>
+    <div style="font-size:12px;color:var(--text-dim);margin-top:6px;max-width:760px">Short reads derived from the same research-tagged events used in this product (policy, shocks, subsidies, and data breaks). They explain how to interpret registration charts without mistaking <strong>rules, taxes, or geography</strong> for pure demand moves. Always cross-check critical numbers with official SIAM, MoRTH, PIB, and RTO sources.</div>
   </div>
   <div class="blog-list">
     <article itemscope itemtype="https://schema.org/Article">
-      <h2 itemprop="headline">India EV car registrations by state: how to compare apples to apples</h2>
-      <div class="blog-meta"><time itemprop="datePublished" datetime="2025-03-01">March 2025</time> · Policy &amp; markets</div>
-      <p itemprop="description">State-level EV volumes in VAHAN extracts move with local incentives, model availability, and charging access—not a single national curve. When you filter by geography in this dashboard, you are comparing the same methodology within that region's published slice, which is the right baseline before inferring leader or laggard states.</p>
-      <p>Use <strong>Calendar Year</strong> for global comparisons and <strong>Financial Year</strong> for India corporate and policy cycles; mixing the two across states exaggerates apparent gaps.</p>
+      <h2 itemprop="headline">Telangana formation: when a state split looks like a demand crash</h2>
+      <div class="blog-meta"><time itemprop="datePublished" datetime="2014-06-02">June 2014</time> · Data break · Tier 1</div>
+      <p itemprop="description">On 2 June 2014, Telangana separated from Andhra Pradesh. Hyderabad, Rangareddy, and related RTOs—roughly 45–53% of undivided AP registrations—moved to the new state. Legacy &quot;Andhra Pradesh&quot; time series show a structural step-down that is <strong>not</strong> a collapse in car buying; it is a boundary change in what geography the label covers.</p>
+      <p class="blog-reading"><strong>Reading the data:</strong> avoid YoY comparisons that straddle June 2014 for old AP labels; use consistent post-split geographies or All India.</p>
+      <p class="blog-sources"><strong>Sources:</strong> Andhra Pradesh Reorganisation Act 2014 · Vahan RTO coverage change (Jun 2014) · FADA AP state data</p>
     </article>
+
     <article itemscope itemtype="https://schema.org/Article">
-      <h2 itemprop="headline">CNG vs petrol car sales in India: what registration data actually captures</h2>
-      <div class="blog-meta"><time itemprop="datePublished" datetime="2025-03-01">March 2025</time> · Fuel mix</div>
-      <p itemprop="description">CNG registrations reflect factory-fitted and approved variants in the Parivahan categories we ingest, not aftermarket conversions. Petrol remains the default denominator for total PV volume, so CNG share should be read as share of <em>reported</em> fuel tags, not of on-road stock.</p>
-      <p>Spikes often align with city gas network expansion or model launches; smooth trends matter more than single-month jumps, especially near fiscal year boundaries.</p>
+      <h2 itemprop="headline">Diesel from deregulation to BS6: why PV diesel share fell for years</h2>
+      <div class="blog-meta"><time itemprop="datePublished" datetime="2014-10-01">2014–2023</time> · Policy &amp; regulation · Structural trend</div>
+      <p itemprop="description">October 2014 ended diesel price administration; diesel lost much of its rupee-per-km edge over petrol by 2015. BS6 from April 2020 raised compliance cost; Maruti Suzuki and Honda exiting diesel removed a large share of diesel SKUs in one stroke. Together these explain a <strong>multi-year</strong> fall in diesel share of passenger registrations—not a single-month blip.</p>
+      <p class="blog-reading"><strong>Reading the data:</strong> separate one-off BS4/BS6 inventory spikes from the slower share shift visible in SIAM-style fuel mix.</p>
+      <p class="blog-sources"><strong>Sources:</strong> MoPNG (Oct 2014) · PPAC price data · Maruti press statement / FY20 report · SIAM fuel-type series</p>
     </article>
+
     <article itemscope itemtype="https://schema.org/Article">
-      <h2 itemprop="headline">Maruti Suzuki market share trend: concentration in four-wheeler PV</h2>
-      <div class="blog-meta"><time itemprop="datePublished" datetime="2025-03-01">March 2025</time> · OEM structure</div>
-      <p itemprop="description">Maruti Suzuki's share in this dataset is computed on passenger four-wheeler registrations only, with makers normalised to a canonical list. That makes long runs comparable, but it will not match OEM press releases that blend segments, exports, or wholesale shipments.</p>
-      <p>Watch the <strong>OEM Analysis</strong> tab with your selected period: share and volume answer different questions—volume tells absolute scale, share tells competitive intensity.</p>
+      <h2 itemprop="headline">EV subsidies: FAME I and II, the 2024 cliff, EMPS, and PM E-DRIVE</h2>
+      <div class="blog-meta"><time itemprop="datePublished" datetime="2015-04-01">2015–2024</time> · Subsidy sequence</div>
+      <p itemprop="description">FAME I (April 2015) seeded a tiny EV base. FAME II (April 2019, ₹10,000 crore) aligned with credible four-wheel EV launches and visible step-up in volumes. FAME II&apos;s March 2024 end produced a classic <strong>front-load then cliff</strong>; EMPS (April 2024) limited the gap, then PM E-DRIVE (October 2024, ₹10,900 crore) set the next policy horizon.</p>
+      <p class="blog-reading"><strong>Reading the data:</strong> expect Feb–Mar spikes and April softness around scheme boundaries; compare to pre-subsidy trend, not only prior month.</p>
+      <p class="blog-sources"><strong>Sources:</strong> MHI FAME I/II notifications · PIB · MHI EMPS Apr 2024 · PIB PM E-DRIVE Oct 2024 · SMEV commentary</p>
     </article>
+
     <article itemscope itemtype="https://schema.org/Article">
-      <h2 itemprop="headline">FAME subsidies and EV registration pulses</h2>
-      <div class="blog-meta"><time itemprop="datePublished" datetime="2024-09-01">September 2024</time> · Policy</div>
-      <p itemprop="description">Demand incentives under FAME phases showed up as accelerations in EV registration growth when eligibility windows and model lists were stable. When policy uncertainty rose or subsidy caps moved, monthly series often exhibited front-loading or pauses—not because underlying demand vanished, but because purchase timing shifted.</p>
-      <p>Pair registration timing with <strong>Forecast</strong> views cautiously: models extrapolate history; they do not predict unpublished rule changes.</p>
+      <h2 itemprop="headline">March–April 2020: BS4 clearance collided with the COVID lockdown</h2>
+      <div class="blog-meta"><time itemprop="datePublished" datetime="2020-03-23">Mar–Apr 2020</time> · Overlapping shocks · Tier 1</div>
+      <p itemprop="description">BS6 enforcement from 1 April 2020 forced a March rush to register remaining BS4 stock. Days later, the national lockdown (23 March onward) drove April registrations toward zero. The overlap is one of the largest distortions in many VAHAN series—<strong>high YoY growth</strong> right after can be mostly base effects, not organic acceleration.</p>
+      <p class="blog-reading"><strong>Reading the data:</strong> use level vs trend and avoid naive YoY% for months anchored to April 2020.</p>
+      <p class="blog-sources"><strong>Sources:</strong> Supreme Court / MoRTH BS6 timeline · MHA lockdown order Mar 2020 · SIAM · FADA Mar–Apr 2020 retail</p>
     </article>
+
     <article itemscope itemtype="https://schema.org/Article">
-      <h2 itemprop="headline">BS6 rollout and diesel share: a regulatory shock in the data</h2>
-      <div class="blog-meta"><time itemprop="datePublished" datetime="2020-04-01">April 2020</time> · Regulation</div>
-      <p itemprop="description">India's leap to BS6 emission norms compressed pre-deadline buying and reshaped diesel vs petrol ordering for several quarters. In VAHAN-class series you typically see elevated volatility around the transition window and a structurally lower diesel trajectory afterward for many PV segments.</p>
-      <p>When interpreting YoY% on the Overview page, treat 2019–2021 as a special interval: compare against pre-BS6 baselines only when explaining long-run fuel mix, not short policy commentary.</p>
+      <h2 itemprop="headline">April–July 2017: BS4, pre-GST inventory, and GST go-live in one window</h2>
+      <div class="blog-meta"><time itemprop="datePublished" datetime="2017-04-01">Apr–Jul 2017</time> · Composite regulation / tax</div>
+      <p itemprop="description">April 2017 brought nationwide BS4 for the relevant segments; June saw dealers clearing stock ahead of GST; July introduced new invoicing and short operational disruption. Registration bumps and dips in this window blend <strong>emission rules, tax incidence, and reporting</strong>—they cannot be cleanly attributed to a single lever in the chart.</p>
+      <p class="blog-reading"><strong>Reading the data:</strong> treat Apr–Jul 2017 as one annotated band in your head; prefer adjacent clean quarters for OEM or fuel attribution.</p>
+      <p class="blog-sources"><strong>Sources:</strong> MoRTH BS4 notification · GST Council Jun–Jul 2017 · SIAM / FADA Apr–Jul 2017 · GST cess schedule on large diesel cars</p>
+    </article>
+
+    <article itemscope itemtype="https://schema.org/Article">
+      <h2 itemprop="headline">CNG: city gas expansion, then the 2021–22 price shock</h2>
+      <div class="blog-meta"><time itemprop="datePublished" datetime="2018-01-01">2018–2022</time> · Infrastructure + macro shock</div>
+      <p itemprop="description">PNGRB&apos;s 9th CGD round and later build-out expanded CNG into many new districts—CNG car registrations tend to follow <strong>station availability</strong>. From 2021, global energy stress (including Russia–Ukraine) fed through to sharply higher CNG tariffs in several cities; growth <strong>rates</strong> cooled even where CNG retained total-cost advantage vs petrol.</p>
+      <p class="blog-reading"><strong>Reading the data:</strong> distinguish level (still often cheaper km-cost) from YoY registration momentum.</p>
+      <p class="blog-sources"><strong>Sources:</strong> PNGRB CGD rounds · PPAC / CGD reports · IGL/MGL price notifications 2022 · SIAM CNG monthly</p>
+    </article>
+
+    <article itemscope itemtype="https://schema.org/Article">
+      <h2 itemprop="headline">When registrations understate demand: NBFC stress and the chip shortage</h2>
+      <div class="blog-meta"><time itemprop="datePublished" datetime="2018-09-01">2018–2022</time> · Credit &amp; supply constraints</div>
+      <p itemprop="description">The IL&amp;FS default (September 2018) tightened NBFC liquidity; two-wheelers and entry segments financed outside prime bank channels were hit hardest. From mid-2021, a global semiconductor shortage capped OEM output—retail waitlists rose while VAHAN counts looked soft. Easing from late 2022 mainly reflected <strong>supply catching backlog</strong>, not a pure demand surge.</p>
+      <p class="blog-reading"><strong>Reading the data:</strong> pair registration series with SIAM wholesale or OEM commentary when supply binds.</p>
+      <p class="blog-sources"><strong>Sources:</strong> RBI FSR Dec 2018 · Maruti / Hyundai investor calls 2021 · SIAM supply alerts · ACMA / OEM Q3 FY23 commentary</p>
+    </article>
+
+    <article itemscope itemtype="https://schema.org/Article">
+      <h2 itemprop="headline">Cab aggregators: fleet registrations as a proxy, not ride demand</h2>
+      <div class="blog-meta"><time itemprop="datePublished" datetime="2014-01-01">2014–2018</time> · Product / fleet cycle</div>
+      <p itemprop="description">Ola and Uber scaling in 2014–2017 lifted motor-cab class registrations (often CNG or diesel) in several cities—visible when you slice commercial or geography correctly. From 2018, incentive cuts hit driver economics and <strong>new partner additions</strong> slowed; fleet registration momentum eased. This is a structural fleet cycle, not the same as app trip growth.</p>
+      <p class="blog-reading"><strong>Reading the data:</strong> use motor-cab or state-level series; do not map directly to All India PV passenger totals.</p>
+      <p class="blog-sources"><strong>Sources:</strong> FADA motor cab data 2014–18 · IDC driver survey 2018 · SIAM</p>
     </article>
   </div>
 </div>
@@ -6852,6 +6888,194 @@ buildFuelAnalysisTable = function(rows, priorRows, containerId) {
   }, 100);
 };
 
+
+function buildEventsPage() {
+  if (!DATA) return;
+
+  const typeF  = document.getElementById('ev-type-filter')?.value || 'all';
+  const yrFrom = parseInt(document.getElementById('ev-year-from')?.value || '2008');
+  const yrTo   = parseInt(document.getElementById('ev-year-to')?.value   || '2025');
+
+  // 4W-PV only events (non-passenger excluded from this view)
+  const EXCLUDE_4WPV = new Set(['A17','A18','A27','A29','A30','A31','A42','A43','A47']);
+
+  const events = (DATA.events || []).filter(ev => {
+    if (EXCLUDE_4WPV.has(ev.id)) return false;
+    const yr = parseInt(ev.date.slice(0,4));
+    if (yr < yrFrom || yr > yrTo) return false;
+    if (typeF !== 'all' && ev.type !== typeF) return false;
+    return true;
+  }).sort((a,b) => a.date.localeCompare(b.date));
+
+  // Update count badge
+  const cntEl = document.getElementById('ev-count-label');
+  if (cntEl) cntEl.textContent = `${events.length} events`;
+
+  // ── KPI Strip ────────────────────────────────────────────
+  const kpiEl = document.getElementById('ev-kpi-strip');
+  if (kpiEl) {
+    const t1   = events.filter(e => e.tier === 1).length;
+    const pos  = events.filter(e => e.impact === 'positive').length;
+    const neg  = events.filter(e => e.impact === 'negative' || e.impact === 'mixed').length;
+    const regs = events.filter(e => e.type === 'regulation' || e.type === 'policy').length;
+    const kpis = [
+      { label:'TOTAL EVENTS', value: events.length, col:'var(--blue)', sub:'in selected range' },
+      { label:'CRITICAL (T1)', value: t1, col:'#f59e0b', sub:'high-impact events' },
+      { label:'POSITIVE IMPACT', value: pos, col:'#22c55e', sub:'growth / demand catalysts' },
+      { label:'NEGATIVE / MIXED', value: neg, col:'#ef4444', sub:'shocks or disruptions' }
+    ];
+    kpiEl.innerHTML = kpis.map(k => `
+      <div class="kpi-card" style="border-top:2px solid ${k.col}">
+        <div class="kpi-label">${k.label}</div>
+        <div class="kpi-value" style="color:${k.col}">${k.value}</div>
+        <div class="kpi-sub"><span style="color:var(--text-dim)">${k.sub}</span></div>
+      </div>`).join('');
+  }
+
+  // ── Mini Charts ────────────────────────────────────────────
+  const EC = {'shock':'#ef4444','regulation':'#f97316','subsidy':'#22c55e',
+               'policy':'#3b82f6','product':'#06b6d4','data_break':'#475569'};
+  const IC = {'positive':'#22c55e','negative':'#ef4444','mixed':'#f59e0b','neutral':'#475569'};
+
+  // Chart 1: by type (horizontal bar)
+  const typeCounts = {};
+  events.forEach(e => { typeCounts[e.type] = (typeCounts[e.type]||0) + 1; });
+  const tTypes = Object.entries(typeCounts).sort((a,b)=>b[1]-a[1]);
+  updateChart('chart-events-type', 'bar',
+    tTypes.map(x=>x[0]),
+    [{ data: tTypes.map(x=>x[1]),
+       backgroundColor: tTypes.map(x=>EC[x[0]]||'#64748b'),
+       borderWidth:0 }],
+    { indexAxis:'y', plugins:{ legend:{display:false} },
+      scales:{
+        x:{ticks:{color:'#64748b',font:{size:9}},grid:{color:'#e2e8f0'}},
+        y:{ticks:{color:'#475569',font:{size:9}},grid:{display:false}}
+      }
+    }
+  );
+
+  // Chart 2: by year (lollipop-style — bar + scatter)
+  const yrCounts = {};
+  events.forEach(e => { const y=e.date.slice(0,4); yrCounts[y]=(yrCounts[y]||0)+1; });
+  const allYrLabels = [];
+  for (let y = yrFrom; y <= yrTo; y++) allYrLabels.push(String(y));
+  updateChart('chart-events-year', 'bar',
+    allYrLabels,
+    [{ data: allYrLabels.map(y=>yrCounts[y]||0),
+       backgroundColor: allYrLabels.map(y => {
+         const cnt = yrCounts[y]||0;
+         return cnt >= 4 ? '#f59e0bcc' : cnt >= 2 ? '#3b82f6cc' : '#3b82f644';
+       }),
+       borderRadius: 3, borderWidth:0 }],
+    { plugins:{ legend:{display:false} },
+      scales:{
+        x:{ticks:{color:'#64748b',font:{size:9}},grid:{color:'#e2e8f0'}},
+        y:{ticks:{color:'#64748b',font:{size:9},stepSize:1},grid:{color:'#e2e8f0'}}
+      }
+    }
+  );
+
+  // Chart 3: Impact distribution (donut)
+  const impCounts = {};
+  events.forEach(e => { impCounts[e.impact]=(impCounts[e.impact]||0)+1; });
+  const impLabels = Object.keys(impCounts);
+  updateChart('chart-events-impact', 'doughnut',
+    impLabels,
+    [{ data: impLabels.map(k=>impCounts[k]),
+       backgroundColor: impLabels.map(k=>IC[k]||'#888'),
+       borderWidth:2, borderColor:'var(--surface2)' }],
+    { plugins:{ legend:{ position:'bottom', labels:{ color:'#475569', boxWidth:10, font:{size:9} } } },
+      cutout:'65%' }
+  );
+
+  // ── Timeline ──────────────────────────────────────────────
+  buildIntelEventsPanel(events);
+}
+
+function buildIntelEventsPanel(filteredEvents) {
+  const el = document.getElementById('intel-events-panel');
+  if (!el) return;
+
+  if (!filteredEvents || !filteredEvents.length) {
+    el.innerHTML = '<div style="color:var(--text-dim);font-size:12px;padding:24px;text-align:center">No events match the selected filters.</div>';
+    return;
+  }
+
+  const EC  = { shock:'#ef4444', regulation:'#f97316', subsidy:'#22c55e',
+                policy:'#3b82f6', product:'#06b6d4', data_break:'#475569' };
+  const IC  = { positive:'#22c55e', negative:'#ef4444', mixed:'#f59e0b', neutral:'#475569' };
+  const II  = { positive:'▲', negative:'▼', mixed:'◈', neutral:'↔' };
+  const EL  = { shock:'Market Shock', regulation:'Regulation', subsidy:'Subsidy',
+                policy:'Policy', product:'Product Launch', data_break:'Data Break' };
+
+  // Group by year for visual separation
+  const byYear = {};
+  filteredEvents.forEach(ev => {
+    const yr = ev.date.slice(0,4);
+    if (!byYear[yr]) byYear[yr] = [];
+    byYear[yr].push(ev);
+  });
+
+  const yearsDesc = Object.keys(byYear).sort((a,b) => b.localeCompare(a));
+
+  el.innerHTML = yearsDesc.map(yr => {
+    const yEvs = byYear[yr];
+    const items = yEvs.map((ev, i) => {
+      const ec   = EC[ev.type]   || '#64748b';
+      const ic   = IC[ev.impact] || '#475569';
+      const ii   = II[ev.impact] || '·';
+      const label= EL[ev.type]   || ev.type;
+      const isT1 = ev.tier === 1;
+      return `<div style="display:flex;gap:0;${i<yEvs.length-1?'margin-bottom:2px':''}">
+        <!-- Spine -->
+        <div style="width:36px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;padding-top:14px">
+          <div style="width:${isT1?12:9}px;height:${isT1?12:9}px;border-radius:50%;
+            background:${ec};border:2px solid var(--surface2);z-index:1;flex-shrink:0"></div>
+          ${i<yEvs.length-1?`<div style="width:2px;flex:1;min-height:16px;background:var(--border)"></div>`:''}
+        </div>
+        <!-- Card -->
+        <div style="flex:1;background:${isT1?'var(--surface)':'var(--surface2)'};
+          border:1px solid ${isT1?ec+'44':'var(--border)'};
+          border-radius:8px;padding:12px 16px;margin-bottom:8px;
+          ${isT1?'box-shadow:0 0 12px '+ec+'18':''}">
+          <!-- Header row -->
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px">
+            <span style="font-size:9px;font-weight:700;background:${ec}22;color:${ec};
+              padding:2px 8px;border-radius:10px;border:1px solid ${ec}44;letter-spacing:0.5px;
+              text-transform:uppercase">${label}</span>
+            ${isT1?`<span style="font-size:9px;font-weight:700;color:#f59e0b;background:#f59e0b22;
+              padding:2px 7px;border-radius:10px;border:1px solid #f59e0b44">T1 CRITICAL</span>`:''}
+            <span style="font-size:10px;color:${ic};font-weight:600">${ii} ${ev.impact}</span>
+            <span style="font-size:10px;color:var(--text-dim);margin-left:auto">${ev.date}</span>
+          </div>
+          <!-- Title -->
+          <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:5px;line-height:1.4">${ev.label}</div>
+          <!-- Detail -->
+          <div style="font-size:11px;color:var(--text-dim);line-height:1.65">${ev.detail}</div>
+          <!-- Params pills -->
+          ${ev.params && ev.params.length && !ev.params.includes('all') ? `
+          <div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap">
+            <span style="font-size:9px;color:var(--text-dim)">AFFECTS:</span>
+            ${ev.params.map(p=>`<span style="font-size:9px;background:var(--surface2);color:var(--text-mid);
+              padding:1px 6px;border-radius:8px;border:1px solid var(--border)">${p}</span>`).join('')}
+          </div>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+
+    return `<div style="display:flex;gap:0;margin-bottom:8px">
+      <!-- Year label -->
+      <div style="width:52px;flex-shrink:0;padding-top:14px;text-align:right;padding-right:10px">
+        <div style="font-size:13px;font-weight:800;color:var(--text-mid)">${yr}</div>
+        <div style="font-size:9px;color:var(--text-dim)">${yEvs.length} event${yEvs.length>1?'s':''}</div>
+      </div>
+      <!-- Year spine -->
+      <div style="width:2px;background:var(--border);flex-shrink:0;margin-top:16px;border-radius:1px"></div>
+      <!-- Events -->
+      <div style="flex:1;padding-left:16px;padding-bottom:4px">${items}</div>
+    </div>`;
+  }).join('');
+}
 
 
 // ════════════════════════════════════════════════════════════════
