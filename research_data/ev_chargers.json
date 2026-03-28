@@ -1,0 +1,560 @@
+[
+  {
+    "state_code": "KA",
+    "state_name": "Karnataka",
+    "year": 2025,
+    "month": 12,
+    "charger_count": 6096,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "MH",
+    "state_name": "Maharashtra",
+    "year": 2025,
+    "month": 12,
+    "charger_count": 4166,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "TN",
+    "state_name": "Tamil Nadu",
+    "year": 2025,
+    "month": 12,
+    "charger_count": 1780,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "DL",
+    "state_name": "Delhi",
+    "year": 2025,
+    "month": 12,
+    "charger_count": 1957,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "RJ",
+    "state_name": "Rajasthan",
+    "year": 2025,
+    "month": 12,
+    "charger_count": 1515,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "KL",
+    "state_name": "Kerala",
+    "year": 2025,
+    "month": 12,
+    "charger_count": 1389,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "UP",
+    "state_name": "Uttar Pradesh",
+    "year": 2025,
+    "month": 12,
+    "charger_count": 1285,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "GJ",
+    "state_name": "Gujarat",
+    "year": 2025,
+    "month": 12,
+    "charger_count": 1158,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "WB",
+    "state_name": "West Bengal",
+    "year": 2025,
+    "month": 12,
+    "charger_count": 985,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "TG",
+    "state_name": "Telangana",
+    "year": 2025,
+    "month": 12,
+    "charger_count": 892,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "AP",
+    "state_name": "Andhra Pradesh",
+    "year": 2025,
+    "month": 12,
+    "charger_count": 765,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "MP",
+    "state_name": "Madhya Pradesh",
+    "year": 2025,
+    "month": 12,
+    "charger_count": 645,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "PB",
+    "state_name": "Punjab",
+    "year": 2025,
+    "month": 12,
+    "charger_count": 528,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "HR",
+    "state_name": "Haryana",
+    "year": 2025,
+    "month": 12,
+    "charger_count": 485,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "BR",
+    "state_name": "Bihar",
+    "year": 2025,
+    "month": 12,
+    "charger_count": 398,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "OR",
+    "state_name": "Odisha",
+    "year": 2025,
+    "month": 12,
+    "charger_count": 365,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "CH",
+    "state_name": "Chhattisgarh",
+    "year": 2025,
+    "month": 12,
+    "charger_count": 285,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "JH",
+    "state_name": "Jharkhand",
+    "year": 2025,
+    "month": 12,
+    "charger_count": 245,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "AS",
+    "state_name": "Assam",
+    "year": 2025,
+    "month": 12,
+    "charger_count": 198,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "UK",
+    "state_name": "Uttarakhand",
+    "year": 2025,
+    "month": 12,
+    "charger_count": 165,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "HP",
+    "state_name": "Himachal Pradesh",
+    "year": 2025,
+    "month": 12,
+    "charger_count": 125,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "GA",
+    "state_name": "Goa",
+    "year": 2025,
+    "month": 12,
+    "charger_count": 98,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "PY",
+    "state_name": "Puducherry",
+    "year": 2025,
+    "month": 12,
+    "charger_count": 65,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "CHD",
+    "state_name": "Chandigarh",
+    "year": 2025,
+    "month": 12,
+    "charger_count": 85,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "TR",
+    "state_name": "Tripura",
+    "year": 2025,
+    "month": 12,
+    "charger_count": 42,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "ML",
+    "state_name": "Meghalaya",
+    "year": 2025,
+    "month": 12,
+    "charger_count": 28,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "MN",
+    "state_name": "Manipur",
+    "year": 2025,
+    "month": 12,
+    "charger_count": 22,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "NL",
+    "state_name": "Nagaland",
+    "year": 2025,
+    "month": 12,
+    "charger_count": 15,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "SK",
+    "state_name": "Sikkim",
+    "year": 2025,
+    "month": 12,
+    "charger_count": 18,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "MZ",
+    "state_name": "Mizoram",
+    "year": 2025,
+    "month": 12,
+    "charger_count": 12,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "AR",
+    "state_name": "Arunachal Pradesh",
+    "year": 2025,
+    "month": 12,
+    "charger_count": 8,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "KA",
+    "state_name": "Karnataka",
+    "year": 2024,
+    "month": 12,
+    "charger_count": 4850,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "MH",
+    "state_name": "Maharashtra",
+    "year": 2024,
+    "month": 12,
+    "charger_count": 3520,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "TN",
+    "state_name": "Tamil Nadu",
+    "year": 2024,
+    "month": 12,
+    "charger_count": 1420,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "DL",
+    "state_name": "Delhi",
+    "year": 2024,
+    "month": 12,
+    "charger_count": 1580,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "RJ",
+    "state_name": "Rajasthan",
+    "year": 2024,
+    "month": 12,
+    "charger_count": 1185,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "KL",
+    "state_name": "Kerala",
+    "year": 2024,
+    "month": 12,
+    "charger_count": 1095,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "UP",
+    "state_name": "Uttar Pradesh",
+    "year": 2024,
+    "month": 12,
+    "charger_count": 985,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "GJ",
+    "state_name": "Gujarat",
+    "year": 2024,
+    "month": 12,
+    "charger_count": 892,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "WB",
+    "state_name": "West Bengal",
+    "year": 2024,
+    "month": 12,
+    "charger_count": 765,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "TG",
+    "state_name": "Telangana",
+    "year": 2024,
+    "month": 12,
+    "charger_count": 698,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "AP",
+    "state_name": "Andhra Pradesh",
+    "year": 2024,
+    "month": 12,
+    "charger_count": 598,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "MP",
+    "state_name": "Madhya Pradesh",
+    "year": 2024,
+    "month": 12,
+    "charger_count": 498,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "PB",
+    "state_name": "Punjab",
+    "year": 2024,
+    "month": 12,
+    "charger_count": 398,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "HR",
+    "state_name": "Haryana",
+    "year": 2024,
+    "month": 12,
+    "charger_count": 365,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "BR",
+    "state_name": "Bihar",
+    "year": 2024,
+    "month": 12,
+    "charger_count": 298,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "OR",
+    "state_name": "Odisha",
+    "year": 2024,
+    "month": 12,
+    "charger_count": 268,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "CH",
+    "state_name": "Chhattisgarh",
+    "year": 2024,
+    "month": 12,
+    "charger_count": 198,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "JH",
+    "state_name": "Jharkhand",
+    "year": 2024,
+    "month": 12,
+    "charger_count": 168,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "AS",
+    "state_name": "Assam",
+    "year": 2024,
+    "month": 12,
+    "charger_count": 142,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "UK",
+    "state_name": "Uttarakhand",
+    "year": 2024,
+    "month": 12,
+    "charger_count": 118,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "HP",
+    "state_name": "Himachal Pradesh",
+    "year": 2024,
+    "month": 12,
+    "charger_count": 88,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "GA",
+    "state_name": "Goa",
+    "year": 2024,
+    "month": 12,
+    "charger_count": 72,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "PY",
+    "state_name": "Puducherry",
+    "year": 2024,
+    "month": 12,
+    "charger_count": 48,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "CHD",
+    "state_name": "Chandigarh",
+    "year": 2024,
+    "month": 12,
+    "charger_count": 62,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "TR",
+    "state_name": "Tripura",
+    "year": 2024,
+    "month": 12,
+    "charger_count": 28,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "ML",
+    "state_name": "Meghalaya",
+    "year": 2024,
+    "month": 12,
+    "charger_count": 18,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "MN",
+    "state_name": "Manipur",
+    "year": 2024,
+    "month": 12,
+    "charger_count": 15,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "NL",
+    "state_name": "Nagaland",
+    "year": 2024,
+    "month": 12,
+    "charger_count": 10,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "SK",
+    "state_name": "Sikkim",
+    "year": 2024,
+    "month": 12,
+    "charger_count": 12,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "MZ",
+    "state_name": "Mizoram",
+    "year": 2024,
+    "month": 12,
+    "charger_count": 8,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  },
+  {
+    "state_code": "AR",
+    "state_name": "Arunachal Pradesh",
+    "year": 2024,
+    "month": 12,
+    "charger_count": 5,
+    "charger_type": "total",
+    "source": "data.gov.in"
+  }
+]

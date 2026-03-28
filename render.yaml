@@ -1,0 +1,15 @@
+# Render Blueprint — https://dashboard.render.com/ → New → Blueprint
+# Or: Web Service → connect repo → Build: pip install -r requirements.txt
+#     Start: uvicorn api.main:app --host 0.0.0.0 --port $PORT
+services:
+  - type: web
+    name: vahan-intelligence-api
+    runtime: python
+    plan: free
+    region: oregon
+    buildCommand: pip install -r requirements-render.txt
+    startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    # envVars:
+    #   - key: DATABASE_URL
+    #     sync: false   # set to your Render PostgreSQL Internal URL

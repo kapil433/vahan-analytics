@@ -1,0 +1,814 @@
+[
+  {
+    "state_code": "AP",
+    "state_name": "Andhra Pradesh",
+    "fy": "2012-13",
+    "pci_rs": 120456.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "AP",
+    "state_name": "Andhra Pradesh",
+    "fy": "2017-18",
+    "pci_rs": 165234.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "AP",
+    "state_name": "Andhra Pradesh",
+    "fy": "2022-23",
+    "pci_rs": 231000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "AP",
+    "state_name": "Andhra Pradesh",
+    "fy": "2023-24",
+    "pci_rs": 258000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "AR",
+    "state_name": "Arunachal Pradesh",
+    "fy": "2012-13",
+    "pci_rs": 89000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "AR",
+    "state_name": "Arunachal Pradesh",
+    "fy": "2022-23",
+    "pci_rs": 185000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "AR",
+    "state_name": "Arunachal Pradesh",
+    "fy": "2023-24",
+    "pci_rs": 198000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "AS",
+    "state_name": "Assam",
+    "fy": "2012-13",
+    "pci_rs": 65000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "AS",
+    "state_name": "Assam",
+    "fy": "2017-18",
+    "pci_rs": 95000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "AS",
+    "state_name": "Assam",
+    "fy": "2022-23",
+    "pci_rs": 145000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "AS",
+    "state_name": "Assam",
+    "fy": "2023-24",
+    "pci_rs": 158000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "BR",
+    "state_name": "Bihar",
+    "fy": "2012-13",
+    "pci_rs": 35000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "BR",
+    "state_name": "Bihar",
+    "fy": "2017-18",
+    "pci_rs": 48000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "BR",
+    "state_name": "Bihar",
+    "fy": "2022-23",
+    "pci_rs": 58000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "BR",
+    "state_name": "Bihar",
+    "fy": "2023-24",
+    "pci_rs": 62000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "CH",
+    "state_name": "Chhattisgarh",
+    "fy": "2012-13",
+    "pci_rs": 75000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "CH",
+    "state_name": "Chhattisgarh",
+    "fy": "2017-18",
+    "pci_rs": 105000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "CH",
+    "state_name": "Chhattisgarh",
+    "fy": "2022-23",
+    "pci_rs": 158000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "CH",
+    "state_name": "Chhattisgarh",
+    "fy": "2023-24",
+    "pci_rs": 172000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "GA",
+    "state_name": "Goa",
+    "fy": "2012-13",
+    "pci_rs": 265000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "GA",
+    "state_name": "Goa",
+    "fy": "2017-18",
+    "pci_rs": 385000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "GA",
+    "state_name": "Goa",
+    "fy": "2022-23",
+    "pci_rs": 598000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "GA",
+    "state_name": "Goa",
+    "fy": "2023-24",
+    "pci_rs": 675000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "GJ",
+    "state_name": "Gujarat",
+    "fy": "2012-13",
+    "pci_rs": 125000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "GJ",
+    "state_name": "Gujarat",
+    "fy": "2017-18",
+    "pci_rs": 216000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "GJ",
+    "state_name": "Gujarat",
+    "fy": "2022-23",
+    "pci_rs": 298000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "GJ",
+    "state_name": "Gujarat",
+    "fy": "2023-24",
+    "pci_rs": 318000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "HR",
+    "state_name": "Haryana",
+    "fy": "2012-13",
+    "pci_rs": 145000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "HR",
+    "state_name": "Haryana",
+    "fy": "2017-18",
+    "pci_rs": 218000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "HR",
+    "state_name": "Haryana",
+    "fy": "2022-23",
+    "pci_rs": 298000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "HR",
+    "state_name": "Haryana",
+    "fy": "2023-24",
+    "pci_rs": 325000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "HP",
+    "state_name": "Himachal Pradesh",
+    "fy": "2012-13",
+    "pci_rs": 115000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "HP",
+    "state_name": "Himachal Pradesh",
+    "fy": "2017-18",
+    "pci_rs": 168000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "HP",
+    "state_name": "Himachal Pradesh",
+    "fy": "2022-23",
+    "pci_rs": 235000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "HP",
+    "state_name": "Himachal Pradesh",
+    "fy": "2023-24",
+    "pci_rs": 252000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "JH",
+    "state_name": "Jharkhand",
+    "fy": "2012-13",
+    "pci_rs": 55000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "JH",
+    "state_name": "Jharkhand",
+    "fy": "2017-18",
+    "pci_rs": 78000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "JH",
+    "state_name": "Jharkhand",
+    "fy": "2022-23",
+    "pci_rs": 118000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "JH",
+    "state_name": "Jharkhand",
+    "fy": "2023-24",
+    "pci_rs": 128000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "KA",
+    "state_name": "Karnataka",
+    "fy": "2012-13",
+    "pci_rs": 118000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "KA",
+    "state_name": "Karnataka",
+    "fy": "2017-18",
+    "pci_rs": 198000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "KA",
+    "state_name": "Karnataka",
+    "fy": "2022-23",
+    "pci_rs": 312000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "KA",
+    "state_name": "Karnataka",
+    "fy": "2023-24",
+    "pci_rs": 368000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "KL",
+    "state_name": "Kerala",
+    "fy": "2012-13",
+    "pci_rs": 135000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "KL",
+    "state_name": "Kerala",
+    "fy": "2017-18",
+    "pci_rs": 185000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "KL",
+    "state_name": "Kerala",
+    "fy": "2022-23",
+    "pci_rs": 258000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "KL",
+    "state_name": "Kerala",
+    "fy": "2023-24",
+    "pci_rs": 278000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "MP",
+    "state_name": "Madhya Pradesh",
+    "fy": "2012-13",
+    "pci_rs": 55000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "MP",
+    "state_name": "Madhya Pradesh",
+    "fy": "2017-18",
+    "pci_rs": 82000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "MP",
+    "state_name": "Madhya Pradesh",
+    "fy": "2022-23",
+    "pci_rs": 128000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "MP",
+    "state_name": "Madhya Pradesh",
+    "fy": "2023-24",
+    "pci_rs": 138000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "MH",
+    "state_name": "Maharashtra",
+    "fy": "2012-13",
+    "pci_rs": 135000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "MH",
+    "state_name": "Maharashtra",
+    "fy": "2017-18",
+    "pci_rs": 199000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "MH",
+    "state_name": "Maharashtra",
+    "fy": "2022-23",
+    "pci_rs": 285000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "MH",
+    "state_name": "Maharashtra",
+    "fy": "2023-24",
+    "pci_rs": 312000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "MN",
+    "state_name": "Manipur",
+    "fy": "2012-13",
+    "pci_rs": 65000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "MN",
+    "state_name": "Manipur",
+    "fy": "2022-23",
+    "pci_rs": 125000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "MN",
+    "state_name": "Manipur",
+    "fy": "2023-24",
+    "pci_rs": 135000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "ML",
+    "state_name": "Meghalaya",
+    "fy": "2012-13",
+    "pci_rs": 75000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "ML",
+    "state_name": "Meghalaya",
+    "fy": "2022-23",
+    "pci_rs": 145000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "ML",
+    "state_name": "Meghalaya",
+    "fy": "2023-24",
+    "pci_rs": 158000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "MZ",
+    "state_name": "Mizoram",
+    "fy": "2012-13",
+    "pci_rs": 85000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "MZ",
+    "state_name": "Mizoram",
+    "fy": "2022-23",
+    "pci_rs": 165000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "MZ",
+    "state_name": "Mizoram",
+    "fy": "2023-24",
+    "pci_rs": 178000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "NL",
+    "state_name": "Nagaland",
+    "fy": "2012-13",
+    "pci_rs": 78000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "NL",
+    "state_name": "Nagaland",
+    "fy": "2022-23",
+    "pci_rs": 142000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "NL",
+    "state_name": "Nagaland",
+    "fy": "2023-24",
+    "pci_rs": 152000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "OR",
+    "state_name": "Odisha",
+    "fy": "2012-13",
+    "pci_rs": 65000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "OR",
+    "state_name": "Odisha",
+    "fy": "2017-18",
+    "pci_rs": 95000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "OR",
+    "state_name": "Odisha",
+    "fy": "2022-23",
+    "pci_rs": 145000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "OR",
+    "state_name": "Odisha",
+    "fy": "2023-24",
+    "pci_rs": 158000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "PB",
+    "state_name": "Punjab",
+    "fy": "2012-13",
+    "pci_rs": 115000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "PB",
+    "state_name": "Punjab",
+    "fy": "2017-18",
+    "pci_rs": 158000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "PB",
+    "state_name": "Punjab",
+    "fy": "2022-23",
+    "pci_rs": 218000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "PB",
+    "state_name": "Punjab",
+    "fy": "2023-24",
+    "pci_rs": 235000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "RJ",
+    "state_name": "Rajasthan",
+    "fy": "2012-13",
+    "pci_rs": 75000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "RJ",
+    "state_name": "Rajasthan",
+    "fy": "2017-18",
+    "pci_rs": 112000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "RJ",
+    "state_name": "Rajasthan",
+    "fy": "2022-23",
+    "pci_rs": 168000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "RJ",
+    "state_name": "Rajasthan",
+    "fy": "2023-24",
+    "pci_rs": 182000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "SK",
+    "state_name": "Sikkim",
+    "fy": "2012-13",
+    "pci_rs": 185000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "SK",
+    "state_name": "Sikkim",
+    "fy": "2017-18",
+    "pci_rs": 285000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "SK",
+    "state_name": "Sikkim",
+    "fy": "2022-23",
+    "pci_rs": 485000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "SK",
+    "state_name": "Sikkim",
+    "fy": "2023-24",
+    "pci_rs": 588000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "TN",
+    "state_name": "Tamil Nadu",
+    "fy": "2012-13",
+    "pci_rs": 125000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "TN",
+    "state_name": "Tamil Nadu",
+    "fy": "2017-18",
+    "pci_rs": 185000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "TN",
+    "state_name": "Tamil Nadu",
+    "fy": "2022-23",
+    "pci_rs": 268000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "TN",
+    "state_name": "Tamil Nadu",
+    "fy": "2023-24",
+    "pci_rs": 292000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "TG",
+    "state_name": "Telangana",
+    "fy": "2015-16",
+    "pci_rs": 185000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "TG",
+    "state_name": "Telangana",
+    "fy": "2017-18",
+    "pci_rs": 215000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "TG",
+    "state_name": "Telangana",
+    "fy": "2022-23",
+    "pci_rs": 358000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "TG",
+    "state_name": "Telangana",
+    "fy": "2023-24",
+    "pci_rs": 393000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "TR",
+    "state_name": "Tripura",
+    "fy": "2012-13",
+    "pci_rs": 75000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "TR",
+    "state_name": "Tripura",
+    "fy": "2022-23",
+    "pci_rs": 158000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "TR",
+    "state_name": "Tripura",
+    "fy": "2023-24",
+    "pci_rs": 172000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "UP",
+    "state_name": "Uttar Pradesh",
+    "fy": "2012-13",
+    "pci_rs": 45000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "UP",
+    "state_name": "Uttar Pradesh",
+    "fy": "2017-18",
+    "pci_rs": 68000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "UP",
+    "state_name": "Uttar Pradesh",
+    "fy": "2022-23",
+    "pci_rs": 98500.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "UP",
+    "state_name": "Uttar Pradesh",
+    "fy": "2023-24",
+    "pci_rs": 105000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "UK",
+    "state_name": "Uttarakhand",
+    "fy": "2012-13",
+    "pci_rs": 115000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "UK",
+    "state_name": "Uttarakhand",
+    "fy": "2017-18",
+    "pci_rs": 168000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "UK",
+    "state_name": "Uttarakhand",
+    "fy": "2022-23",
+    "pci_rs": 235000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "UK",
+    "state_name": "Uttarakhand",
+    "fy": "2023-24",
+    "pci_rs": 252000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "WB",
+    "state_name": "West Bengal",
+    "fy": "2012-13",
+    "pci_rs": 85000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "WB",
+    "state_name": "West Bengal",
+    "fy": "2017-18",
+    "pci_rs": 125000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "WB",
+    "state_name": "West Bengal",
+    "fy": "2022-23",
+    "pci_rs": 185000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "WB",
+    "state_name": "West Bengal",
+    "fy": "2023-24",
+    "pci_rs": 198000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "DL",
+    "state_name": "Delhi",
+    "fy": "2012-13",
+    "pci_rs": 215000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "DL",
+    "state_name": "Delhi",
+    "fy": "2017-18",
+    "pci_rs": 325000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "DL",
+    "state_name": "Delhi",
+    "fy": "2022-23",
+    "pci_rs": 428000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "DL",
+    "state_name": "Delhi",
+    "fy": "2023-24",
+    "pci_rs": 462000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "PY",
+    "state_name": "Puducherry",
+    "fy": "2012-13",
+    "pci_rs": 185000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "PY",
+    "state_name": "Puducherry",
+    "fy": "2022-23",
+    "pci_rs": 325000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "PY",
+    "state_name": "Puducherry",
+    "fy": "2023-24",
+    "pci_rs": 352000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "CHD",
+    "state_name": "Chandigarh",
+    "fy": "2012-13",
+    "pci_rs": 285000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "CHD",
+    "state_name": "Chandigarh",
+    "fy": "2022-23",
+    "pci_rs": 458000.0,
+    "source": "MOSPI"
+  },
+  {
+    "state_code": "CHD",
+    "state_name": "Chandigarh",
+    "fy": "2023-24",
+    "pci_rs": 505000.0,
+    "source": "MOSPI"
+  }
+]

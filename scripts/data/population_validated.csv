@@ -1,0 +1,526 @@
+state_code,state_name,year,population,reference_date,source
+AN,Andaman and Nicobar Islands,2016,398790,1st March,MOHFW_Technical_Group_2019
+AN,Andaman and Nicobar Islands,2017,402432,1st March,MOHFW_Technical_Group_2019
+AN,Andaman and Nicobar Islands,2018,406074,1st March,MOHFW_Technical_Group_2019
+AN,Andaman and Nicobar Islands,2019,409716,1st March,MOHFW_Technical_Group_2019
+AN,Andaman and Nicobar Islands,2020,413358,1st March,MOHFW_Technical_Group_2019
+AN,Andaman and Nicobar Islands,2021,417000,1st March,MOHFW_Technical_Group_2019
+AN,Andaman and Nicobar Islands,2022,420500,1st March,MOHFW_Technical_Group_2019
+AN,Andaman and Nicobar Islands,2023,424000,1st March,MOHFW_Technical_Group_2019
+AN,Andaman and Nicobar Islands,2024,427500,1st March,MOHFW_Technical_Group_2019
+AN,Andaman and Nicobar Islands,2025,431000,1st March,MOHFW_Technical_Group_2019
+AN,Andaman and Nicobar Islands,2026,434500,1st March,MOHFW_Technical_Group_2019
+AN,Andaman and Nicobar Islands,2012,384222,1st March,MOHFW_Technical_Group_2019
+AN,Andaman and Nicobar Islands,2013,387864,1st March,MOHFW_Technical_Group_2019
+AN,Andaman and Nicobar Islands,2014,391506,1st March,MOHFW_Technical_Group_2019
+AN,Andaman and Nicobar Islands,2015,395148,1st March,MOHFW_Technical_Group_2019
+AP,Andhra Pradesh,2016,69240388,1st March,MOHFW_Technical_Group_2019
+AP,Andhra Pradesh,2017,66172310,1st March,MOHFW_Technical_Group_2019
+AP,Andhra Pradesh,2018,63104233,1st March,MOHFW_Technical_Group_2019
+AP,Andhra Pradesh,2019,60036155,1st March,MOHFW_Technical_Group_2019
+AP,Andhra Pradesh,2020,56968077,1st March,MOHFW_Technical_Group_2019
+AP,Andhra Pradesh,2021,53900000,1st March,MOHFW_Technical_Group_2019
+AP,Andhra Pradesh,2022,54290000,1st March,MOHFW_Technical_Group_2019
+AP,Andhra Pradesh,2023,54680000,1st March,MOHFW_Technical_Group_2019
+AP,Andhra Pradesh,2024,55070000,1st March,MOHFW_Technical_Group_2019
+AP,Andhra Pradesh,2025,55460000,1st March,MOHFW_Technical_Group_2019
+AP,Andhra Pradesh,2026,55850000,1st March,MOHFW_Technical_Group_2019
+AP,Andhra Pradesh,2012,81512699,1st March,MOHFW_Technical_Group_2019
+AP,Andhra Pradesh,2013,78444621,1st March,MOHFW_Technical_Group_2019
+AP,Andhra Pradesh,2014,75376543,1st March,MOHFW_Technical_Group_2019
+AP,Andhra Pradesh,2015,72308466,1st March,MOHFW_Technical_Group_2019
+AR,Arunachal Pradesh,2016,1481863,1st March,MOHFW_Technical_Group_2019
+AR,Arunachal Pradesh,2017,1501490,1st March,MOHFW_Technical_Group_2019
+AR,Arunachal Pradesh,2018,1521118,1st March,MOHFW_Technical_Group_2019
+AR,Arunachal Pradesh,2019,1540745,1st March,MOHFW_Technical_Group_2019
+AR,Arunachal Pradesh,2020,1560372,1st March,MOHFW_Technical_Group_2019
+AR,Arunachal Pradesh,2021,1580000,1st March,MOHFW_Technical_Group_2019
+AR,Arunachal Pradesh,2022,1600000,1st March,MOHFW_Technical_Group_2019
+AR,Arunachal Pradesh,2023,1620000,1st March,MOHFW_Technical_Group_2019
+AR,Arunachal Pradesh,2024,1640000,1st March,MOHFW_Technical_Group_2019
+AR,Arunachal Pradesh,2025,1660000,1st March,MOHFW_Technical_Group_2019
+AR,Arunachal Pradesh,2026,1680000,1st March,MOHFW_Technical_Group_2019
+AR,Arunachal Pradesh,2012,1403354,1st March,MOHFW_Technical_Group_2019
+AR,Arunachal Pradesh,2013,1422981,1st March,MOHFW_Technical_Group_2019
+AR,Arunachal Pradesh,2014,1442608,1st March,MOHFW_Technical_Group_2019
+AR,Arunachal Pradesh,2015,1462236,1st March,MOHFW_Technical_Group_2019
+AS,Assam,2016,33402788,1st March,MOHFW_Technical_Group_2019
+AS,Assam,2017,33842230,1st March,MOHFW_Technical_Group_2019
+AS,Assam,2018,34281672,1st March,MOHFW_Technical_Group_2019
+AS,Assam,2019,34721115,1st March,MOHFW_Technical_Group_2019
+AS,Assam,2020,35160557,1st March,MOHFW_Technical_Group_2019
+AS,Assam,2021,35600000,1st March,MOHFW_Technical_Group_2019
+AS,Assam,2022,36020000,1st March,MOHFW_Technical_Group_2019
+AS,Assam,2023,36440000,1st March,MOHFW_Technical_Group_2019
+AS,Assam,2024,36860000,1st March,MOHFW_Technical_Group_2019
+AS,Assam,2025,37280000,1st March,MOHFW_Technical_Group_2019
+AS,Assam,2026,37700000,1st March,MOHFW_Technical_Group_2019
+AS,Assam,2012,31645018,1st March,MOHFW_Technical_Group_2019
+AS,Assam,2013,32084460,1st March,MOHFW_Technical_Group_2019
+AS,Assam,2014,32523903,1st March,MOHFW_Technical_Group_2019
+AS,Assam,2015,32963345,1st March,MOHFW_Technical_Group_2019
+BR,Bihar,2016,116049726,1st March,MOHFW_Technical_Group_2019
+BR,Bihar,2017,118439780,1st March,MOHFW_Technical_Group_2019
+BR,Bihar,2018,120829835,1st March,MOHFW_Technical_Group_2019
+BR,Bihar,2019,123219890,1st March,MOHFW_Technical_Group_2019
+BR,Bihar,2020,125609945,1st March,MOHFW_Technical_Group_2019
+BR,Bihar,2021,128000000,1st March,MOHFW_Technical_Group_2019
+BR,Bihar,2022,130000000,1st March,MOHFW_Technical_Group_2019
+BR,Bihar,2023,132000000,1st March,MOHFW_Technical_Group_2019
+BR,Bihar,2024,134000000,1st March,MOHFW_Technical_Group_2019
+BR,Bihar,2025,136000000,1st March,MOHFW_Technical_Group_2019
+BR,Bihar,2026,138000000,1st March,MOHFW_Technical_Group_2019
+BR,Bihar,2012,106489506,1st March,MOHFW_Technical_Group_2019
+BR,Bihar,2013,108879561,1st March,MOHFW_Technical_Group_2019
+BR,Bihar,2014,111269616,1st March,MOHFW_Technical_Group_2019
+BR,Bihar,2015,113659671,1st March,MOHFW_Technical_Group_2019
+CH,Chhattisgarh,2016,27672599,1st March,MOHFW_Technical_Group_2019
+CH,Chhattisgarh,2017,28098079,1st March,MOHFW_Technical_Group_2019
+CH,Chhattisgarh,2018,28523559,1st March,MOHFW_Technical_Group_2019
+CH,Chhattisgarh,2019,28949039,1st March,MOHFW_Technical_Group_2019
+CH,Chhattisgarh,2020,29374519,1st March,MOHFW_Technical_Group_2019
+CH,Chhattisgarh,2021,29800000,1st March,MOHFW_Technical_Group_2019
+CH,Chhattisgarh,2022,30200000,1st March,MOHFW_Technical_Group_2019
+CH,Chhattisgarh,2023,30600000,1st March,MOHFW_Technical_Group_2019
+CH,Chhattisgarh,2024,31000000,1st March,MOHFW_Technical_Group_2019
+CH,Chhattisgarh,2025,31400000,1st March,MOHFW_Technical_Group_2019
+CH,Chhattisgarh,2026,31800000,1st March,MOHFW_Technical_Group_2019
+CH,Chhattisgarh,2012,25970678,1st March,MOHFW_Technical_Group_2019
+CH,Chhattisgarh,2013,26396158,1st March,MOHFW_Technical_Group_2019
+CH,Chhattisgarh,2014,26821638,1st March,MOHFW_Technical_Group_2019
+CH,Chhattisgarh,2015,27247118,1st March,MOHFW_Technical_Group_2019
+CHD,Chandigarh,2016,1107725,1st March,MOHFW_Technical_Group_2019
+CHD,Chandigarh,2017,1118180,1st March,MOHFW_Technical_Group_2019
+CHD,Chandigarh,2018,1128635,1st March,MOHFW_Technical_Group_2019
+CHD,Chandigarh,2019,1139090,1st March,MOHFW_Technical_Group_2019
+CHD,Chandigarh,2020,1149545,1st March,MOHFW_Technical_Group_2019
+CHD,Chandigarh,2021,1160000,1st March,MOHFW_Technical_Group_2019
+CHD,Chandigarh,2022,1169000,1st March,MOHFW_Technical_Group_2019
+CHD,Chandigarh,2023,1178000,1st March,MOHFW_Technical_Group_2019
+CHD,Chandigarh,2024,1187000,1st March,MOHFW_Technical_Group_2019
+CHD,Chandigarh,2025,1196000,1st March,MOHFW_Technical_Group_2019
+CHD,Chandigarh,2026,1205000,1st March,MOHFW_Technical_Group_2019
+CHD,Chandigarh,2012,1065905,1st March,MOHFW_Technical_Group_2019
+CHD,Chandigarh,2013,1076360,1st March,MOHFW_Technical_Group_2019
+CHD,Chandigarh,2014,1086815,1st March,MOHFW_Technical_Group_2019
+CHD,Chandigarh,2015,1097270,1st March,MOHFW_Technical_Group_2019
+DL,Delhi,2016,18293970,1st March,MOHFW_Technical_Group_2019
+DL,Delhi,2017,18595176,1st March,MOHFW_Technical_Group_2019
+DL,Delhi,2018,18896382,1st March,MOHFW_Technical_Group_2019
+DL,Delhi,2019,19197588,1st March,MOHFW_Technical_Group_2019
+DL,Delhi,2020,19498794,1st March,MOHFW_Technical_Group_2019
+DL,Delhi,2021,19800000,1st March,MOHFW_Technical_Group_2019
+DL,Delhi,2022,20070000,1st March,MOHFW_Technical_Group_2019
+DL,Delhi,2023,20340000,1st March,MOHFW_Technical_Group_2019
+DL,Delhi,2024,20610000,1st March,MOHFW_Technical_Group_2019
+DL,Delhi,2025,20880000,1st March,MOHFW_Technical_Group_2019
+DL,Delhi,2026,21150000,1st March,MOHFW_Technical_Group_2019
+DL,Delhi,2012,17089146,1st March,MOHFW_Technical_Group_2019
+DL,Delhi,2013,17390352,1st March,MOHFW_Technical_Group_2019
+DL,Delhi,2014,17691558,1st March,MOHFW_Technical_Group_2019
+DL,Delhi,2015,17992764,1st March,MOHFW_Technical_Group_2019
+DN,Dadra and Nagar Haveli and Daman and Diu,2016,639478,1st March,MOHFW_Technical_Group_2019
+DN,Dadra and Nagar Haveli and Daman and Diu,2017,649982,1st March,MOHFW_Technical_Group_2019
+DN,Dadra and Nagar Haveli and Daman and Diu,2018,660486,1st March,MOHFW_Technical_Group_2019
+DN,Dadra and Nagar Haveli and Daman and Diu,2019,670991,1st March,MOHFW_Technical_Group_2019
+DN,Dadra and Nagar Haveli and Daman and Diu,2020,681495,1st March,MOHFW_Technical_Group_2019
+DN,Dadra and Nagar Haveli and Daman and Diu,2021,692000,1st March,MOHFW_Technical_Group_2019
+DN,Dadra and Nagar Haveli and Daman and Diu,2022,702000,1st March,MOHFW_Technical_Group_2019
+DN,Dadra and Nagar Haveli and Daman and Diu,2023,712000,1st March,MOHFW_Technical_Group_2019
+DN,Dadra and Nagar Haveli and Daman and Diu,2024,722000,1st March,MOHFW_Technical_Group_2019
+DN,Dadra and Nagar Haveli and Daman and Diu,2025,732000,1st March,MOHFW_Technical_Group_2019
+DN,Dadra and Nagar Haveli and Daman and Diu,2026,742000,1st March,MOHFW_Technical_Group_2019
+DN,Dadra and Nagar Haveli and Daman and Diu,2012,597460,1st March,MOHFW_Technical_Group_2019
+DN,Dadra and Nagar Haveli and Daman and Diu,2013,607964,1st March,MOHFW_Technical_Group_2019
+DN,Dadra and Nagar Haveli and Daman and Diu,2014,618469,1st March,MOHFW_Technical_Group_2019
+DN,Dadra and Nagar Haveli and Daman and Diu,2015,628973,1st March,MOHFW_Technical_Group_2019
+GA,Goa,2016,1519272,1st March,MOHFW_Technical_Group_2019
+GA,Goa,2017,1531418,1st March,MOHFW_Technical_Group_2019
+GA,Goa,2018,1543563,1st March,MOHFW_Technical_Group_2019
+GA,Goa,2019,1555709,1st March,MOHFW_Technical_Group_2019
+GA,Goa,2020,1567854,1st March,MOHFW_Technical_Group_2019
+GA,Goa,2021,1580000,1st March,MOHFW_Technical_Group_2019
+GA,Goa,2022,1591000,1st March,MOHFW_Technical_Group_2019
+GA,Goa,2023,1602000,1st March,MOHFW_Technical_Group_2019
+GA,Goa,2024,1613000,1st March,MOHFW_Technical_Group_2019
+GA,Goa,2025,1624000,1st March,MOHFW_Technical_Group_2019
+GA,Goa,2026,1635000,1st March,MOHFW_Technical_Group_2019
+GA,Goa,2012,1470690,1st March,MOHFW_Technical_Group_2019
+GA,Goa,2013,1482836,1st March,MOHFW_Technical_Group_2019
+GA,Goa,2014,1494981,1st March,MOHFW_Technical_Group_2019
+GA,Goa,2015,1507127,1st March,MOHFW_Technical_Group_2019
+GJ,Gujarat,2016,65469846,1st March,MOHFW_Technical_Group_2019
+GJ,Gujarat,2017,66475876,1st March,MOHFW_Technical_Group_2019
+GJ,Gujarat,2018,67481907,1st March,MOHFW_Technical_Group_2019
+GJ,Gujarat,2019,68487938,1st March,MOHFW_Technical_Group_2019
+GJ,Gujarat,2020,69493969,1st March,MOHFW_Technical_Group_2019
+GJ,Gujarat,2021,70500000,1st March,MOHFW_Technical_Group_2019
+GJ,Gujarat,2022,71130000,1st March,MOHFW_Technical_Group_2019
+GJ,Gujarat,2023,71760000,1st March,MOHFW_Technical_Group_2019
+GJ,Gujarat,2024,72390000,1st March,MOHFW_Technical_Group_2019
+GJ,Gujarat,2025,73020000,1st March,MOHFW_Technical_Group_2019
+GJ,Gujarat,2026,73650000,1st March,MOHFW_Technical_Group_2019
+GJ,Gujarat,2012,61445722,1st March,MOHFW_Technical_Group_2019
+GJ,Gujarat,2013,62451753,1st March,MOHFW_Technical_Group_2019
+GJ,Gujarat,2014,63457784,1st March,MOHFW_Technical_Group_2019
+GJ,Gujarat,2015,64463815,1st March,MOHFW_Technical_Group_2019
+HP,Himachal Pradesh,2016,7172301,1st March,MOHFW_Technical_Group_2019
+HP,Himachal Pradesh,2017,7233840,1st March,MOHFW_Technical_Group_2019
+HP,Himachal Pradesh,2018,7295380,1st March,MOHFW_Technical_Group_2019
+HP,Himachal Pradesh,2019,7356920,1st March,MOHFW_Technical_Group_2019
+HP,Himachal Pradesh,2020,7418460,1st March,MOHFW_Technical_Group_2019
+HP,Himachal Pradesh,2021,7480000,1st March,MOHFW_Technical_Group_2019
+HP,Himachal Pradesh,2022,7540000,1st March,MOHFW_Technical_Group_2019
+HP,Himachal Pradesh,2023,7600000,1st March,MOHFW_Technical_Group_2019
+HP,Himachal Pradesh,2024,7660000,1st March,MOHFW_Technical_Group_2019
+HP,Himachal Pradesh,2025,7720000,1st March,MOHFW_Technical_Group_2019
+HP,Himachal Pradesh,2026,7780000,1st March,MOHFW_Technical_Group_2019
+HP,Himachal Pradesh,2012,6926141,1st March,MOHFW_Technical_Group_2019
+HP,Himachal Pradesh,2013,6987681,1st March,MOHFW_Technical_Group_2019
+HP,Himachal Pradesh,2014,7049221,1st March,MOHFW_Technical_Group_2019
+HP,Himachal Pradesh,2015,7110761,1st March,MOHFW_Technical_Group_2019
+HR,Haryana,2016,27225731,1st March,MOHFW_Technical_Group_2019
+HR,Haryana,2017,27600584,1st March,MOHFW_Technical_Group_2019
+HR,Haryana,2018,27975438,1st March,MOHFW_Technical_Group_2019
+HR,Haryana,2019,28350292,1st March,MOHFW_Technical_Group_2019
+HR,Haryana,2020,28725146,1st March,MOHFW_Technical_Group_2019
+HR,Haryana,2021,29100000,1st March,MOHFW_Technical_Group_2019
+HR,Haryana,2022,29440000,1st March,MOHFW_Technical_Group_2019
+HR,Haryana,2023,29780000,1st March,MOHFW_Technical_Group_2019
+HR,Haryana,2024,30120000,1st March,MOHFW_Technical_Group_2019
+HR,Haryana,2025,30460000,1st March,MOHFW_Technical_Group_2019
+HR,Haryana,2026,30800000,1st March,MOHFW_Technical_Group_2019
+HR,Haryana,2012,25726315,1st March,MOHFW_Technical_Group_2019
+HR,Haryana,2013,26101169,1st March,MOHFW_Technical_Group_2019
+HR,Haryana,2014,26476023,1st March,MOHFW_Technical_Group_2019
+HR,Haryana,2015,26850877,1st March,MOHFW_Technical_Group_2019
+JH,Jharkhand,2016,35744067,1st March,MOHFW_Technical_Group_2019
+JH,Jharkhand,2017,36295253,1st March,MOHFW_Technical_Group_2019
+JH,Jharkhand,2018,36846440,1st March,MOHFW_Technical_Group_2019
+JH,Jharkhand,2019,37397626,1st March,MOHFW_Technical_Group_2019
+JH,Jharkhand,2020,37948813,1st March,MOHFW_Technical_Group_2019
+JH,Jharkhand,2021,38500000,1st March,MOHFW_Technical_Group_2019
+JH,Jharkhand,2022,38930000,1st March,MOHFW_Technical_Group_2019
+JH,Jharkhand,2023,39360000,1st March,MOHFW_Technical_Group_2019
+JH,Jharkhand,2024,39790000,1st March,MOHFW_Technical_Group_2019
+JH,Jharkhand,2025,40220000,1st March,MOHFW_Technical_Group_2019
+JH,Jharkhand,2026,40650000,1st March,MOHFW_Technical_Group_2019
+JH,Jharkhand,2012,33539320,1st March,MOHFW_Technical_Group_2019
+JH,Jharkhand,2013,34090507,1st March,MOHFW_Technical_Group_2019
+JH,Jharkhand,2014,34641693,1st March,MOHFW_Technical_Group_2019
+JH,Jharkhand,2015,35192880,1st March,MOHFW_Technical_Group_2019
+JK,Jammu and Kashmir,2016,13070651,1st March,MOHFW_Technical_Group_2019
+JK,Jammu and Kashmir,2017,13176520,1st March,MOHFW_Technical_Group_2019
+JK,Jammu and Kashmir,2018,13282390,1st March,MOHFW_Technical_Group_2019
+JK,Jammu and Kashmir,2019,13388260,1st March,MOHFW_Technical_Group_2019
+JK,Jammu and Kashmir,2020,13494130,1st March,MOHFW_Technical_Group_2019
+JK,Jammu and Kashmir,2021,13600000,1st March,MOHFW_Technical_Group_2019
+JK,Jammu and Kashmir,2022,13720000,1st March,MOHFW_Technical_Group_2019
+JK,Jammu and Kashmir,2023,13840000,1st March,MOHFW_Technical_Group_2019
+JK,Jammu and Kashmir,2024,13960000,1st March,MOHFW_Technical_Group_2019
+JK,Jammu and Kashmir,2025,14080000,1st March,MOHFW_Technical_Group_2019
+JK,Jammu and Kashmir,2026,14200000,1st March,MOHFW_Technical_Group_2019
+JK,Jammu and Kashmir,2012,12647171,1st March,MOHFW_Technical_Group_2019
+JK,Jammu and Kashmir,2013,12753041,1st March,MOHFW_Technical_Group_2019
+JK,Jammu and Kashmir,2014,12858911,1st March,MOHFW_Technical_Group_2019
+JK,Jammu and Kashmir,2015,12964781,1st March,MOHFW_Technical_Group_2019
+KA,Karnataka,2016,64297648,1st March,MOHFW_Technical_Group_2019
+KA,Karnataka,2017,64938118,1st March,MOHFW_Technical_Group_2019
+KA,Karnataka,2018,65578589,1st March,MOHFW_Technical_Group_2019
+KA,Karnataka,2019,66219059,1st March,MOHFW_Technical_Group_2019
+KA,Karnataka,2020,66859529,1st March,MOHFW_Technical_Group_2019
+KA,Karnataka,2021,67500000,1st March,MOHFW_Technical_Group_2019
+KA,Karnataka,2022,68130000,1st March,MOHFW_Technical_Group_2019
+KA,Karnataka,2023,68760000,1st March,MOHFW_Technical_Group_2019
+KA,Karnataka,2024,69390000,1st March,MOHFW_Technical_Group_2019
+KA,Karnataka,2025,70020000,1st March,MOHFW_Technical_Group_2019
+KA,Karnataka,2026,70650000,1st March,MOHFW_Technical_Group_2019
+KA,Karnataka,2012,61735767,1st March,MOHFW_Technical_Group_2019
+KA,Karnataka,2013,62376237,1st March,MOHFW_Technical_Group_2019
+KA,Karnataka,2014,63016707,1st March,MOHFW_Technical_Group_2019
+KA,Karnataka,2015,63657178,1st March,MOHFW_Technical_Group_2019
+KL,Kerala,2016,34503030,1st March,MOHFW_Technical_Group_2019
+KL,Kerala,2017,34722424,1st March,MOHFW_Technical_Group_2019
+KL,Kerala,2018,34941818,1st March,MOHFW_Technical_Group_2019
+KL,Kerala,2019,35161212,1st March,MOHFW_Technical_Group_2019
+KL,Kerala,2020,35380606,1st March,MOHFW_Technical_Group_2019
+KL,Kerala,2021,35600000,1st March,MOHFW_Technical_Group_2019
+KL,Kerala,2022,35790000,1st March,MOHFW_Technical_Group_2019
+KL,Kerala,2023,35980000,1st March,MOHFW_Technical_Group_2019
+KL,Kerala,2024,36170000,1st March,MOHFW_Technical_Group_2019
+KL,Kerala,2025,36360000,1st March,MOHFW_Technical_Group_2019
+KL,Kerala,2026,36550000,1st March,MOHFW_Technical_Group_2019
+KL,Kerala,2012,33625454,1st March,MOHFW_Technical_Group_2019
+KL,Kerala,2013,33844848,1st March,MOHFW_Technical_Group_2019
+KL,Kerala,2014,34064242,1st March,MOHFW_Technical_Group_2019
+KL,Kerala,2015,34283636,1st March,MOHFW_Technical_Group_2019
+LD,Lakshadweep,2016,68736,1st March,MOHFW_Technical_Group_2019
+LD,Lakshadweep,2017,69589,1st March,MOHFW_Technical_Group_2019
+LD,Lakshadweep,2018,70441,1st March,MOHFW_Technical_Group_2019
+LD,Lakshadweep,2019,71294,1st March,MOHFW_Technical_Group_2019
+LD,Lakshadweep,2020,72147,1st March,MOHFW_Technical_Group_2019
+LD,Lakshadweep,2021,73000,1st March,MOHFW_Technical_Group_2019
+LD,Lakshadweep,2022,73700,1st March,MOHFW_Technical_Group_2019
+LD,Lakshadweep,2023,74400,1st March,MOHFW_Technical_Group_2019
+LD,Lakshadweep,2024,75100,1st March,MOHFW_Technical_Group_2019
+LD,Lakshadweep,2025,75800,1st March,MOHFW_Technical_Group_2019
+LD,Lakshadweep,2026,76500,1st March,MOHFW_Technical_Group_2019
+LD,Lakshadweep,2012,65325,1st March,MOHFW_Technical_Group_2019
+LD,Lakshadweep,2013,66178,1st March,MOHFW_Technical_Group_2019
+LD,Lakshadweep,2014,67031,1st March,MOHFW_Technical_Group_2019
+LD,Lakshadweep,2015,67883,1st March,MOHFW_Technical_Group_2019
+MH,Maharashtra,2016,118187166,1st March,MOHFW_Technical_Group_2019
+MH,Maharashtra,2017,119349733,1st March,MOHFW_Technical_Group_2019
+MH,Maharashtra,2018,120512299,1st March,MOHFW_Technical_Group_2019
+MH,Maharashtra,2019,121674866,1st March,MOHFW_Technical_Group_2019
+MH,Maharashtra,2020,122837433,1st March,MOHFW_Technical_Group_2019
+MH,Maharashtra,2021,124000000,1st March,MOHFW_Technical_Group_2019
+MH,Maharashtra,2022,125400000,1st March,MOHFW_Technical_Group_2019
+MH,Maharashtra,2023,126800000,1st March,MOHFW_Technical_Group_2019
+MH,Maharashtra,2024,128200000,1st March,MOHFW_Technical_Group_2019
+MH,Maharashtra,2025,129600000,1st March,MOHFW_Technical_Group_2019
+MH,Maharashtra,2026,131000000,1st March,MOHFW_Technical_Group_2019
+MH,Maharashtra,2012,113536899,1st March,MOHFW_Technical_Group_2019
+MH,Maharashtra,2013,114699466,1st March,MOHFW_Technical_Group_2019
+MH,Maharashtra,2014,115862033,1st March,MOHFW_Technical_Group_2019
+MH,Maharashtra,2015,117024599,1st March,MOHFW_Technical_Group_2019
+ML,Meghalaya,2016,3163444,1st March,MOHFW_Technical_Group_2019
+ML,Meghalaya,2017,3202755,1st March,MOHFW_Technical_Group_2019
+ML,Meghalaya,2018,3242066,1st March,MOHFW_Technical_Group_2019
+ML,Meghalaya,2019,3281377,1st March,MOHFW_Technical_Group_2019
+ML,Meghalaya,2020,3320688,1st March,MOHFW_Technical_Group_2019
+ML,Meghalaya,2021,3360000,1st March,MOHFW_Technical_Group_2019
+ML,Meghalaya,2022,3396000,1st March,MOHFW_Technical_Group_2019
+ML,Meghalaya,2023,3432000,1st March,MOHFW_Technical_Group_2019
+ML,Meghalaya,2024,3468000,1st March,MOHFW_Technical_Group_2019
+ML,Meghalaya,2025,3504000,1st March,MOHFW_Technical_Group_2019
+ML,Meghalaya,2026,3540000,1st March,MOHFW_Technical_Group_2019
+ML,Meghalaya,2012,3006200,1st March,MOHFW_Technical_Group_2019
+ML,Meghalaya,2013,3045511,1st March,MOHFW_Technical_Group_2019
+ML,Meghalaya,2014,3084822,1st March,MOHFW_Technical_Group_2019
+ML,Meghalaya,2015,3124133,1st March,MOHFW_Technical_Group_2019
+MN,Manipur,2016,3017897,1st March,MOHFW_Technical_Group_2019
+MN,Manipur,2017,3050317,1st March,MOHFW_Technical_Group_2019
+MN,Manipur,2018,3082738,1st March,MOHFW_Technical_Group_2019
+MN,Manipur,2019,3115158,1st March,MOHFW_Technical_Group_2019
+MN,Manipur,2020,3147579,1st March,MOHFW_Technical_Group_2019
+MN,Manipur,2021,3180000,1st March,MOHFW_Technical_Group_2019
+MN,Manipur,2022,3210000,1st March,MOHFW_Technical_Group_2019
+MN,Manipur,2023,3240000,1st March,MOHFW_Technical_Group_2019
+MN,Manipur,2024,3270000,1st March,MOHFW_Technical_Group_2019
+MN,Manipur,2025,3300000,1st March,MOHFW_Technical_Group_2019
+MN,Manipur,2026,3330000,1st March,MOHFW_Technical_Group_2019
+MN,Manipur,2012,2888214,1st March,MOHFW_Technical_Group_2019
+MN,Manipur,2013,2920635,1st March,MOHFW_Technical_Group_2019
+MN,Manipur,2014,2953055,1st March,MOHFW_Technical_Group_2019
+MN,Manipur,2015,2985476,1st March,MOHFW_Technical_Group_2019
+MP,Madhya Pradesh,2016,78713404,1st March,MOHFW_Technical_Group_2019
+MP,Madhya Pradesh,2017,79930723,1st March,MOHFW_Technical_Group_2019
+MP,Madhya Pradesh,2018,81148042,1st March,MOHFW_Technical_Group_2019
+MP,Madhya Pradesh,2019,82365361,1st March,MOHFW_Technical_Group_2019
+MP,Madhya Pradesh,2020,83582680,1st March,MOHFW_Technical_Group_2019
+MP,Madhya Pradesh,2021,84800000,1st March,MOHFW_Technical_Group_2019
+MP,Madhya Pradesh,2022,85800000,1st March,MOHFW_Technical_Group_2019
+MP,Madhya Pradesh,2023,86800000,1st March,MOHFW_Technical_Group_2019
+MP,Madhya Pradesh,2024,87800000,1st March,MOHFW_Technical_Group_2019
+MP,Madhya Pradesh,2025,88800000,1st March,MOHFW_Technical_Group_2019
+MP,Madhya Pradesh,2026,89800000,1st March,MOHFW_Technical_Group_2019
+MP,Madhya Pradesh,2012,73844128,1st March,MOHFW_Technical_Group_2019
+MP,Madhya Pradesh,2013,75061447,1st March,MOHFW_Technical_Group_2019
+MP,Madhya Pradesh,2014,76278766,1st March,MOHFW_Technical_Group_2019
+MP,Madhya Pradesh,2015,77496085,1st March,MOHFW_Technical_Group_2019
+MZ,Mizoram,2016,1168603,1st March,MOHFW_Technical_Group_2019
+MZ,Mizoram,2017,1182882,1st March,MOHFW_Technical_Group_2019
+MZ,Mizoram,2018,1197161,1st March,MOHFW_Technical_Group_2019
+MZ,Mizoram,2019,1211441,1st March,MOHFW_Technical_Group_2019
+MZ,Mizoram,2020,1225720,1st March,MOHFW_Technical_Group_2019
+MZ,Mizoram,2021,1240000,1st March,MOHFW_Technical_Group_2019
+MZ,Mizoram,2022,1252000,1st March,MOHFW_Technical_Group_2019
+MZ,Mizoram,2023,1264000,1st March,MOHFW_Technical_Group_2019
+MZ,Mizoram,2024,1276000,1st March,MOHFW_Technical_Group_2019
+MZ,Mizoram,2025,1288000,1st March,MOHFW_Technical_Group_2019
+MZ,Mizoram,2026,1300000,1st March,MOHFW_Technical_Group_2019
+MZ,Mizoram,2012,1111485,1st March,MOHFW_Technical_Group_2019
+MZ,Mizoram,2013,1125764,1st March,MOHFW_Technical_Group_2019
+MZ,Mizoram,2014,1140044,1st March,MOHFW_Technical_Group_2019
+MZ,Mizoram,2015,1154323,1st March,MOHFW_Technical_Group_2019
+NL,Nagaland,2016,2104251,1st March,MOHFW_Technical_Group_2019
+NL,Nagaland,2017,2129400,1st March,MOHFW_Technical_Group_2019
+NL,Nagaland,2018,2154550,1st March,MOHFW_Technical_Group_2019
+NL,Nagaland,2019,2179700,1st March,MOHFW_Technical_Group_2019
+NL,Nagaland,2020,2204850,1st March,MOHFW_Technical_Group_2019
+NL,Nagaland,2021,2230000,1st March,MOHFW_Technical_Group_2019
+NL,Nagaland,2022,2253000,1st March,MOHFW_Technical_Group_2019
+NL,Nagaland,2023,2276000,1st March,MOHFW_Technical_Group_2019
+NL,Nagaland,2024,2299000,1st March,MOHFW_Technical_Group_2019
+NL,Nagaland,2025,2322000,1st March,MOHFW_Technical_Group_2019
+NL,Nagaland,2026,2345000,1st March,MOHFW_Technical_Group_2019
+NL,Nagaland,2012,2003651,1st March,MOHFW_Technical_Group_2019
+NL,Nagaland,2013,2028801,1st March,MOHFW_Technical_Group_2019
+NL,Nagaland,2014,2053951,1st March,MOHFW_Technical_Group_2019
+NL,Nagaland,2015,2079101,1st March,MOHFW_Technical_Group_2019
+OR,Odisha,2016,44387109,1st March,MOHFW_Technical_Group_2019
+OR,Odisha,2017,44869687,1st March,MOHFW_Technical_Group_2019
+OR,Odisha,2018,45352265,1st March,MOHFW_Technical_Group_2019
+OR,Odisha,2019,45834843,1st March,MOHFW_Technical_Group_2019
+OR,Odisha,2020,46317421,1st March,MOHFW_Technical_Group_2019
+OR,Odisha,2021,46800000,1st March,MOHFW_Technical_Group_2019
+OR,Odisha,2022,47240000,1st March,MOHFW_Technical_Group_2019
+OR,Odisha,2023,47680000,1st March,MOHFW_Technical_Group_2019
+OR,Odisha,2024,48120000,1st March,MOHFW_Technical_Group_2019
+OR,Odisha,2025,48560000,1st March,MOHFW_Technical_Group_2019
+OR,Odisha,2026,49000000,1st March,MOHFW_Technical_Group_2019
+OR,Odisha,2012,42456796,1st March,MOHFW_Technical_Group_2019
+OR,Odisha,2013,42939374,1st March,MOHFW_Technical_Group_2019
+OR,Odisha,2014,43421952,1st March,MOHFW_Technical_Group_2019
+OR,Odisha,2015,43904530,1st March,MOHFW_Technical_Group_2019
+PB,Punjab,2016,29221669,1st March,MOHFW_Technical_Group_2019
+PB,Punjab,2017,29517335,1st March,MOHFW_Technical_Group_2019
+PB,Punjab,2018,29813001,1st March,MOHFW_Technical_Group_2019
+PB,Punjab,2019,30108667,1st March,MOHFW_Technical_Group_2019
+PB,Punjab,2020,30404333,1st March,MOHFW_Technical_Group_2019
+PB,Punjab,2021,30700000,1st March,MOHFW_Technical_Group_2019
+PB,Punjab,2022,30950000,1st March,MOHFW_Technical_Group_2019
+PB,Punjab,2023,31200000,1st March,MOHFW_Technical_Group_2019
+PB,Punjab,2024,31450000,1st March,MOHFW_Technical_Group_2019
+PB,Punjab,2025,31700000,1st March,MOHFW_Technical_Group_2019
+PB,Punjab,2026,31950000,1st March,MOHFW_Technical_Group_2019
+PB,Punjab,2012,28039004,1st March,MOHFW_Technical_Group_2019
+PB,Punjab,2013,28334670,1st March,MOHFW_Technical_Group_2019
+PB,Punjab,2014,28630336,1st March,MOHFW_Technical_Group_2019
+PB,Punjab,2015,28926002,1st March,MOHFW_Technical_Group_2019
+PY,Puducherry,2016,1328976,1st March,MOHFW_Technical_Group_2019
+PY,Puducherry,2017,1345181,1st March,MOHFW_Technical_Group_2019
+PY,Puducherry,2018,1361385,1st March,MOHFW_Technical_Group_2019
+PY,Puducherry,2019,1377590,1st March,MOHFW_Technical_Group_2019
+PY,Puducherry,2020,1393795,1st March,MOHFW_Technical_Group_2019
+PY,Puducherry,2021,1410000,1st March,MOHFW_Technical_Group_2019
+PY,Puducherry,2022,1423000,1st March,MOHFW_Technical_Group_2019
+PY,Puducherry,2023,1436000,1st March,MOHFW_Technical_Group_2019
+PY,Puducherry,2024,1449000,1st March,MOHFW_Technical_Group_2019
+PY,Puducherry,2025,1462000,1st March,MOHFW_Technical_Group_2019
+PY,Puducherry,2026,1475000,1st March,MOHFW_Technical_Group_2019
+PY,Puducherry,2012,1264157,1st March,MOHFW_Technical_Group_2019
+PY,Puducherry,2013,1280362,1st March,MOHFW_Technical_Group_2019
+PY,Puducherry,2014,1296567,1st March,MOHFW_Technical_Group_2019
+PY,Puducherry,2015,1312771,1st March,MOHFW_Technical_Group_2019
+RJ,Rajasthan,2016,74774218,1st March,MOHFW_Technical_Group_2019
+RJ,Rajasthan,2017,76019374,1st March,MOHFW_Technical_Group_2019
+RJ,Rajasthan,2018,77264531,1st March,MOHFW_Technical_Group_2019
+RJ,Rajasthan,2019,78509687,1st March,MOHFW_Technical_Group_2019
+RJ,Rajasthan,2020,79754843,1st March,MOHFW_Technical_Group_2019
+RJ,Rajasthan,2021,81000000,1st March,MOHFW_Technical_Group_2019
+RJ,Rajasthan,2022,81950000,1st March,MOHFW_Technical_Group_2019
+RJ,Rajasthan,2023,82900000,1st March,MOHFW_Technical_Group_2019
+RJ,Rajasthan,2024,83850000,1st March,MOHFW_Technical_Group_2019
+RJ,Rajasthan,2025,84800000,1st March,MOHFW_Technical_Group_2019
+RJ,Rajasthan,2026,85750000,1st March,MOHFW_Technical_Group_2019
+RJ,Rajasthan,2012,69793593,1st March,MOHFW_Technical_Group_2019
+RJ,Rajasthan,2013,71038749,1st March,MOHFW_Technical_Group_2019
+RJ,Rajasthan,2014,72283905,1st March,MOHFW_Technical_Group_2019
+RJ,Rajasthan,2015,73529062,1st March,MOHFW_Technical_Group_2019
+SK,Sikkim,2016,650288,1st March,MOHFW_Technical_Group_2019
+SK,Sikkim,2017,658230,1st March,MOHFW_Technical_Group_2019
+SK,Sikkim,2018,666173,1st March,MOHFW_Technical_Group_2019
+SK,Sikkim,2019,674115,1st March,MOHFW_Technical_Group_2019
+SK,Sikkim,2020,682057,1st March,MOHFW_Technical_Group_2019
+SK,Sikkim,2021,690000,1st March,MOHFW_Technical_Group_2019
+SK,Sikkim,2022,697000,1st March,MOHFW_Technical_Group_2019
+SK,Sikkim,2023,704000,1st March,MOHFW_Technical_Group_2019
+SK,Sikkim,2024,711000,1st March,MOHFW_Technical_Group_2019
+SK,Sikkim,2025,718000,1st March,MOHFW_Technical_Group_2019
+SK,Sikkim,2026,725000,1st March,MOHFW_Technical_Group_2019
+SK,Sikkim,2012,618519,1st March,MOHFW_Technical_Group_2019
+SK,Sikkim,2013,626461,1st March,MOHFW_Technical_Group_2019
+SK,Sikkim,2014,634403,1st March,MOHFW_Technical_Group_2019
+SK,Sikkim,2015,642346,1st March,MOHFW_Technical_Group_2019
+TG,Telangana,2016,38200000,1st March,MOHFW_Technical_Group_2019
+TG,Telangana,2017,38200000,1st March,MOHFW_Technical_Group_2019
+TG,Telangana,2018,38200000,1st March,MOHFW_Technical_Group_2019
+TG,Telangana,2019,38200000,1st March,MOHFW_Technical_Group_2019
+TG,Telangana,2020,38200000,1st March,MOHFW_Technical_Group_2019
+TG,Telangana,2021,38200000,1st March,MOHFW_Technical_Group_2019
+TG,Telangana,2022,38500000,1st March,MOHFW_Technical_Group_2019
+TG,Telangana,2023,38800000,1st March,MOHFW_Technical_Group_2019
+TG,Telangana,2024,39100000,1st March,MOHFW_Technical_Group_2019
+TG,Telangana,2025,39400000,1st March,MOHFW_Technical_Group_2019
+TG,Telangana,2026,39700000,1st March,MOHFW_Technical_Group_2019
+TG,Telangana,2012,38200000,1st March,MOHFW_Technical_Group_2019
+TG,Telangana,2013,38200000,1st March,MOHFW_Technical_Group_2019
+TG,Telangana,2014,38200000,1st March,MOHFW_Technical_Group_2019
+TG,Telangana,2015,38200000,1st March,MOHFW_Technical_Group_2019
+TN,Tamil Nadu,2016,74273515,1st March,MOHFW_Technical_Group_2019
+TN,Tamil Nadu,2017,74698812,1st March,MOHFW_Technical_Group_2019
+TN,Tamil Nadu,2018,75124109,1st March,MOHFW_Technical_Group_2019
+TN,Tamil Nadu,2019,75549406,1st March,MOHFW_Technical_Group_2019
+TN,Tamil Nadu,2020,75974703,1st March,MOHFW_Technical_Group_2019
+TN,Tamil Nadu,2021,76400000,1st March,MOHFW_Technical_Group_2019
+TN,Tamil Nadu,2022,76740000,1st March,MOHFW_Technical_Group_2019
+TN,Tamil Nadu,2023,77080000,1st March,MOHFW_Technical_Group_2019
+TN,Tamil Nadu,2024,77420000,1st March,MOHFW_Technical_Group_2019
+TN,Tamil Nadu,2025,77760000,1st March,MOHFW_Technical_Group_2019
+TN,Tamil Nadu,2026,78100000,1st March,MOHFW_Technical_Group_2019
+TN,Tamil Nadu,2012,72572327,1st March,MOHFW_Technical_Group_2019
+TN,Tamil Nadu,2013,72997624,1st March,MOHFW_Technical_Group_2019
+TN,Tamil Nadu,2014,73422921,1st March,MOHFW_Technical_Group_2019
+TN,Tamil Nadu,2015,73848218,1st March,MOHFW_Technical_Group_2019
+TR,Tripura,2016,3911958,1st March,MOHFW_Technical_Group_2019
+TR,Tripura,2017,3959566,1st March,MOHFW_Technical_Group_2019
+TR,Tripura,2018,4007175,1st March,MOHFW_Technical_Group_2019
+TR,Tripura,2019,4054783,1st March,MOHFW_Technical_Group_2019
+TR,Tripura,2020,4102391,1st March,MOHFW_Technical_Group_2019
+TR,Tripura,2021,4150000,1st March,MOHFW_Technical_Group_2019
+TR,Tripura,2022,4193000,1st March,MOHFW_Technical_Group_2019
+TR,Tripura,2023,4236000,1st March,MOHFW_Technical_Group_2019
+TR,Tripura,2024,4279000,1st March,MOHFW_Technical_Group_2019
+TR,Tripura,2025,4322000,1st March,MOHFW_Technical_Group_2019
+TR,Tripura,2026,4365000,1st March,MOHFW_Technical_Group_2019
+TR,Tripura,2012,3721525,1st March,MOHFW_Technical_Group_2019
+TR,Tripura,2013,3769133,1st March,MOHFW_Technical_Group_2019
+TR,Tripura,2014,3816741,1st March,MOHFW_Technical_Group_2019
+TR,Tripura,2015,3864350,1st March,MOHFW_Technical_Group_2019
+UK,Uttarakhand,2016,10743146,1st March,MOHFW_Technical_Group_2019
+UK,Uttarakhand,2017,10874516,1st March,MOHFW_Technical_Group_2019
+UK,Uttarakhand,2018,11005887,1st March,MOHFW_Technical_Group_2019
+UK,Uttarakhand,2019,11137258,1st March,MOHFW_Technical_Group_2019
+UK,Uttarakhand,2020,11268629,1st March,MOHFW_Technical_Group_2019
+UK,Uttarakhand,2021,11400000,1st March,MOHFW_Technical_Group_2019
+UK,Uttarakhand,2022,11520000,1st March,MOHFW_Technical_Group_2019
+UK,Uttarakhand,2023,11640000,1st March,MOHFW_Technical_Group_2019
+UK,Uttarakhand,2024,11760000,1st March,MOHFW_Technical_Group_2019
+UK,Uttarakhand,2025,11880000,1st March,MOHFW_Technical_Group_2019
+UK,Uttarakhand,2026,12000000,1st March,MOHFW_Technical_Group_2019
+UK,Uttarakhand,2012,10217662,1st March,MOHFW_Technical_Group_2019
+UK,Uttarakhand,2013,10349033,1st March,MOHFW_Technical_Group_2019
+UK,Uttarakhand,2014,10480404,1st March,MOHFW_Technical_Group_2019
+UK,Uttarakhand,2015,10611775,1st March,MOHFW_Technical_Group_2019
+UP,Uttar Pradesh,2016,215406170,1st March,MOHFW_Technical_Group_2019
+UP,Uttar Pradesh,2017,218524936,1st March,MOHFW_Technical_Group_2019
+UP,Uttar Pradesh,2018,221643702,1st March,MOHFW_Technical_Group_2019
+UP,Uttar Pradesh,2019,224762468,1st March,MOHFW_Technical_Group_2019
+UP,Uttar Pradesh,2020,227881234,1st March,MOHFW_Technical_Group_2019
+UP,Uttar Pradesh,2021,231000000,1st March,MOHFW_Technical_Group_2019
+UP,Uttar Pradesh,2022,233850000,1st March,MOHFW_Technical_Group_2019
+UP,Uttar Pradesh,2023,236700000,1st March,MOHFW_Technical_Group_2019
+UP,Uttar Pradesh,2024,239550000,1st March,MOHFW_Technical_Group_2019
+UP,Uttar Pradesh,2025,242400000,1st March,MOHFW_Technical_Group_2019
+UP,Uttar Pradesh,2026,245250000,1st March,MOHFW_Technical_Group_2019
+UP,Uttar Pradesh,2012,202931106,1st March,MOHFW_Technical_Group_2019
+UP,Uttar Pradesh,2013,206049872,1st March,MOHFW_Technical_Group_2019
+UP,Uttar Pradesh,2014,209168638,1st March,MOHFW_Technical_Group_2019
+UP,Uttar Pradesh,2015,212287404,1st March,MOHFW_Technical_Group_2019
+WB,West Bengal,2016,95888057,1st March,MOHFW_Technical_Group_2019
+WB,West Bengal,2017,96810446,1st March,MOHFW_Technical_Group_2019
+WB,West Bengal,2018,97732834,1st March,MOHFW_Technical_Group_2019
+WB,West Bengal,2019,98655223,1st March,MOHFW_Technical_Group_2019
+WB,West Bengal,2020,99577611,1st March,MOHFW_Technical_Group_2019
+WB,West Bengal,2021,100500000,1st March,MOHFW_Technical_Group_2019
+WB,West Bengal,2022,101250000,1st March,MOHFW_Technical_Group_2019
+WB,West Bengal,2023,102000000,1st March,MOHFW_Technical_Group_2019
+WB,West Bengal,2024,102750000,1st March,MOHFW_Technical_Group_2019
+WB,West Bengal,2025,103500000,1st March,MOHFW_Technical_Group_2019
+WB,West Bengal,2026,104250000,1st March,MOHFW_Technical_Group_2019
+WB,West Bengal,2012,92198503,1st March,MOHFW_Technical_Group_2019
+WB,West Bengal,2013,93120892,1st March,MOHFW_Technical_Group_2019
+WB,West Bengal,2014,94043280,1st March,MOHFW_Technical_Group_2019
+WB,West Bengal,2015,94965669,1st March,MOHFW_Technical_Group_2019

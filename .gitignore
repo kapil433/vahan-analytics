@@ -1,0 +1,25 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.venv/
+venv/
+.env
+.env.local
+*.log
+.pytest_cache/
+.mypy_cache/
+.idea/
+.vscode/
+
+# Large / generated data (keep DB out of git unless you intentionally ship a small demo DB)
+output/
+*.db
+!**/data/.gitkeep
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Local temp / nested clones
+.legacy-dash-tmp/

@@ -1,0 +1,51 @@
+# GitHub Pages: landing + optional API-backed dashboard (inject __VAHAN_API_BASE__).
+# Set repo variable VAHAN_API_BASE_URL (e.g. https://your-app.onrender.com) for /dashboard/index.html.
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Assemble site
+        env:
+          API_BASE: ${{ vars.VAHAN_API_BASE_URL }}
+        run: |
+          mkdir -p _site/data _site/dashboard _site/legacy
+          touch _site/.nojekyll
+          cp deploy/github-pages/index.html _site/index.html
+          cp deploy/github-pages/legacy/README.md _site/legacy/README.md
+          if [ -f docs/data/vahan_master.json ]; then
+            cp docs/data/vahan_master.json _site/data/vahan_master.json
+          fi
+          if [ -n "$API_BASE" ]; then
+            {
+              printf '%s\n' "<script>window.__VAHAN_API_BASE__='${API_BASE}';</script>"
+              cat api/static/dashboard/index.html
+            } > _site/dashboard/index.html
+          fi
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - uses: actions/deploy-pages@v4
+        id: deployment

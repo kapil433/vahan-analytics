@@ -1,0 +1,63 @@
+state_code,state_name,year,month,charger_count,charger_type,source
+KA,Karnataka,2025,12,6096,total,data.gov.in
+MH,Maharashtra,2025,12,4166,total,data.gov.in
+TN,Tamil Nadu,2025,12,1780,total,data.gov.in
+DL,Delhi,2025,12,1957,total,data.gov.in
+RJ,Rajasthan,2025,12,1515,total,data.gov.in
+KL,Kerala,2025,12,1389,total,data.gov.in
+UP,Uttar Pradesh,2025,12,1285,total,data.gov.in
+GJ,Gujarat,2025,12,1158,total,data.gov.in
+WB,West Bengal,2025,12,985,total,data.gov.in
+TG,Telangana,2025,12,892,total,data.gov.in
+AP,Andhra Pradesh,2025,12,765,total,data.gov.in
+MP,Madhya Pradesh,2025,12,645,total,data.gov.in
+PB,Punjab,2025,12,528,total,data.gov.in
+HR,Haryana,2025,12,485,total,data.gov.in
+BR,Bihar,2025,12,398,total,data.gov.in
+OR,Odisha,2025,12,365,total,data.gov.in
+CH,Chhattisgarh,2025,12,285,total,data.gov.in
+JH,Jharkhand,2025,12,245,total,data.gov.in
+AS,Assam,2025,12,198,total,data.gov.in
+UK,Uttarakhand,2025,12,165,total,data.gov.in
+HP,Himachal Pradesh,2025,12,125,total,data.gov.in
+GA,Goa,2025,12,98,total,data.gov.in
+PY,Puducherry,2025,12,65,total,data.gov.in
+CHD,Chandigarh,2025,12,85,total,data.gov.in
+TR,Tripura,2025,12,42,total,data.gov.in
+ML,Meghalaya,2025,12,28,total,data.gov.in
+MN,Manipur,2025,12,22,total,data.gov.in
+NL,Nagaland,2025,12,15,total,data.gov.in
+SK,Sikkim,2025,12,18,total,data.gov.in
+MZ,Mizoram,2025,12,12,total,data.gov.in
+AR,Arunachal Pradesh,2025,12,8,total,data.gov.in
+KA,Karnataka,2024,12,4850,total,data.gov.in
+MH,Maharashtra,2024,12,3520,total,data.gov.in
+TN,Tamil Nadu,2024,12,1420,total,data.gov.in
+DL,Delhi,2024,12,1580,total,data.gov.in
+RJ,Rajasthan,2024,12,1185,total,data.gov.in
+KL,Kerala,2024,12,1095,total,data.gov.in
+UP,Uttar Pradesh,2024,12,985,total,data.gov.in
+GJ,Gujarat,2024,12,892,total,data.gov.in
+WB,West Bengal,2024,12,765,total,data.gov.in
+TG,Telangana,2024,12,698,total,data.gov.in
+AP,Andhra Pradesh,2024,12,598,total,data.gov.in
+MP,Madhya Pradesh,2024,12,498,total,data.gov.in
+PB,Punjab,2024,12,398,total,data.gov.in
+HR,Haryana,2024,12,365,total,data.gov.in
+BR,Bihar,2024,12,298,total,data.gov.in
+OR,Odisha,2024,12,268,total,data.gov.in
+CH,Chhattisgarh,2024,12,198,total,data.gov.in
+JH,Jharkhand,2024,12,168,total,data.gov.in
+AS,Assam,2024,12,142,total,data.gov.in
+UK,Uttarakhand,2024,12,118,total,data.gov.in
+HP,Himachal Pradesh,2024,12,88,total,data.gov.in
+GA,Goa,2024,12,72,total,data.gov.in
+PY,Puducherry,2024,12,48,total,data.gov.in
+CHD,Chandigarh,2024,12,62,total,data.gov.in
+TR,Tripura,2024,12,28,total,data.gov.in
+ML,Meghalaya,2024,12,18,total,data.gov.in
+MN,Manipur,2024,12,15,total,data.gov.in
+NL,Nagaland,2024,12,10,total,data.gov.in
+SK,Sikkim,2024,12,12,total,data.gov.in
+MZ,Mizoram,2024,12,8,total,data.gov.in
+AR,Arunachal Pradesh,2024,12,5,total,data.gov.in

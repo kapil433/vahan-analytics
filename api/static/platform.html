@@ -1,0 +1,2265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vahan Complexity Lab · Platform</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --bg: #0b1220;
+      --surface: #151e32;
+      --surface2: #1c2740;
+      --border: #2d3a52;
+      --text: #e8eef7;
+      --muted: #8b9cb5;
+      --accent: #38bdf8;
+      --accent2: #a78bfa;
+      --good: #4ade80;
+      --warn: #fbbf24;
+      --danger: #f87171;
+    }
+    body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.55; min-height: 100vh; }
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 0.85rem 1.25rem;
+      background: var(--surface);
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem;
+    }
+    header h1 { margin: 0; font-size: 1.15rem; font-weight: 800; letter-spacing: -0.02em; }
+    header .sub { font-size: 0.78rem; color: var(--muted); max-width: 36rem; }
+    nav a { color: var(--accent); text-decoration: none; margin-right: 1rem; font-size: 0.85rem; }
+    nav a:hover { text-decoration: underline; }
+    .wrap { max-width: 1280px; margin: 0 auto; padding: 1rem 1.25rem 2.5rem; }
+    #banner {
+      display: none;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      background: #422006;
+      color: #fde68a;
+      border: 1px solid rgba(251, 191, 36, 0.35);
+      margin-bottom: 1rem;
+      font-size: 0.88rem;
+    }
+    #banner.show { display: block; }
+    #banner.err { background: #450a0a; color: #fecaca; border-color: rgba(248, 113, 113, 0.35); }
+    .note-exclude {
+      font-size: 0.8rem;
+      color: var(--muted);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.65rem 0.9rem;
+      margin-bottom: 1rem;
+    }
+    .tabs { display: flex; gap: 0.35rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .tabs button {
+      padding: 0.45rem 0.95rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.82rem;
+      cursor: pointer;
+    }
+    .tabs button.active { background: var(--accent); color: var(--bg); border-color: var(--accent); color: #0b1220; }
+    .panel { display: none; }
+    .panel.active { display: block; }
+    .filters {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+      gap: 0.75rem 1rem;
+      align-items: end;
+      margin-bottom: 1.25rem;
+      padding: 1rem;
+      background: var(--surface);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .filters label { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.72rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+    .filters select, .filters input[type="text"] {
+      padding: 0.45rem 0.55rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 0.9rem;
+    }
+    .filters .actions { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: flex-end; }
+    .filters button.primary {
+      padding: 0.5rem 1.1rem;
+      border: none;
+      border-radius: 8px;
+      background: var(--accent);
+      color: var(--bg);
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .filters button.primary:hover { filter: brightness(1.08); }
+    .filters .fy-hint { grid-column: 1 / -1; font-size: 0.75rem; color: var(--muted); line-height: 1.4; }
+    .filter-bar {
+      background: #141428;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.15rem;
+      margin-bottom: 1.25rem;
+    }
+    .filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      gap: 0.85rem 1.6rem;
+    }
+    .filter-row + .filter-row {
+      margin-top: 0.9rem;
+      padding-top: 0.9rem;
+      border-top: 1px solid rgba(45, 58, 82, 0.55);
+    }
+    .filter-field {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 0.45rem;
+      min-width: 0;
+    }
+    .filter-cap {
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 0.07em;
+      color: #7e8ea3;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .filter-bar select {
+      padding: 0.42rem 2rem 0.42rem 0.55rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: #1c2740;
+      color: var(--text);
+      font-size: 0.88rem;
+      min-width: 8.5rem;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238b9cb5' d='M3 4.5L6 8l3-3.5'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.5rem center;
+      cursor: pointer;
+    }
+    details.filter-ms {
+      position: relative;
+      min-width: 10.5rem;
+    }
+    details.filter-ms > summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 0.42rem 2rem 0.42rem 0.55rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: #1c2740;
+      color: var(--text);
+      font-size: 0.88rem;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238b9cb5' d='M3 4.5L6 8l3-3.5'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.5rem center;
+    }
+    details.filter-ms > summary::-webkit-details-marker { display: none; }
+    .filter-ms-panel {
+      position: absolute;
+      z-index: 30;
+      top: calc(100% + 4px);
+      left: 0;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.45rem 0.6rem;
+      max-height: 240px;
+      overflow-y: auto;
+      min-width: 13rem;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
+    }
+    .filter-ms-panel label {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+      color: var(--text);
+      padding: 0.12rem 0;
+      cursor: pointer;
+    }
+    .filter-bar .filter-actions {
+      margin-left: auto;
+      display: flex;
+      align-items: flex-end;
+    }
+    .filter-bar .filter-hint {
+      margin-top: 0.65rem;
+      font-size: 0.72rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+    .kpi {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+    }
+    .kpi .v { font-size: 1.35rem; font-weight: 800; color: var(--accent); }
+    .kpi .l { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .kpi .s { font-size: 0.78rem; color: var(--muted); margin-top: 0.25rem; }
+    .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    @media (max-width: 900px) { .charts { grid-template-columns: 1fr; } }
+    .chart-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.9rem;
+    }
+    .chart-card h3 { margin: 0 0 0.65rem; font-size: 0.88rem; color: var(--muted); font-weight: 700; }
+    .chart-box { position: relative; height: 260px; }
+    .research {
+      padding: 1rem 1.1rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+    .research h3 { margin: 0 0 0.5rem; color: var(--text); font-size: 0.95rem; }
+    .research .derived { margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border); }
+    .experiment-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .exp-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .exp-card h4 { margin: 0; font-size: 0.82rem; color: var(--text); }
+    .exp-card p { margin: 0; font-size: 0.75rem; color: var(--muted); flex: 1; }
+    .exp-card button {
+      align-self: flex-start;
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      border: 1px solid var(--accent);
+      background: transparent;
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 0.78rem;
+      cursor: pointer;
+    }
+    .exp-card button:disabled { opacity: 0.45; cursor: not-allowed; }
+    .exp-card.backend button { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+    .exp-card.stats-active button {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(56, 189, 248, 0.1);
+      font-weight: 700;
+    }
+    .exp-card.advanced-active button {
+      border-color: var(--warn);
+      color: var(--warn);
+      background: rgba(251, 191, 36, 0.1);
+      font-weight: 700;
+    }
+    .exp-card.planned button { border-color: var(--border); color: var(--muted); }
+    .exp-detail { font-size: 0.72rem; color: var(--muted); line-height: 1.4; margin-top: 0.4rem; max-width: 42rem; }
+    #experimentOut {
+      background: #070b14;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.85rem;
+      font-family: ui-monospace, monospace;
+      font-size: 0.72rem;
+      color: #cbd5e1;
+      max-height: 420px;
+      overflow: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .policy-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.15rem;
+      margin-bottom: 1rem;
+    }
+    .policy-section h3 { margin: 0 0 0.6rem; font-size: 0.95rem; }
+    .policy-section ul { margin: 0; padding-left: 1.2rem; color: var(--muted); font-size: 0.86rem; }
+    .policy-section li { margin-bottom: 0.35rem; }
+    .exp-tier-block { margin-bottom: 1.75rem; }
+    .exp-tier-head { margin: 0 0 0.35rem; font-size: 0.95rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+    .exp-tier-sub { margin: 0 0 0.65rem; font-size: 0.78rem; color: var(--muted); line-height: 1.45; max-width: 52rem; }
+    .tier-pill {
+      font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.07em;
+      padding: 0.2rem 0.45rem; border-radius: 4px; font-weight: 800;
+    }
+    .tier-pill.api { background: rgba(74, 222, 128, 0.15); color: var(--good); }
+    .tier-pill.foundation { background: rgba(56, 189, 248, 0.15); color: var(--accent); }
+    .tier-pill.standard { background: rgba(167, 139, 250, 0.18); color: var(--accent2); }
+    .tier-pill.advanced { background: rgba(251, 191, 36, 0.12); color: var(--warn); }
+    .tier-pill.planned { background: rgba(148, 163, 184, 0.12); color: var(--muted); }
+    .exp-chart-wrap { margin-top: 1rem; }
+    .exp-chart-wrap .chart-box { position: relative; height: 280px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Vahan Complexity Lab · Platform</h1>
+      <div class="sub">Registration analytics with research overlays (population, PCI, CNG, EV infra) for <strong>calendar years 2012–2026</strong>. Financial-year mode uses <strong>FY 2012–13</strong> through <strong>FY 2025–26</strong> (boundary FYs with only partial months in this window are omitted). Use <strong>Experiments</strong> for API probes; <strong>Policy &amp; networks</strong> for research directions.</div>
+    </div>
+    <nav>
+      <a href="/dashboard">Full dashboard</a>
+      <a href="/">Data scraper</a>
+      <a href="/docs">API docs</a>
+    </nav>
+  </header>
+  <div class="wrap">
+    <div id="banner"></div>
+    <div class="note-exclude" id="excludeNote"></div>
+
+    <div class="tabs" role="tablist">
+      <button type="button" class="active" data-tab="analytics">Analytics</button>
+      <button type="button" data-tab="experiments">Experiments</button>
+      <button type="button" data-tab="policy">Policy &amp; networks</button>
+    </div>
+
+    <div class="filter-bar" id="globalFilters">
+      <div class="filter-row">
+        <div class="filter-field">
+          <span class="filter-cap">Geography</span>
+          <select id="state" aria-label="Geography"></select>
+        </div>
+        <div class="filter-field">
+          <span class="filter-cap">Year type</span>
+          <select id="yearType" aria-label="Year type">
+            <option value="calendar">Calendar year</option>
+            <option value="fy">Financial year</option>
+          </select>
+        </div>
+        <div class="filter-field" id="wrapYearCalendar">
+          <span class="filter-cap">Years</span>
+          <details class="filter-ms" id="msYears">
+            <summary><span id="yearSummary">All years</span></summary>
+            <div class="filter-ms-panel" id="msYearBody"></div>
+          </details>
+        </div>
+        <div class="filter-field" id="wrapYearFy" style="display:none">
+          <span class="filter-cap">Year</span>
+          <select id="yearFySelect" aria-label="Financial year"></select>
+        </div>
+        <div class="filter-field">
+          <span class="filter-cap">Month</span>
+          <details class="filter-ms" id="msMonth">
+            <summary><span id="monthSummary">All months</span></summary>
+            <div class="filter-ms-panel" id="msMonthBody"></div>
+          </details>
+        </div>
+        <div class="filter-actions">
+          <button type="button" class="primary" id="refresh">Refresh</button>
+        </div>
+      </div>
+      <div class="filter-row">
+        <div class="filter-field">
+          <span class="filter-cap">OEM</span>
+          <details class="filter-ms" id="msOem">
+            <summary><span id="oemSummary">All OEMs</span></summary>
+            <div class="filter-ms-panel" id="msOemBody">
+              <span style="font-size:0.78rem;color:var(--muted)">Loading…</span>
+            </div>
+          </details>
+        </div>
+        <div class="filter-field">
+          <span class="filter-cap">Fuel</span>
+          <details class="filter-ms" id="msFuel">
+            <summary><span id="fuelSummary">All fuels</span></summary>
+            <div class="filter-ms-panel" id="msFuelBody"></div>
+          </details>
+        </div>
+      </div>
+      <p class="filter-hint">
+        Filters apply to <strong>all tabs</strong>. <strong>Calendar</strong>: multiselect years <strong>2012–2026</strong> (aggregated KPIs &amp; charts). <strong>Financial year</strong> is single slice only; FY list matches <code>GET /options</code> <code>financial_years</code> (<strong>FY2012-13</strong> … <strong>FY2025-26</strong>, no partial FY2011-12 / FY2026-27). OEM names follow <code>config.mappings</code> canonical labels.
+        <code>GET /data/platform_context</code> accepts repeated <code>years</code>, <code>fuel_types</code>, <code>makers</code>, <code>months</code>.
+      </p>
+    </div>
+
+    <section id="panel-analytics" class="panel active">
+      <div class="kpis">
+        <div class="kpi"><div class="l">Total registrations</div><div class="v" id="kpiTotal">—</div><div class="s" id="kpiYoy"></div></div>
+        <div class="kpi"><div class="l">EV share</div><div class="v" id="kpiEv">—</div><div class="s">% of filtered total</div></div>
+        <div class="kpi"><div class="l">FY context</div><div class="v" style="font-size:0.9rem;color:var(--accent2)" id="kpiFy">—</div><div class="s">Indian FY (Apr–Mar)</div></div>
+        <div class="kpi"><div class="l">Months in view</div><div class="v" id="kpiMoCount">—</div><div class="s" id="kpiMoHint">from slice</div></div>
+        <div class="kpi"><div class="l">Avg monthly regs</div><div class="v" id="kpiAvgMo">—</div><div class="s">total ÷ months w/ data</div></div>
+        <div class="kpi"><div class="l">Diesel share</div><div class="v" id="kpiDiesel">—</div><div class="s">of filtered total</div></div>
+        <div class="kpi"><div class="l">Petrol share</div><div class="v" id="kpiPetrol">—</div><div class="s">of filtered total</div></div>
+        <div class="kpi"><div class="l">CNG share</div><div class="v" id="kpiCng">—</div><div class="s">of filtered total</div></div>
+        <div class="kpi"><div class="l">Hybrid share</div><div class="v" id="kpiHybrid">—</div><div class="s">Strong Hybrid</div></div>
+        <div class="kpi"><div class="l">Population</div><div class="v" id="kpiPop">—</div><div class="s" id="kpiPopSub">research_data</div></div>
+        <div class="kpi"><div class="l">PCI</div><div class="v" id="kpiPci">—</div><div class="s" id="kpiPciSub">per-capita income ₹</div></div>
+        <div class="kpi"><div class="l">Top OEM</div><div class="v" style="font-size:0.95rem" id="kpiTopMaker">—</div></div>
+        <div class="kpi"><div class="l">Regs / capita</div><div class="v" style="font-size:0.95rem" id="kpiRpc">—</div><div class="s">needs state + population</div></div>
+        <div class="kpi"><div class="l">Regs / EV charger</div><div class="v" style="font-size:0.95rem" id="kpiRpev">—</div><div class="s">from infra JSON</div></div>
+      </div>
+
+      <div class="charts">
+        <div class="chart-card"><h3>Registrations by fuel</h3><div class="chart-box"><canvas id="chartFuel"></canvas></div></div>
+        <div class="chart-card"><h3>Fuel mix (counts)</h3><div class="chart-box"><canvas id="chartFuelBar"></canvas></div></div>
+      </div>
+      <div class="charts">
+        <div class="chart-card"><h3>Top makers (OEM)</h3><div class="chart-box"><canvas id="chartMakers"></canvas></div></div>
+        <div class="chart-card"><h3>Top OEMs (share)</h3><div class="chart-box"><canvas id="chartOemPie"></canvas></div></div>
+      </div>
+      <div class="chart-card" style="margin-bottom:1rem;">
+        <h3>Month-wise trend <span style="font-weight:400;color:var(--muted)">(multi-year = one line per year; FY in tooltip when single year)</span></h3>
+        <div class="chart-box" style="height:280px"><canvas id="chartMonth"></canvas></div>
+      </div>
+      <div class="charts">
+        <div class="chart-card">
+          <h3>CNG stations <span style="font-weight:400;color:var(--muted)">(research_data)</span></h3>
+          <div class="chart-box"><canvas id="chartCng"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3>EV chargers <span style="font-weight:400;color:var(--muted)">(research_data)</span></h3>
+          <div class="chart-box"><canvas id="chartEv"></canvas></div>
+        </div>
+      </div>
+      <div class="research" id="researchBox">
+        <h3>Research layer (population · PCI · infra)</h3>
+        <div id="researchBody">Refresh to load merged context.</div>
+      </div>
+    </section>
+
+    <section id="panel-experiments" class="panel">
+      <p style="color:var(--muted);font-size:0.88rem;margin:0 0 1rem;max-width:52rem;">
+        <strong>API</strong> = live HTTP calls. <strong>Stats</strong> = browser-side math on the last platform refresh (<code>window._lastPlatformContext</code>): same top-bar slice; infra pairing uses the <em>latest selected calendar year</em> when multiple years are aggregated.
+        <strong>Cross-state</strong> cards need <strong>All India</strong> + <strong>Calendar</strong> year mode; they load <code>/data/aggregates</code> and join <code>population.json</code> / <code>pci.json</code>, then show JSON + scatter when possible.
+        <strong>Advanced</strong> = methodology catalog.
+      </p>
+      <div id="experimentCatalog"></div>
+      <h3 style="font-size:0.9rem;margin:0.75rem 0 0.5rem">Last result</h3>
+      <pre id="experimentOut">—</pre>
+      <div class="exp-chart-wrap" id="expChartWrap" style="display:none">
+        <h4 style="font-size:0.85rem;margin:0.5rem 0 0.35rem;color:var(--muted)">Scatter + OLS fit (when regression run)</h4>
+        <div class="chart-box"><canvas id="chartExperiment"></canvas></div>
+      </div>
+    </section>
+
+    <section id="panel-policy" class="panel">
+      <div class="policy-section">
+        <h3>Policy angles (fuel transition &amp; market)</h3>
+        <ul>
+          <li><strong>FAME / state EV policies:</strong> cross states with EV share, charger density, and PCI to find adoption vs incentive intensity.</li>
+          <li><strong>Registration-linked fiscal levers:</strong> road tax, scrappage, green cess — correlate with fuel mix shifts in the dashboard time series.</li>
+          <li><strong>CNG corridors (PNGRB):</strong> align monthly CNG station roll-out with CNG vehicle registrations; flag states where infra leads or lags demand.</li>
+          <li><strong>Air-quality / city programs:</strong> overlay (external) low-emission zones with EV+CNG penetration by city where disaggregated data exists.</li>
+          <li><strong>Import / PLI exposure:</strong> OEM concentration (top makers) vs policy on local manufacturing — use OEM panels as a baseline.</li>
+        </ul>
+      </div>
+      <div class="policy-section">
+        <h3>Network &amp; complexity science angles</h3>
+        <ul>
+          <li><strong>State–state similarity:</strong> build graphs where edges = correlation or cosine similarity of fuel-mix vectors over time (experiment: export time series then network build in Python/NetworkX).</li>
+          <li><strong>OEM bipartite network:</strong> states ↔ OEMs weighted by registrations; detect community structure (regional OEM strongholds).</li>
+          <li><strong>Infrastructure coupling:</strong> bipartite or multilayer model linking states to EV chargers and CNG stations vs EV/CNG registration growth rates.</li>
+          <li><strong>Diffusion / SIR-style metaphors:</strong> treat EV share growth as adoption curves; estimate parameters per state for forecasting benchmarks.</li>
+          <li><strong>Contagion of policy:</strong> temporal ordering of state EV rules vs neighboring states’ adoption (requires external policy timeline data).</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const API = window.location.origin;
+    const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const RESEARCH_EXCLUDE = new Set(['AR', 'MH']);
+
+    let chartFuel, chartFuelBar, chartMakers, chartOemPie, chartMonth, chartCng, chartEv, chartExperiment;
+    let populationRows = [];
+    let pciRows = [];
+    let cngRows = [];
+    let evRows = [];
+    window._lastPlatformContext = null;
+    window._platformYears = [];
+    let refreshTimer = null;
+    const FUEL_OPTIONS = ['CNG', 'Petrol', 'Diesel', 'EV', 'Strong Hybrid'];
+
+    function showBanner(msg, isErr) {
+      const b = document.getElementById('banner');
+      b.textContent = msg;
+      b.classList.toggle('err', !!isErr);
+      b.classList.add('show');
+    }
+    function hideBanner() {
+      document.getElementById('banner').classList.remove('show');
+    }
+
+    function scheduleRefresh() {
+      if (refreshTimer) clearTimeout(refreshTimer);
+      refreshTimer = setTimeout(() => {
+        refreshTimer = null;
+        refresh();
+      }, 320);
+    }
+
+    function fyLabelToApiYear(label) {
+      const m = /^FY(\d{4})-\d{2}$/.exec(String(label || '').trim());
+      return m ? parseInt(m[1], 10) : null;
+    }
+
+    function allFyLabelsFromYearList(years) {
+      const s = new Set();
+      for (const y of years) {
+        for (let mo = 1; mo <= 12; mo++) s.add(fullFyLabel(y, mo));
+      }
+      return [...s].sort();
+    }
+
+    /** Client fallback if /options omits financial_years (same rules as server). */
+    function filterAnalyticsFyLabelsClient(labels) {
+      const ymax = window._platformCalendarYearMax;
+      const cap = Number.isFinite(ymax) ? ymax : 2026;
+      return labels.filter((fy) => {
+        if (fy === 'FY2011-12') return false;
+        const m = /^FY(\d{4})-/.exec(fy);
+        if (!m) return false;
+        return parseInt(m[1], 10) < cap;
+      });
+    }
+
+    function syncYearTypeUi() {
+      const yt = document.getElementById('yearType').value;
+      const wCal = document.getElementById('wrapYearCalendar');
+      const wFy = document.getElementById('wrapYearFy');
+      if (wCal) wCal.style.display = yt === 'calendar' ? 'flex' : 'none';
+      if (wFy) wFy.style.display = yt === 'fy' ? 'flex' : 'none';
+    }
+
+    function getSelectedCalendarYears() {
+      const years = window._platformYears || [];
+      const boxes = document.querySelectorAll('#msYearBody input[type="checkbox"]');
+      const on = [];
+      boxes.forEach((b) => { if (b.checked) on.push(parseInt(b.value, 10)); });
+      if (on.length === years.length && years.length > 0) {
+        return years.slice().sort((a, b) => a - b);
+      }
+      if (on.length === 0 && years.length) {
+        return years.slice().sort((a, b) => a - b);
+      }
+      return on.sort((a, b) => a - b);
+    }
+
+    /** Always non-empty for API calls (checkboxes missing / options not loaded yet). */
+    function resolveCalendarYearsForRequest() {
+      let ys = getSelectedCalendarYears();
+      const pool = window._platformYears || [];
+      if (!ys.length && pool.length) {
+        const yNow = new Date().getFullYear();
+        ys = [pool.includes(yNow) ? yNow : pool[pool.length - 1]];
+      }
+      if (!ys.length) ys = [new Date().getFullYear()];
+      return ys;
+    }
+
+    function updateYearSummary() {
+      const el = document.getElementById('yearSummary');
+      if (!el) return;
+      const pool = window._platformYears || [];
+      const ys = [];
+      document.querySelectorAll('#msYearBody input[type="checkbox"]').forEach((b) => {
+        if (b.checked) ys.push(parseInt(b.value, 10));
+      });
+      ys.sort((a, b) => a - b);
+      if (pool.length && ys.length === pool.length) {
+        el.textContent = 'All years';
+        return;
+      }
+      if (ys.length === 0) el.textContent = 'Pick year(s)';
+      else if (ys.length <= 3) el.textContent = ys.join(', ');
+      else el.textContent = ys.length + ' years';
+    }
+
+    function buildYearMsBody() {
+      const box = document.getElementById('msYearBody');
+      if (!box || box.dataset.built) return;
+      const years = [...(window._platformYears || [])].sort((a, b) => b - a);
+      if (!years.length) return;
+      box.dataset.built = '1';
+      years.forEach((y) => {
+        const lab = document.createElement('label');
+        const inp = document.createElement('input');
+        inp.type = 'checkbox';
+        inp.value = String(y);
+        inp.checked = true;
+        lab.appendChild(inp);
+        lab.appendChild(document.createTextNode(' ' + y));
+        box.appendChild(lab);
+      });
+      box.addEventListener('change', () => { updateYearSummary(); scheduleRefresh(); });
+      updateYearSummary();
+    }
+
+    function rebuildYearCheckboxes() {
+      const box = document.getElementById('msYearBody');
+      if (!box) return;
+      box.innerHTML = '';
+      delete box.dataset.built;
+      buildYearMsBody();
+    }
+
+    function populateFyYearSelect() {
+      const yearEl = document.getElementById('yearFySelect');
+      const years = window._platformYears || [];
+      if (!yearEl || !years.length) return;
+      const prev = yearEl.value;
+      const fromApi = window._platformFinancialYears;
+      const fys = (Array.isArray(fromApi) && fromApi.length)
+        ? fromApi.slice()
+        : filterAnalyticsFyLabelsClient(allFyLabelsFromYearList(years));
+      yearEl.innerHTML = fys.map((fy) => {
+        const y0 = fyLabelToApiYear(fy);
+        const disp = fy.replace(/^FY/, '');
+        return '<option value="' + fy + '" data-api-year="' + y0 + '">' + disp + '</option>';
+      }).join('');
+      if (fys.includes(prev)) yearEl.value = prev;
+      else if (fys.length) yearEl.value = fys[fys.length - 1];
+    }
+
+    function getYearListFromApi() {
+      const yearType = document.getElementById('yearType').value;
+      if (yearType === 'calendar') {
+        return { years: resolveCalendarYearsForRequest(), fy: null };
+      }
+      const sel = document.getElementById('yearFySelect');
+      const opt = sel && sel.selectedOptions[0];
+      const yAttr = opt && opt.getAttribute('data-api-year');
+      const y = parseInt(yAttr, 10);
+      const fy = sel && sel.value ? sel.value : null;
+      return { years: Number.isFinite(y) ? [y] : [], fy };
+    }
+
+    function getAnchorYearForMakers() {
+      const yt = document.getElementById('yearType').value;
+      if (yt === 'calendar') return Math.max(...resolveCalendarYearsForRequest());
+      const { years } = getYearListFromApi();
+      if (years.length) return Math.max(...years);
+      const ys = window._platformYears || [];
+      return ys.length ? ys[ys.length - 1] : NaN;
+    }
+
+    function getSelectedMonthsList() {
+      const boxes = document.querySelectorAll('#msMonthBody input[type="checkbox"]');
+      const on = [];
+      boxes.forEach((b) => { if (b.checked) on.push(parseInt(b.value, 10)); });
+      if (on.length === 0 || on.length === 12) return null;
+      return on.sort((a, b) => a - b);
+    }
+
+    function getSelectedFuelsList() {
+      const boxes = document.querySelectorAll('#msFuelBody input[type="checkbox"]');
+      const on = [];
+      boxes.forEach((b) => { if (b.checked) on.push(b.value); });
+      if (on.length === 0 || on.length === FUEL_OPTIONS.length) return null;
+      return on;
+    }
+
+    function getSelectedOemsList() {
+      const boxes = document.querySelectorAll('#msOemBody input[type="checkbox"]');
+      const on = [];
+      boxes.forEach((b) => { if (b.checked) on.push(b.value); });
+      const all = boxes.length;
+      if (on.length === 0 || (all > 0 && on.length === all)) return null;
+      return on;
+    }
+
+    function buildPlatformSearchParams() {
+      const p = new URLSearchParams();
+      const yt = document.getElementById('yearType').value;
+      if (yt === 'calendar') {
+        resolveCalendarYearsForRequest().forEach((y) => p.append('years', String(y)));
+      } else {
+        const sel = document.getElementById('yearFySelect');
+        const opt = sel && sel.selectedOptions[0];
+        const y = parseInt(opt && opt.getAttribute('data-api-year'), 10);
+        if (Number.isFinite(y)) p.set('year', String(y));
+        if (sel && sel.value) p.set('fy', sel.value);
+      }
+      const stateCode = document.getElementById('state').value || '';
+      if (stateCode) p.set('state_code', stateCode);
+      const mos = getSelectedMonthsList();
+      if (mos) mos.forEach((m) => p.append('months', String(m)));
+      const fts = getSelectedFuelsList();
+      if (fts) fts.forEach((f) => p.append('fuel_types', f));
+      const mks = getSelectedOemsList();
+      if (mks) mks.forEach((mk) => p.append('makers', mk));
+      return p;
+    }
+
+    function updateMonthSummary() {
+      const el = document.getElementById('monthSummary');
+      const mos = getSelectedMonthsList();
+      if (!mos) { el.textContent = 'All months'; return; }
+      if (mos.length <= 4) el.textContent = mos.map((m) => MONTHS[m - 1]).join(', ');
+      else el.textContent = mos.length + ' months';
+    }
+
+    function updateFuelSummary() {
+      const el = document.getElementById('fuelSummary');
+      const fts = getSelectedFuelsList();
+      if (!fts) { el.textContent = 'All fuels'; return; }
+      el.textContent = fts.length === 1 ? fts[0] : fts.length + ' fuels';
+    }
+
+    function updateOemSummary() {
+      const el = document.getElementById('oemSummary');
+      const mks = getSelectedOemsList();
+      const n = document.querySelectorAll('#msOemBody input[type="checkbox"]').length;
+      if (!mks) { el.textContent = 'All OEMs'; return; }
+      el.textContent = mks.length === 1 ? (mks[0].length > 24 ? mks[0].slice(0, 22) + '…' : mks[0]) : mks.length + ' OEMs';
+    }
+
+    function buildMonthMsBody() {
+      const box = document.getElementById('msMonthBody');
+      if (!box || box.dataset.built) return;
+      box.dataset.built = '1';
+      MONTHS.forEach((name, i) => {
+        const mo = i + 1;
+        const lab = document.createElement('label');
+        const inp = document.createElement('input');
+        inp.type = 'checkbox';
+        inp.value = String(mo);
+        inp.checked = true;
+        lab.appendChild(inp);
+        lab.appendChild(document.createTextNode(' ' + name));
+        box.appendChild(lab);
+      });
+      box.addEventListener('change', () => { updateMonthSummary(); scheduleRefresh(); });
+    }
+
+    function buildFuelMsBody() {
+      const box = document.getElementById('msFuelBody');
+      if (!box || box.dataset.built) return;
+      box.dataset.built = '1';
+      FUEL_OPTIONS.forEach((f) => {
+        const lab = document.createElement('label');
+        const inp = document.createElement('input');
+        inp.type = 'checkbox';
+        inp.value = f;
+        inp.checked = true;
+        lab.appendChild(inp);
+        lab.appendChild(document.createTextNode(' ' + f));
+        box.appendChild(lab);
+      });
+      box.addEventListener('change', () => { updateFuelSummary(); scheduleRefresh(); });
+    }
+
+    async function loadOemOptions() {
+      const body = document.getElementById('msOemBody');
+      if (!body) return;
+      const year = getAnchorYearForMakers();
+      if (!Number.isFinite(year)) return;
+      const prevFilter = getSelectedOemsList();
+      const stateCode = document.getElementById('state').value || '';
+      const u = new URL(API + '/data/makers');
+      u.searchParams.set('year', String(year));
+      u.searchParams.set('limit', '50');
+      if (stateCode) u.searchParams.set('state_code', stateCode);
+      body.innerHTML = '<span style="font-size:0.78rem;color:var(--muted)">Loading…</span>';
+      try {
+        const res = await fetch(u);
+        if (!res.ok) throw new Error(await readApiError(res));
+        const j = await res.json();
+        const rows = Array.isArray(j.data) ? j.data : [];
+        body.innerHTML = '';
+        body.dataset.built = '1';
+        rows.forEach((r) => {
+          const name = r.maker || r.name || '';
+          if (!name) return;
+          const lab = document.createElement('label');
+          const inp = document.createElement('input');
+          inp.type = 'checkbox';
+          inp.value = name;
+          const useAll = prevFilter == null;
+          inp.checked = useAll || prevFilter.includes(name);
+          lab.appendChild(inp);
+          lab.appendChild(document.createTextNode(' ' + (name.length > 42 ? name.slice(0, 40) + '…' : name)));
+          body.appendChild(lab);
+        });
+        if (!rows.length) body.innerHTML = '<span style="font-size:0.78rem;color:var(--muted)">No OEM rows</span>';
+        body.onchange = () => { updateOemSummary(); scheduleRefresh(); };
+        updateOemSummary();
+      } catch (e) {
+        body.innerHTML = '<span style="font-size:0.78rem;color:var(--danger)">' + (e.message || e) + '</span>';
+      }
+    }
+
+    function setTab(name) {
+      document.querySelectorAll('.tabs button').forEach((btn) => {
+        btn.classList.toggle('active', btn.dataset.tab === name);
+      });
+      document.querySelectorAll('.panel').forEach((p) => p.classList.remove('active'));
+      const el = document.getElementById('panel-' + name);
+      if (el) el.classList.add('active');
+    }
+
+    document.querySelectorAll('.tabs button').forEach((btn) => {
+      btn.addEventListener('click', () => setTab(btn.dataset.tab));
+    });
+
+    function monthToFY(y, m) {
+      const start = m >= 4 ? y : y - 1;
+      return start + '-' + String(start + 1).slice(-2);
+    }
+    function fullFyLabel(y, m) {
+      return 'FY' + monthToFY(y, m);
+    }
+
+    async function loadOptions() {
+      const [optRes, stRes] = await Promise.all([
+        fetch(API + '/options'),
+        fetch(API + '/data/states'),
+      ]);
+      if (!optRes.ok) throw new Error('options');
+      const opt = await optRes.json();
+      window._platformYears = Array.isArray(opt.years) ? opt.years.map((y) => parseInt(y, 10)).filter((y) => Number.isFinite(y)) : [];
+      window._platformFinancialYears = Array.isArray(opt.financial_years) ? opt.financial_years : [];
+      window._platformCalendarYearMin = Number.isFinite(Number(opt.calendar_year_min)) ? Number(opt.calendar_year_min) : 2012;
+      window._platformCalendarYearMax = Number.isFinite(Number(opt.calendar_year_max)) ? Number(opt.calendar_year_max) : 2026;
+      populateFyYearSelect();
+      rebuildYearCheckboxes();
+      syncYearTypeUi();
+
+      const stateEl = document.getElementById('state');
+      stateEl.innerHTML = '<option value="">All India</option>';
+      let exclHtml = '';
+      if (stRes.ok) {
+        const st = await stRes.json();
+        if (Array.isArray(st.excluded_from_analytics) && st.excluded_from_analytics.length) {
+          const parts = st.excluded_from_analytics.map((x) => x.state_code + (x.reason ? '' : ''));
+          exclHtml = '<strong>Excluded from analytics:</strong> ' + parts.join(', ') + '. ' +
+            (st.excluded_from_analytics[0].reason || '');
+        }
+        for (const r of st.states) {
+          if (r.state_code === 'ALL') continue;
+          const o = document.createElement('option');
+          o.value = r.state_code;
+          o.textContent = r.state_name + ' (' + r.state_code + ')';
+          stateEl.appendChild(o);
+        }
+      }
+      document.getElementById('excludeNote').innerHTML = exclHtml || 'State filters use the cleaned pipeline; incomplete portal extracts may be excluded from sums.';
+    }
+
+    function renderResearchFromContext(research, stateCode, year, fySel) {
+      const el = document.getElementById('researchBody');
+      if (!research) {
+        el.innerHTML = 'No research object in response.';
+        return;
+      }
+      const pop = research.population;
+      const pci = research.pci;
+      const infra = research.infrastructure || {};
+      const derived = research.derived || {};
+      let html = '';
+
+      if (!stateCode) {
+        html += '<p><strong>National view:</strong> population / PCI need a selected state. CNG/EV charts sum research JSON across states (excluding AR, MH to match Vahan exclusions).</p>';
+      } else {
+        if (pop && pop.population != null) {
+          html += '<p><strong>Population</strong> (' + (pop.state_name || stateCode) + ', year ' + pop.year + '): ' +
+            Number(pop.population).toLocaleString() + ' <span style="opacity:0.8">— ' + (pop.source || '') + '</span></p>';
+        } else {
+          html += '<p>No population row for this state in <code>research_data/population.json</code>.</p>';
+        }
+        if (pci && pci.pci_rs != null) {
+          html += '<p><strong>PCI</strong> (FY ' + pci.fy + '): ₹' + Number(pci.pci_rs).toLocaleString() + ' <span style="opacity:0.8">— ' + (pci.source || '') + '</span></p>';
+        } else {
+          html += '<p>No PCI row matched in <code>research_data/pci.json</code>.</p>';
+        }
+      }
+
+      if (infra.alignment_notes && infra.alignment_notes.length) {
+        html += '<p><strong>Infra notes:</strong> ' + infra.alignment_notes.join(' ') + '</p>';
+      }
+      html += '<p style="margin-bottom:0;opacity:0.85">Sources: <a href="' + API + '/research/manifest" style="color:var(--accent)">manifest</a> · ' +
+        '<a href="' + API + '/research/cng.json" style="color:var(--accent)">cng.json</a> · ' +
+        '<a href="' + API + '/research/ev_chargers.json" style="color:var(--accent)">ev_chargers.json</a></p>';
+
+      const dk = Object.keys(derived);
+      if (dk.length) {
+        html += '<div class="derived"><strong>Derived</strong> (server): ';
+        html += dk.map((k) => k + ' = <code>' + derived[k] + '</code>').join(' · ');
+        html += '</div>';
+      }
+      el.innerHTML = html;
+    }
+
+    function buildCngEvCharts(stateCode, year, infraMonthly, monthFilter) {
+      const allowM = monthFilter instanceof Set && monthFilter.size > 0
+        ? (m) => monthFilter.has(m)
+        : () => true;
+      let cng = cngRows.filter((r) => Number(r.year) === year && allowM(Number(r.month)));
+      let ev = evRows.filter((r) => Number(r.year) === year && (!r.charger_type || r.charger_type === 'total') && allowM(Number(r.month)));
+      const allow = (code) => code && !RESEARCH_EXCLUDE.has(code);
+      if (stateCode) {
+        if (!allow(stateCode)) {
+          cng = []; ev = [];
+        } else {
+          cng = cng.filter((r) => r.state_code === stateCode);
+          ev = ev.filter((r) => r.state_code === stateCode);
+        }
+      } else {
+        cng = cng.filter((r) => allow(r.state_code));
+        ev = ev.filter((r) => allow(r.state_code));
+        const sumByMonth = (rows, key) => {
+          const m = {};
+          rows.forEach((r) => {
+            const mo = Number(r.month);
+            m[mo] = (m[mo] || 0) + (Number(r[key]) || 0);
+          });
+          return m;
+        };
+        const cm = sumByMonth(cng, 'station_count');
+        const em = sumByMonth(ev, 'charger_count');
+        cng = Object.keys(cm).map((k) => ({ month: Number(k), station_count: cm[k], year })).sort((a, b) => a.month - b.month);
+        ev = Object.keys(em).map((k) => ({ month: Number(k), charger_count: em[k], year })).sort((a, b) => a.month - b.month);
+      }
+
+      if (infraMonthly && infraMonthly.cng_monthly && infraMonthly.cng_monthly.length && stateCode) {
+        cng = infraMonthly.cng_monthly
+          .filter((r) => allowM(Number(r.month)))
+          .map((r) => ({
+            month: Number(r.month),
+            station_count: Number(r.station_count) || 0,
+            year: Number(r.year) || year,
+          }));
+      }
+      if (infraMonthly && infraMonthly.ev_monthly && infraMonthly.ev_monthly.length && stateCode) {
+        ev = infraMonthly.ev_monthly
+          .filter((r) => allowM(Number(r.month)))
+          .map((r) => ({
+            month: Number(r.month),
+            charger_count: Number(r.charger_count) || 0,
+            year: Number(r.year) || year,
+          }));
+      }
+
+      cng.sort((a, b) => a.month - b.month || Number(a.year) - Number(b.year));
+      ev.sort((a, b) => a.month - b.month || Number(a.year) - Number(b.year));
+
+      const cngLabels = cng.length ? cng.map((r) => MONTHS[r.month - 1] + (stateCode ? '' : ' · sum')) : ['No rows'];
+      const cngData = cng.length ? cng.map((r) => r.station_count) : [0];
+      const evLabels = ev.length ? ev.map((r) => MONTHS[r.month - 1] + (stateCode ? '' : ' · sum')) : ['No rows'];
+      const evData = ev.length ? ev.map((r) => r.charger_count) : [0];
+
+      if (chartCng) chartCng.destroy();
+      chartCng = new Chart(document.getElementById('chartCng'), {
+        type: cng.length <= 1 ? 'bar' : 'line',
+        data: {
+          labels: cngLabels,
+          datasets: [{
+            label: 'Stations',
+            data: cngData,
+            borderColor: '#fbbf24',
+            backgroundColor: cng.length <= 1 ? 'rgba(251,191,36,0.5)' : 'rgba(251,191,36,0.2)',
+            fill: cng.length > 1,
+            tension: 0.2,
+          }],
+        },
+        options: {
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { color: '#94a3b8', maxRotation: 45 }, grid: { color: '#334155' } },
+            y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' }, beginAtZero: true },
+          },
+          maintainAspectRatio: false,
+        },
+      });
+
+      if (chartEv) chartEv.destroy();
+      chartEv = new Chart(document.getElementById('chartEv'), {
+        type: ev.length <= 1 ? 'bar' : 'line',
+        data: {
+          labels: evLabels,
+          datasets: [{
+            label: 'Chargers',
+            data: evData,
+            borderColor: '#4ade80',
+            backgroundColor: ev.length <= 1 ? 'rgba(74,222,128,0.5)' : 'rgba(74,222,128,0.15)',
+            fill: ev.length > 1,
+            tension: 0.2,
+          }],
+        },
+        options: {
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { color: '#94a3b8', maxRotation: 45 }, grid: { color: '#334155' } },
+            y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' }, beginAtZero: true },
+          },
+          maintainAspectRatio: false,
+        },
+      });
+    }
+
+    async function readApiError(res) {
+      try {
+        const j = await res.json();
+        if (typeof j.detail === 'string') return j.detail;
+        if (Array.isArray(j.detail)) {
+          return j.detail.map((x) => (x.msg != null ? x.msg : JSON.stringify(x))).join('; ');
+        }
+        return j.message || JSON.stringify(j);
+      } catch (_) {
+        return res.statusText || String(res.status);
+      }
+    }
+
+    function outJson(obj) {
+      document.getElementById('experimentOut').textContent = JSON.stringify(obj, null, 2);
+    }
+
+    function scrollToExperimentResult() {
+      const el = document.getElementById('experimentOut');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function hideExpChart() {
+      const w = document.getElementById('expChartWrap');
+      if (w) w.style.display = 'none';
+      if (chartExperiment) {
+        chartExperiment.destroy();
+        chartExperiment = null;
+      }
+    }
+
+    function mean(arr) {
+      const n = arr.length;
+      if (!n) return 0;
+      return arr.reduce((a, b) => a + b, 0) / n;
+    }
+
+    function pearson(x, y) {
+      const n = x.length;
+      if (n < 2 || n !== y.length) return null;
+      const mx = mean(x);
+      const my = mean(y);
+      let num = 0;
+      let dx = 0;
+      let dy = 0;
+      for (let i = 0; i < n; i++) {
+        const vx = x[i] - mx;
+        const vy = y[i] - my;
+        num += vx * vy;
+        dx += vx * vx;
+        dy += vy * vy;
+      }
+      const den = Math.sqrt(dx * dy);
+      if (den < 1e-14) return null;
+      return num / den;
+    }
+
+    function rankify(arr) {
+      const n = arr.length;
+      const idx = arr.map((v, i) => ({ v, i })).sort((a, b) => a.v - b.v);
+      const ranks = new Array(n);
+      let j = 0;
+      while (j < n) {
+        let k = j;
+        while (k < n && idx[k].v === idx[j].v) k++;
+        const avg = (j + k + 1) / 2;
+        for (let t = j; t < k; t++) ranks[idx[t].i] = avg;
+        j = k;
+      }
+      return ranks;
+    }
+
+    function spearman(x, y) {
+      if (x.length !== y.length || x.length < 2) return null;
+      return pearson(rankify(x), rankify(y));
+    }
+
+    function olsSimple(x, y) {
+      const n = x.length;
+      if (n < 2 || n !== y.length) return null;
+      const mx = mean(x);
+      const my = mean(y);
+      let sxx = 0;
+      let sxy = 0;
+      for (let i = 0; i < n; i++) {
+        const dx = x[i] - mx;
+        sxx += dx * dx;
+        sxy += dx * (y[i] - my);
+      }
+      if (sxx < 1e-14) return null;
+      const b = sxy / sxx;
+      const a = my - b * mx;
+      let sse = 0;
+      let sst = 0;
+      for (let i = 0; i < n; i++) {
+        const pred = a + b * x[i];
+        sse += (y[i] - pred) ** 2;
+        sst += (y[i] - my) ** 2;
+      }
+      const r2 = sst < 1e-14 ? null : 1 - sse / sst;
+      return { a, b, r2, n, sse, sst };
+    }
+
+    function registrationsByMonthFromCtx(ctx) {
+      const monthly = (ctx.charts && ctx.charts.monthly) || [];
+      const yearSet = [...new Set(monthly.map((r) => Number(r.year)).filter((y) => Number.isFinite(y)))].sort((a, b) => a - b);
+      const useY = yearSet.length <= 1 ? null : Math.max(...yearSet);
+      const byR = {};
+      monthly.forEach((r) => {
+        if (useY != null && Number(r.year) !== useY) return;
+        byR[r.month] = Number(r.total) || 0;
+      });
+      return { byR, pairedYear: useY || yearSet[0] || null };
+    }
+
+    function getPairedRegEv(ctx) {
+      const evM = ((ctx.research || {}).infrastructure || {}).ev_monthly || [];
+      const { byR } = registrationsByMonthFromCtx(ctx);
+      const byE = {};
+      evM.forEach((r) => { byE[r.month] = Number(r.charger_count) || 0; });
+      const xs = [];
+      const ys = [];
+      const labels = [];
+      for (let m = 1; m <= 12; m++) {
+        if (byR[m] == null || byE[m] == null) continue;
+        xs.push(byE[m]);
+        ys.push(byR[m]);
+        labels.push(MONTHS[m - 1]);
+      }
+      return {
+        xs,
+        ys,
+        labels,
+        xLabel: 'EV chargers (infra stock, month)',
+        yLabel: 'Registrations (Vahan, current filters)',
+      };
+    }
+
+    function getPairedRegCng(ctx) {
+      const cngM = ((ctx.research || {}).infrastructure || {}).cng_monthly || [];
+      const { byR } = registrationsByMonthFromCtx(ctx);
+      const byC = {};
+      cngM.forEach((r) => { byC[r.month] = Number(r.station_count) || 0; });
+      const xs = [];
+      const ys = [];
+      const labels = [];
+      for (let m = 1; m <= 12; m++) {
+        if (byR[m] == null || byC[m] == null) continue;
+        xs.push(byC[m]);
+        ys.push(byR[m]);
+        labels.push(MONTHS[m - 1]);
+      }
+      return {
+        xs,
+        ys,
+        labels,
+        xLabel: 'CNG stations (infra, month)',
+        yLabel: 'Registrations (Vahan, current filters)',
+      };
+    }
+
+    function pciFyKeyForCalendarYear(anchorY) {
+      const m = 9;
+      const start = m >= 4 ? anchorY : anchorY - 1;
+      return start + '-' + String(start + 1).slice(-2);
+    }
+
+    function pickPopulationForState(stateCode, anchorYear) {
+      const rows = populationRows.filter((r) => r.state_code === stateCode && Number(r.year) <= anchorYear);
+      if (!rows.length) return null;
+      rows.sort((a, b) => Number(b.year) - Number(a.year));
+      return rows[0];
+    }
+
+    function pickPciForState(stateCode, anchorYear) {
+      const want = pciFyKeyForCalendarYear(anchorYear);
+      const exact = pciRows.filter((r) => r.state_code === stateCode && String(r.fy) === want);
+      if (exact.length) return exact[0];
+      const all = pciRows.filter((r) => r.state_code === stateCode);
+      all.sort((a, b) => String(b.fy).localeCompare(String(a.fy)));
+      return all[0] || null;
+    }
+
+    async function runCrossStateAnalysis(kind) {
+      hideExpChart();
+      const geo = document.getElementById('state').value;
+      if (geo) {
+        outJson({
+          error: 'Set Geography to All India for this experiment (state totals vs research JSON).',
+          filters_applied: window._lastPlatformContext?.filters_applied || {},
+        });
+        return;
+      }
+      const { years, fy } = getYearListFromApi();
+      if (!years.length) {
+        outJson({ error: 'Select year(s) on the top bar.' });
+        return;
+      }
+      if (fy) {
+        outJson({
+          error: 'Use Calendar year mode for this experiment (single calendar anchor for aggregates + PCI match).',
+        });
+        return;
+      }
+      const anchorYear = Math.max(...years);
+      const res = await fetch(API + '/data/aggregates?year=' + encodeURIComponent(String(anchorYear)));
+      if (!res.ok) {
+        outJson({ error: await readApiError(res) });
+        return;
+      }
+      const bundle = await res.json();
+      const regsByState = {};
+      for (const r of bundle.data || []) {
+        if (!r.state_code || r.state_code === 'ALL') continue;
+        regsByState[r.state_code] = (regsByState[r.state_code] || 0) + Number(r.total);
+      }
+      const xs = [];
+      const ys = [];
+      const labels = [];
+      for (const code of Object.keys(regsByState)) {
+        const tot = regsByState[code];
+        if (kind === 'pop') {
+          const p = pickPopulationForState(code, anchorYear);
+          if (!p || !Number(p.population) || Number(p.population) <= 0) continue;
+          xs.push(Math.log(Number(p.population)));
+          ys.push(Math.log(Math.max(tot, 1)));
+          labels.push(code);
+        } else {
+          const pci = pickPciForState(code, anchorYear);
+          if (!pci || !Number(pci.pci_rs) || Number(pci.pci_rs) <= 0) continue;
+          xs.push(Math.log(Number(pci.pci_rs)));
+          ys.push(Math.log(Math.max(tot, 1)));
+          labels.push(code);
+        }
+      }
+      if (xs.length < 4) {
+        outJson({
+          error: 'Too few states with overlapping Vahan aggregates and research_data.',
+          pairs: xs.length,
+          anchor_calendar_year: anchorYear,
+          kind,
+        });
+        return;
+      }
+      const rP = pearson(xs, ys);
+      const rho = spearman(xs, ys);
+      const ols = olsSimple(xs, ys);
+      const fa = { filters_applied: window._lastPlatformContext?.filters_applied || {} };
+      outJson({
+        ...fa,
+        tier: 'foundation',
+        anchor_calendar_year: anchorYear,
+        method: kind === 'pop'
+          ? 'Cross-state: log(regs) vs log(population) — research_data'
+          : 'Cross-state: log(regs) vs log(PCI ₹) — research_data',
+        n_states: xs.length,
+        state_codes: labels,
+        pearson_r: rP,
+        spearman_rho: rho,
+        ols_in_log_space: ols
+          ? { intercept: ols.a, slope: ols.b, r_squared: ols.r2, n: ols.n }
+          : null,
+        caveat: 'Ecological correlation; not causal. Registrations = sum of all fuels for the calendar year.',
+      });
+      if (ols) {
+        showScatterOls(
+          xs,
+          ys,
+          labels,
+          ols,
+          kind === 'pop' ? 'log(population)' : 'log(PCI ₹)',
+          'log(state total regs)',
+          kind === 'pop' ? 'Cross-state · population' : 'Cross-state · PCI',
+        );
+      }
+    }
+
+    function showScatterOls(xs, ys, labels, ols, xLabel, yLabel, title) {
+      const wrap = document.getElementById('expChartWrap');
+      if (!wrap) return;
+      wrap.style.display = 'block';
+      if (chartExperiment) chartExperiment.destroy();
+      const points = xs.map((x, i) => ({ x, y: ys[i], m: labels[i] }));
+      const xMin = Math.min(...xs);
+      const xMax = Math.max(...xs);
+      let lineData = [];
+      if (ols && Number.isFinite(ols.a) && Number.isFinite(ols.b)) {
+        lineData = [
+          { x: xMin, y: ols.a + ols.b * xMin },
+          { x: xMax, y: ols.a + ols.b * xMax },
+        ];
+      }
+      chartExperiment = new Chart(document.getElementById('chartExperiment'), {
+        type: 'scatter',
+        data: {
+          datasets: [
+            {
+              label: 'Months',
+              data: points.map((p) => ({ x: p.x, y: p.y })),
+              backgroundColor: 'rgba(56, 189, 248, 0.55)',
+              pointRadius: 6,
+            },
+            ...(lineData.length
+              ? [{
+                  label: 'OLS fit',
+                  data: lineData,
+                  type: 'line',
+                  borderColor: '#fbbf24',
+                  borderWidth: 2,
+                  pointRadius: 0,
+                  fill: false,
+                }]
+              : []),
+          ],
+        },
+        options: {
+          maintainAspectRatio: false,
+          plugins: {
+            title: { display: !!title, text: title || '', color: '#94a3b8', font: { size: 11 } },
+            tooltip: {
+              callbacks: {
+                label: (c) => {
+                  const i = c.dataIndex;
+                  if (c.datasetIndex === 0 && labels[i]) return labels[i] + ': (' + c.parsed.x + ', ' + c.parsed.y + ')';
+                  return c.formattedValue;
+                },
+              },
+            },
+            legend: { labels: { color: '#94a3b8' } },
+          },
+          scales: {
+            x: {
+              title: { display: true, text: xLabel, color: '#64748b' },
+              ticks: { color: '#94a3b8' },
+              grid: { color: '#334155' },
+            },
+            y: {
+              title: { display: true, text: yLabel, color: '#64748b' },
+              ticks: { color: '#94a3b8' },
+              grid: { color: '#334155' },
+            },
+          },
+        },
+      });
+    }
+
+    function runStatAnalysis(mode) {
+      hideExpChart();
+      const ctx = window._lastPlatformContext;
+      if (!ctx) {
+        outJson({ error: 'No context. Click Refresh (top bar) first.' });
+        return;
+      }
+      const fa = { filters_applied: ctx.filters_applied || {} };
+      const useCng = mode === 'pearson_cng' || mode === 'ols_cng';
+      const pair = useCng ? getPairedRegCng(ctx) : getPairedRegEv(ctx);
+      const { xs, ys, labels, xLabel, yLabel } = pair;
+      if (xs.length < 3) {
+        outJson({
+          ...fa,
+          error: 'Need ≥3 paired months with both Vahan monthly totals and infra series.',
+          pairs_found: xs.length,
+          mode,
+          hint: useCng
+            ? 'Ensure research CNG monthly exists for selected scope/year (see infra alignment notes on Analytics).'
+            : 'Ensure research EV monthly exists; national view aggregates months across states.',
+        });
+        return;
+      }
+
+      const rP = pearson(xs, ys);
+      const rho = spearman(xs, ys);
+      const ols = olsSimple(xs, ys);
+
+      if (mode === 'pearson' || mode === 'pearson_cng') {
+        outJson({
+          ...fa,
+          tier: 'foundation',
+          method: useCng ? 'Pearson r (regs vs CNG stations)' : 'Pearson r (regs vs EV chargers)',
+          n: xs.length,
+          months: labels,
+          pearson_r: rP,
+          spearman_rho: rho,
+          warning: 'Association ≠ causation. Infra and demand are jointly determined; seasonality and policy omitted.',
+          reference: 'Pearson (1895); use robust SEs in regression for inference (Wooldridge 2010).',
+        });
+        return;
+      }
+
+      if (mode === 'spearman') {
+        outJson({
+          ...fa,
+          tier: 'foundation',
+          method: 'Spearman rank correlation (regs vs EV chargers)',
+          n: xs.length,
+          months: labels,
+          spearman_rho: rho,
+          pearson_r: rP,
+          note: 'Less sensitive to outliers in charger counts or registration spikes.',
+          reference: 'Spearman (1904); Hollander & Wolfe (1999) nonparametric inference.',
+        });
+        return;
+      }
+
+      if (mode === 'ols_ev' || mode === 'ols_cng') {
+        if (!ols) {
+          outJson({ ...fa, error: 'OLS failed (degenerate x).' });
+          return;
+        }
+        outJson({
+          ...fa,
+          tier: 'standard',
+          method: useCng ? 'OLS: registrations ~ CNG stations (levels)' : 'OLS: registrations ~ EV chargers (levels)',
+          n: ols.n,
+          coefficients: { intercept: ols.a, slope: ols.b },
+          r_squared: ols.r2,
+          months: labels,
+          interpretation: 'Slope = expected change in registrations for +1 unit of infra (same month), holding nothing else fixed — not causal.',
+          reference: 'Wooldridge, Introductory Econometrics (2010), ch.2–3.',
+        });
+        showScatterOls(xs, ys, labels, ols, xLabel, yLabel, useCng ? 'OLS: regs ~ CNG' : 'OLS: regs ~ EV');
+        return;
+      }
+
+      if (mode === 'loglog') {
+        const lx = [];
+        const ly = [];
+        const lab = [];
+        for (let i = 0; i < xs.length; i++) {
+          if (xs[i] > 0 && ys[i] > 0) {
+            lx.push(Math.log(xs[i]));
+            ly.push(Math.log(ys[i]));
+            lab.push(labels[i]);
+          }
+        }
+        if (lx.length < 3) {
+          outJson({ ...fa, error: 'Log-log needs ≥3 strictly positive pairs.', positive_pairs: lx.length });
+          return;
+        }
+        const ol = olsSimple(lx, ly);
+        outJson({
+          ...fa,
+          tier: 'standard',
+          method: 'Log-log OLS: log(regs) ~ log(EV chargers)',
+          n: ol.n,
+          elasticity_estimate: ol.b,
+          intercept_log_space: ol.a,
+          r_squared: ol.r2,
+          months: lab,
+          interpretation: 'Coefficient on log(chargers) ≈ elasticity of registrations w.r.t. charger stock in a crude descriptive sense.',
+          reference: 'Wooldridge ch.17; Angrist & Pischke (2009) on interpretation hazards.',
+        });
+        showScatterOls(lx, ly, lab, ol, 'log(EV chargers)', 'log(registrations)', 'Log-log (EV)');
+        return;
+      }
+
+      if (mode === 'trend_time') {
+        const { byR: byM, pairedYear: trendY } = registrationsByMonthFromCtx(ctx);
+        const tx = [];
+        const ty = [];
+        const tl = [];
+        for (let m = 1; m <= 12; m++) {
+          if (byM[m] == null) continue;
+          tx.push(tx.length + 1);
+          ty.push(byM[m]);
+          tl.push(MONTHS[m - 1]);
+        }
+        if (tx.length < 3) {
+          outJson({ ...fa, error: 'Need ≥3 months of Vahan data for trend regression.' });
+          return;
+        }
+        const ot = olsSimple(tx, ty);
+        outJson({
+          ...fa,
+          tier: 'standard',
+          method: 'OLS: registrations ~ linear time index (month order in calendar year)',
+          registration_year_used: trendY,
+          n: ot.n,
+          coefficients: { intercept: ot.a, slope_per_step: ot.b },
+          r_squared: ot.r2,
+          months: tl,
+          caveat: 'Ignores seasonality, FY breaks, and autocorrelated errors — use for rough trend only.',
+          reference: 'Hamilton (1994) Time Series Analysis; consider seasonal ARIMA or STL.',
+        });
+        showScatterOls(tx, ty, tl, ot, 'Time index (1…n)', 'Registrations (Vahan)', 'Trend in regs');
+        return;
+      }
+
+      outJson({ ...fa, error: 'Unknown stat mode', mode });
+    }
+
+    function showResearchMethod(payload) {
+      hideExpChart();
+      outJson(payload);
+    }
+
+    function fuelSharePct(byFuel, total, label) {
+      if (!total || !Array.isArray(byFuel)) return '—';
+      const row = byFuel.find((r) => r.fuel_type === label);
+      const n = row ? Number(row.subtotal) : 0;
+      if (!Number.isFinite(n) || total <= 0) return '—';
+      return ((100 * n) / total).toFixed(1) + '%';
+    }
+
+    async function refresh() {
+      hideBanner();
+      const { years: selYears, fy } = getYearListFromApi();
+      if (!selYears.length) {
+        showBanner('Select at least one calendar year, or pick a financial year.', true);
+        return;
+      }
+      const anchorYear = Math.max(...selYears);
+      const stateCode = document.getElementById('state').value || null;
+      const fySel = fy || null;
+
+      const u = new URL(API + '/data/platform_context');
+      u.search = buildPlatformSearchParams().toString();
+
+      const mos = getSelectedMonthsList();
+      const monthFilterSet = mos ? new Set(mos) : null;
+
+      let ctx;
+      try {
+        const res = await fetch(u);
+        if (res.status === 503) {
+          showBanner(await readApiError(res), true);
+          return;
+        }
+        if (!res.ok) throw new Error(await readApiError(res));
+        ctx = await res.json();
+      } catch (e) {
+        showBanner('Could not load platform context: ' + (e.message || e), true);
+        return;
+      }
+
+      window._lastPlatformContext = ctx;
+      const v = ctx.vahan || {};
+      if (v.error) {
+        showBanner('Vahan: ' + v.error, true);
+      } else if (!ctx.database_reachable) {
+        showBanner(ctx.database_message || 'Database unreachable — research layer only.', false);
+      }
+
+      const totalRegs = Number(v.total_registrations);
+      document.getElementById('kpiTotal').textContent = Number.isFinite(totalRegs) ? totalRegs.toLocaleString() : '—';
+      const ctxYears = Array.isArray(ctx.years) && ctx.years.length ? ctx.years : (ctx.year != null ? [ctx.year] : []);
+      const singleCalY = ctxYears.length === 1 ? ctxYears[0] : null;
+      const yoy = v.yoy_growth_pct;
+      document.getElementById('kpiYoy').textContent =
+        singleCalY == null
+          ? (ctxYears.length > 1 ? 'YoY: n/a (multi-year aggregate)' : 'YoY: n/a')
+          : (yoy == null ? 'YoY vs ' + (singleCalY - 1) + ': n/a' : 'YoY vs ' + (singleCalY - 1) + ': ' + yoy + '%');
+      document.getElementById('kpiEv').textContent = (v.ev_share_pct != null ? v.ev_share_pct : 0) + '%';
+      document.getElementById('kpiFy').textContent = v.fy_note || '—';
+
+      const popK = ctx.research && ctx.research.population;
+      document.getElementById('kpiPop').textContent =
+        popK && popK.population != null ? Number(popK.population).toLocaleString() : '—';
+      document.getElementById('kpiPopSub').textContent =
+        popK && popK.state_name
+          ? (popK.state_name + (popK.year != null ? ' · data year ' + popK.year : '') + (popK.source ? ' · ' + popK.source : ''))
+          : (stateCode ? 'No population row for this state' : 'No population.json data');
+
+      const pciK = ctx.research && ctx.research.pci;
+      document.getElementById('kpiPci').textContent =
+        pciK && pciK.pci_rs != null ? '₹' + Number(pciK.pci_rs).toLocaleString() : '—';
+      document.getElementById('kpiPciSub').textContent = pciK && pciK.pci_rs != null
+        ? (
+            'FY ' + (pciK.fy || '—')
+            + (pciK.state_name ? ' · ' + pciK.state_name : '')
+            + (pciK.states_in_mean != null ? ' · n=' + pciK.states_in_mean + ' states' : '')
+            + (pciK.source ? ' · ' + pciK.source : '')
+          )
+        : (stateCode ? 'No PCI row for this state/FY' : 'No pci.json match for FY');
+
+      const makerRows = Array.isArray(ctx.charts && ctx.charts.makers) ? ctx.charts.makers : [];
+      const top = makerRows[0];
+      document.getElementById('kpiTopMaker').textContent = top ? (top.maker + ' — ' + Number(top.total).toLocaleString()) : '—';
+
+      const monthlyRows = Array.isArray(ctx.charts && ctx.charts.monthly) ? ctx.charts.monthly : [];
+      document.getElementById('kpiMoCount').textContent = String(monthlyRows.length || '—');
+      document.getElementById('kpiMoHint').textContent =
+        (ctx.filters_applied && ctx.filters_applied.months && ctx.filters_applied.months.length)
+          ? 'months param'
+          : 'from slice';
+      const sumMo = monthlyRows.reduce((s, r) => s + (Number(r.total) || 0), 0);
+      const denomMo = monthlyRows.length || 1;
+      document.getElementById('kpiAvgMo').textContent =
+        monthlyRows.length ? Math.round(sumMo / denomMo).toLocaleString() : '—';
+
+      const der = (ctx.research && ctx.research.derived) || {};
+      document.getElementById('kpiRpc').textContent =
+        der.registrations_per_capita != null ? Number(der.registrations_per_capita).toFixed(6) : '—';
+      document.getElementById('kpiRpev').textContent =
+        der.registrations_per_ev_charger != null ? String(der.registrations_per_ev_charger) : '—';
+
+      const byFuel = Array.isArray(v.by_fuel) ? v.by_fuel : [];
+      document.getElementById('kpiDiesel').textContent = fuelSharePct(byFuel, totalRegs, 'Diesel');
+      document.getElementById('kpiPetrol').textContent = fuelSharePct(byFuel, totalRegs, 'Petrol');
+      document.getElementById('kpiCng').textContent = fuelSharePct(byFuel, totalRegs, 'CNG');
+      document.getElementById('kpiHybrid').textContent = fuelSharePct(byFuel, totalRegs, 'Strong Hybrid');
+      const fuelLabels = byFuel.length ? byFuel.map((r) => r.fuel_type) : ['No rows for filters'];
+      const fuelData = byFuel.length ? byFuel.map((r) => r.subtotal) : [0];
+      const pal = ['#38bdf8', '#a78bfa', '#4ade80', '#fbbf24', '#f472b6', '#94a3b8', '#fb7185', '#2dd4bf', '#818cf8'];
+      const colors = fuelLabels.map((_, i) => pal[i % pal.length]);
+
+      if (chartFuel) chartFuel.destroy();
+      chartFuel = new Chart(document.getElementById('chartFuel'), {
+        type: 'doughnut',
+        data: { labels: fuelLabels, datasets: [{ data: fuelData, backgroundColor: colors }] },
+        options: {
+          plugins: { legend: { position: 'right', labels: { color: '#94a3b8' } } },
+          maintainAspectRatio: false,
+        },
+      });
+
+      if (chartMakers) chartMakers.destroy();
+      chartMakers = new Chart(document.getElementById('chartMakers'), {
+        type: 'bar',
+        data: {
+          labels: makerRows.length
+            ? makerRows.map((r) => (r.maker.length > 28 ? r.maker.slice(0, 26) + '…' : r.maker))
+            : ['No data'],
+          datasets: [{
+            label: 'Registrations',
+            data: makerRows.length ? makerRows.map((r) => r.total) : [0],
+            backgroundColor: '#38bdf8',
+          }],
+        },
+        options: {
+          indexAxis: 'y',
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
+            y: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } },
+          },
+          maintainAspectRatio: false,
+        },
+      });
+
+      if (chartFuelBar) chartFuelBar.destroy();
+      chartFuelBar = new Chart(document.getElementById('chartFuelBar'), {
+        type: 'bar',
+        data: {
+          labels: fuelLabels,
+          datasets: [{
+            label: 'Registrations',
+            data: fuelData,
+            backgroundColor: colors,
+          }],
+        },
+        options: {
+          indexAxis: 'y',
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' }, beginAtZero: true },
+            y: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } },
+          },
+          maintainAspectRatio: false,
+        },
+      });
+
+      const pieSlice = makerRows.slice(0, 8);
+      const pieTotal = pieSlice.reduce((s, r) => s + (Number(r.total) || 0), 0) || 1;
+      if (chartOemPie) chartOemPie.destroy();
+      chartOemPie = new Chart(document.getElementById('chartOemPie'), {
+        type: 'doughnut',
+        data: {
+          labels: pieSlice.length ? pieSlice.map((r) => (r.maker.length > 22 ? r.maker.slice(0, 20) + '…' : r.maker)) : ['No data'],
+          datasets: [{
+            data: pieSlice.length ? pieSlice.map((r) => r.total) : [1],
+            backgroundColor: ['#38bdf8', '#a78bfa', '#4ade80', '#fbbf24', '#f472b6', '#94a3b8', '#fb7185', '#2dd4bf'],
+          }],
+        },
+        options: {
+          plugins: {
+            legend: { position: 'right', labels: { color: '#94a3b8', font: { size: 10 } } },
+            tooltip: {
+              callbacks: {
+                afterLabel: (c) => {
+                  const v = Number(c.parsed);
+                  return pieTotal > 0 ? ((100 * v) / pieTotal).toFixed(1) + '% of top-8 OEM total' : '';
+                },
+              },
+            },
+          },
+          maintainAspectRatio: false,
+        },
+      });
+
+      const monthly = Array.isArray(ctx.charts && ctx.charts.monthly) ? ctx.charts.monthly : [];
+      let yearSet = [...new Set(monthly.map((r) => Number(r.year)).filter((y) => Number.isFinite(y)))].sort((a, b) => a - b);
+      if (!yearSet.length) yearSet = [anchorYear];
+      const linePal = ['#a78bfa', '#38bdf8', '#4ade80', '#fbbf24', '#f472b6', '#fb7185'];
+
+      if (chartMonth) chartMonth.destroy();
+      if (yearSet.length <= 1) {
+        const y0 = yearSet[0];
+        const byM = {};
+        const fyByMonth = {};
+        monthly.forEach((r) => {
+          if (Number(r.year) === y0 || !Number.isFinite(Number(r.year))) {
+            byM[r.month] = r.total;
+            fyByMonth[r.month] = r.fy;
+          }
+        });
+        const lineData = [];
+        const lineFy = [];
+        for (let m = 1; m <= 12; m++) {
+          lineData.push(byM[m] != null ? byM[m] : 0);
+          const raw = fyByMonth[m];
+          lineFy.push(raw && String(raw).startsWith('FY') ? raw : fullFyLabel(y0, m));
+        }
+        chartMonth = new Chart(document.getElementById('chartMonth'), {
+          type: 'line',
+          data: {
+            labels: MONTHS,
+            datasets: [{
+              label: String(y0),
+              data: lineData,
+              borderColor: '#a78bfa',
+              backgroundColor: 'rgba(167,139,250,0.15)',
+              fill: true,
+              tension: 0.25,
+            }],
+          },
+          options: {
+            plugins: {
+              legend: { labels: { color: '#94a3b8' } },
+              tooltip: {
+                callbacks: {
+                  afterLabel: (c) => 'FY (India): ' + lineFy[c.dataIndex],
+                },
+              },
+            },
+            scales: {
+              x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
+              y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
+            },
+            maintainAspectRatio: false,
+          },
+        });
+      } else {
+        const datasets = yearSet.map((yr, i) => {
+          const byM = {};
+          monthly.filter((r) => Number(r.year) === yr).forEach((r) => { byM[r.month] = r.total; });
+          const data = [];
+          for (let m = 1; m <= 12; m++) data.push(byM[m] != null ? byM[m] : 0);
+          const col = linePal[i % linePal.length];
+          return {
+            label: String(yr),
+            data,
+            borderColor: col,
+            fill: false,
+            tension: 0.25,
+            pointRadius: 2,
+          };
+        });
+        chartMonth = new Chart(document.getElementById('chartMonth'), {
+          type: 'line',
+          data: { labels: MONTHS, datasets },
+          options: {
+            plugins: {
+              legend: { labels: { color: '#94a3b8' } },
+            },
+            scales: {
+              x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
+              y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
+            },
+            maintainAspectRatio: false,
+          },
+        });
+      }
+
+      const infra = ctx.research && ctx.research.infrastructure;
+      buildCngEvCharts(stateCode, anchorYear, infra, monthFilterSet);
+      renderResearchFromContext(ctx.research, stateCode, anchorYear, fySel);
+    }
+
+    async function loadResearch() {
+      try {
+        const [p, c, g, e] = await Promise.all([
+          fetch(API + '/research/population.json'),
+          fetch(API + '/research/pci.json'),
+          fetch(API + '/research/cng.json'),
+          fetch(API + '/research/ev_chargers.json'),
+        ]);
+        if (p.ok) populationRows = await p.json();
+        if (c.ok) pciRows = await c.json();
+        if (g.ok) cngRows = await g.json();
+        if (e.ok) evRows = await e.json();
+      } catch (_) { /* optional */ }
+    }
+
+    function addTier(catalog, pillClass, title, subtitle) {
+      const block = document.createElement('div');
+      block.className = 'exp-tier-block';
+      const h = document.createElement('h2');
+      h.className = 'exp-tier-head';
+      const pill = document.createElement('span');
+      pill.className = 'tier-pill ' + pillClass;
+      pill.textContent = title;
+      h.appendChild(pill);
+      block.appendChild(h);
+      const sub = document.createElement('p');
+      sub.className = 'exp-tier-sub';
+      sub.textContent = subtitle;
+      block.appendChild(sub);
+      const grid = document.createElement('div');
+      grid.className = 'experiment-grid';
+      block.appendChild(grid);
+      catalog.appendChild(block);
+      return grid;
+    }
+
+    function addCard(grid, c) {
+      const div = document.createElement('div');
+      const tag = c.kind === 'api' ? 'API' : c.kind === 'stats' ? 'Stats' : c.kind === 'advanced' ? 'Advanced' : 'Planned';
+      const col = c.kind === 'api'
+        ? 'var(--good)'
+        : c.kind === 'stats'
+          ? 'var(--accent)'
+          : c.kind === 'advanced'
+            ? 'var(--accent2)'
+            : 'var(--warn)';
+      let cardClass = 'exp-card';
+      if (c.kind === 'api') cardClass += ' backend';
+      else if (c.kind === 'stats') cardClass += ' stats-active';
+      else if (c.kind === 'advanced') cardClass += ' advanced-active';
+      else if (c.kind === 'planned') cardClass += ' planned';
+      div.className = cardClass;
+      const detailHtml = c.detail ? '<p class="exp-detail">' + c.detail + '</p>' : '';
+      div.innerHTML =
+        '<h4>' + c.title + ' <span style="color:' + col + ';font-size:0.65rem;font-weight:800">' + tag + '</span></h4>' +
+        '<p>' + c.desc + '</p>' + detailHtml;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = c.btn || 'Run';
+      btn.addEventListener('click', async () => {
+        try {
+          await Promise.resolve(c.run());
+          setTab('experiments');
+          scrollToExperimentResult();
+        } catch (e) {
+          setTab('experiments');
+          outJson({ error: String(e.message || e) });
+          scrollToExperimentResult();
+        }
+      });
+      div.appendChild(btn);
+      grid.appendChild(div);
+    }
+
+    function buildExperimentCards() {
+      const catalog = document.getElementById('experimentCatalog');
+      if (!catalog) return;
+      catalog.innerHTML = '';
+
+      const gApi = addTier(
+        catalog,
+        'api',
+        'API probes',
+        'Live calls using the same top-bar filters (year/FY, geography, months, fuels, OEMs) where applicable.'
+      );
+      [
+        {
+          kind: 'api',
+          title: 'Platform context JSON',
+          desc: 'Prints the same merged JSON the Analytics page just loaded.',
+          detail: 'Includes vahan KPIs, charts.makers / charts.monthly, research (population, PCI, infra), and derived ratios (e.g. regs/capita). Click Refresh on the top bar first so this is current.',
+          run: () => outJson(window._lastPlatformContext || { hint: 'Click Refresh (top bar) first' }),
+        },
+        {
+          kind: 'api',
+          title: 'Registration sample',
+          desc: 'Raw rows from the API (not the full table).',
+          detail: 'Uses the latest selected calendar year from the top bar (max year if several are selected). Good for spot-checking fuel_type, maker, month.',
+          run: async () => {
+            const { years } = getYearListFromApi();
+            const year = years.length ? Math.max(...years) : NaN;
+            if (!Number.isFinite(year)) {
+              outJson({ error: 'Invalid year from top bar' });
+              return;
+            }
+            const u = new URL(API + '/data/registrations');
+            u.searchParams.set('year', String(year));
+            u.searchParams.set('limit', '40');
+            const r = await fetch(u);
+            outJson({ status: r.status, body: r.ok ? await r.json() : await readApiError(r) });
+          },
+        },
+        {
+          kind: 'api',
+          title: 'Aggregates (state × fuel)',
+          desc: 'GET /data/aggregates for selected calendar year — cross-section for many analyses.',
+          run: async () => {
+            const { years } = getYearListFromApi();
+            const year = years.length ? Math.max(...years) : NaN;
+            if (!Number.isFinite(year)) {
+              outJson({ error: 'Invalid year from top bar' });
+              return;
+            }
+            const u = new URL(API + '/data/aggregates');
+            u.searchParams.set('year', String(year));
+            const r = await fetch(u);
+            outJson({ status: r.status, body: r.ok ? await r.json() : await readApiError(r) });
+          },
+        },
+        {
+          kind: 'api',
+          title: 'Research manifest',
+          desc: 'Index of population, PCI, CNG, EV JSON bundles.',
+          run: async () => {
+            const r = await fetch(API + '/research/manifest');
+            outJson({ status: r.status, body: r.ok ? await r.json() : await readApiError(r) });
+          },
+        },
+        {
+          kind: 'api',
+          title: 'Health & outputs',
+          desc: 'GET /health and GET /outputs (merged CSV list).',
+          run: async () => {
+            const [h, o] = await Promise.all([fetch(API + '/health'), fetch(API + '/outputs')]);
+            outJson({
+              health: await h.json(),
+              outputs: o.ok ? await o.json() : await readApiError(o),
+            });
+          },
+        },
+        {
+          kind: 'api',
+          title: 'Legacy bundle summary',
+          desc: '/data/vahan_master_compat — row counts only.',
+          run: async () => {
+            const r = await fetch(API + '/data/vahan_master_compat');
+            if (!r.ok) {
+              outJson({ status: r.status, error: await readApiError(r) });
+              return;
+            }
+            const j = await r.json();
+            outJson({
+              regions: (j.regions || []).length,
+              makers: (j.makers || []).length,
+              fuels: (j.fuels || []).length,
+              data_rows: (j.data || []).length,
+              meta: j.meta,
+            });
+          },
+        },
+        {
+          kind: 'api',
+          title: 'Enriched join (Postgres)',
+          desc: 'GET /data/enriched — requires migration 001; not available on SQLite.',
+          run: async () => {
+            const { years } = getYearListFromApi();
+            const year = years.length ? Math.max(...years) : NaN;
+            if (!Number.isFinite(year)) {
+              outJson({ error: 'Invalid year from top bar' });
+              return;
+            }
+            const u = new URL(API + '/data/enriched');
+            u.searchParams.set('year', String(year));
+            const r = await fetch(u);
+            outJson({ status: r.status, body: r.ok ? await r.json() : await readApiError(r) });
+          },
+        },
+      ].forEach((c) => addCard(gApi, c));
+
+      const gFound = addTier(
+        catalog,
+        'foundation',
+        'Foundation — association',
+        'Pearson / Spearman on paired monthly observations (latest calendar year when multiple years selected) vs infra. Cross-state cards: All India + population / PCI from research JSON. Not causal.'
+      );
+      [
+        {
+          kind: 'stats',
+          title: 'Pearson r (regs vs EV chargers)',
+          desc: 'Measures linear association between monthly registration totals and EV charger stock.',
+          detail: 'Needs Refresh first. Pairs months where both Vahan monthly totals and EV infra series exist. Output: Pearson r, Spearman ρ, and filters_applied. Not causal.',
+          run: () => runStatAnalysis('pearson'),
+        },
+        {
+          kind: 'stats',
+          title: 'Pearson r (regs vs CNG stations)',
+          desc: 'Same pairing idea using CNG station counts from research_data.',
+          detail: 'Useful when your fuel filter emphasizes CNG. Requires CNG monthly series for the selected geography/year.',
+          run: () => runStatAnalysis('pearson_cng'),
+        },
+        {
+          kind: 'stats',
+          title: 'Spearman ρ (rank correlation)',
+          desc: 'Rank-based correlation (EV chargers vs regs); less sensitive to spikes.',
+          detail: 'Also reports Pearson r for comparison. Same pairing rules as the Pearson (EV) card.',
+          run: () => runStatAnalysis('spearman'),
+        },
+        {
+          kind: 'stats',
+          title: 'Cross-state · regs vs population',
+          desc: 'All states in one year: log(total registrations) vs log(population).',
+          detail: 'Geography must be All India; use Calendar year mode. Joins GET /data/aggregates with population.json (latest row per state ≤ anchor year). Shows JSON + scatter/OLS when enough states match.',
+          run: async () => { await runCrossStateAnalysis('pop'); },
+        },
+        {
+          kind: 'stats',
+          title: 'Cross-state · regs vs PCI',
+          desc: 'All states: log(total regs) vs log(state PCI ₹) for one FY.',
+          detail: 'All India + Calendar mode. PCI FY matches September of the anchor calendar year (same rule as dashboard PCI). Ecological / descriptive only.',
+          run: async () => { await runCrossStateAnalysis('pci'); },
+        },
+      ].forEach((c) => addCard(gFound, c));
+
+      const gStd = addTier(
+        catalog,
+        'standard',
+        'Standard — regression',
+        'Ordinary least squares in the browser; for inference use statsmodels/R with robust SEs, seasonality controls, and explicit design.'
+      );
+      [
+        {
+          kind: 'stats',
+          title: 'OLS: registrations ~ EV chargers',
+          desc: 'Straight-line fit in levels: registrations regressed on charger count by month.',
+          detail: 'Plots scatter + OLS line. JSON has intercept, slope, R², and filters_applied. Inference (SEs, causality) needs a proper model offline.',
+          run: () => runStatAnalysis('ols_ev'),
+        },
+        {
+          kind: 'stats',
+          title: 'OLS: registrations ~ CNG stations',
+          desc: 'Same as EV OLS but x = CNG station stock by month.',
+          detail: 'Best when CNG infra series exists for your scope. Outputs coefficients and chart.',
+          run: () => runStatAnalysis('ols_cng'),
+        },
+        {
+          kind: 'stats',
+          title: 'Log–log (elasticity sketch)',
+          desc: 'Regress log(regs) on log(EV chargers); slope is a crude “elasticity” reading.',
+          detail: 'Drops non-positive months. Useful for proportional relationships; still not causal.',
+          run: () => runStatAnalysis('loglog'),
+        },
+        {
+          kind: 'stats',
+          title: 'OLS trend: regs ~ time index',
+          desc: 'Treats month order 1…n as x and total regs as y within the selected registration year.',
+          detail: 'If multiple calendar years are selected, uses the latest year’s monthly series only. Very rough trend; no seasonality adjustment.',
+          run: () => runStatAnalysis('trend_time'),
+        },
+      ].forEach((c) => addCard(gStd, c));
+
+      const gAdv = addTier(
+        catalog,
+        'advanced',
+        'Advanced — research methods',
+        'Methodology you should implement in Python (statsmodels, linearmodels), R, or Julia. Listed with typical Vahan use and citations.'
+      );
+      const advancedPayloads = [
+        {
+          title: 'Multiple regression & controls',
+          desc: 'Add PCI, population, prior-year regs, seasonal dummies.',
+          payload: {
+            method: 'Multiple linear regression',
+            model: 'y_it = X_it β + ε_it with fuel dummies, log(pop), log(PCI), FE optional',
+            vahan_use: 'Explain registrations or EV share with economics + infra covariates.',
+            reference: 'Wooldridge (2010) Introductory Econometrics; James et al. (2021) ISL for regularization.',
+            implementation: 'statsmodels.api.OLS or sklearn.linear_model with pipeline; check VIF for multicollinearity.',
+          },
+        },
+        {
+          title: 'Panel data & fixed effects',
+          desc: 'State × year panels; two-way FE absorbs time-invariant heterogeneity.',
+          payload: {
+            method: 'Panel FE / RE',
+            model: 'y_st = α_s + γ_t + X_st′β + u_st',
+            vahan_use: 'Compare states controlling for common year shocks (policy, macro).',
+            reference: 'Wooldridge ch.14; Baltagi (2013) Econometric Analysis of Panel Data.',
+            implementation: 'linearmodels.PanelOLS in Python; plm in R.',
+          },
+        },
+        {
+          title: 'Instrumental variables (2SLS)',
+          desc: 'Address reverse causality: infra built where demand is high.',
+          payload: {
+            method: 'Two-stage least squares',
+            idea: 'Instrument EV chargers with e.g. geography / politics / lagged policy (exclusion restrictions must be argued).',
+            vahan_use: 'Estimate effect of charger stock on EV regs per capita.',
+            reference: 'Angrist & Pischke (2009) Mostly Harmless Econometrics; Stock & Watson.',
+            implementation: 'statsmodels.sandbox.regression.gmm or linearmodels IV2SLS.',
+          },
+        },
+        {
+          title: 'Diff-in-diff & event studies',
+          desc: 'Policy adoption before/after with parallel trends assumption.',
+          payload: {
+            method: 'Difference-in-differences',
+            vahan_use: 'State EV policy or FAME tranches vs control states; event study for dynamic effects.',
+            reference: 'Cunningham (2021) Causal Inference: The Mixtape; Roth et al. (2023) on event-study binning.',
+            implementation: 'did in R; linearmodels with interacted time dummies in Python.',
+          },
+        },
+        {
+          title: 'Time series (VAR / Granger)',
+          desc: 'Joint dynamics of regs, infra, and macro.',
+          payload: {
+            method: 'Vector autoregression; Granger causality tests',
+            vahan_use: 'Lead–lag between national EV regs and charger roll-out.',
+            reference: 'Hamilton (1994) Time Series Analysis; Lütkepohl VAR handbook.',
+            implementation: 'statsmodels.tsa.vector_ar.var_model.VAR',
+          },
+        },
+        {
+          title: 'Cointegration & error correction',
+          desc: 'Long-run equilibrium between stocks and flows.',
+          payload: {
+            method: 'Engle–Granger or Johansen',
+            vahan_use: 'If regs and cumulative infra are non-stationary but co-move.',
+            reference: 'Hamilton ch.19; Johansen (1991).',
+            implementation: 'statsmodels.tsa.vector_ar.vecm',
+          },
+        },
+        {
+          title: 'Quantile regression',
+          desc: 'Effects differ for high vs low adoption states.',
+          payload: {
+            method: 'Linear quantile regression at τ ∈ (0,1)',
+            vahan_use: 'Conditional quantiles of EV share given PCI and chargers.',
+            reference: 'Koenker & Bassett (1978); Koenker (2005) Quantile Regression.',
+            implementation: 'statsmodels.regression.quantile_regression.QuantReg',
+          },
+        },
+        {
+          title: 'Spatial econometrics',
+          desc: 'Neighboring states influence adoption (spatial lag / error).',
+          payload: {
+            method: 'SAR, SEM, SDM models',
+            vahan_use: 'Spatial spillovers in EV penetration across borders.',
+            reference: 'Anselin (1988) Spatial Econometrics; LeSage & Pace (2009).',
+            implementation: 'pysal + spreg; GeoDa for exploration.',
+          },
+        },
+        {
+          title: 'Discrete choice & diffusion',
+          desc: 'Logit/probit for vehicle choice; Bass diffusion for EV share.',
+          payload: {
+            method: 'Multinomial logit; Bass / epidemic diffusion models',
+            vahan_use: 'Forecast EV share S-curves by state; choice among fuel types if microdata exists.',
+            reference: 'Train (2009) Discrete Choice; Bass (1969) diffusion model.',
+            implementation: 'biogeme; statsmodels.discrete; custom MLE for Bass.',
+          },
+        },
+        {
+          title: 'Bayesian hierarchical models',
+          desc: 'Partial pooling across states with uncertainty quantification.',
+          payload: {
+            method: 'Hierarchical / multilevel regression',
+            vahan_use: 'Borrow strength across small states for EV growth rates.',
+            reference: 'Gelman et al. (2013) BDA; McElreath Statistical Rethinking.',
+            implementation: 'PyMC, Stan, numpyro',
+          },
+        },
+        {
+          title: 'Machine learning (prediction vs inference)',
+          desc: 'Random forest, gradient boosting for accuracy; SHAP for partial dependencies.',
+          payload: {
+            method: 'Supervised learning + interpretability',
+            vahan_use: 'Predict next-year regs; explore nonlinearities vs PCI/infra.',
+            reference: 'Breiman (2001) random forests; Lundberg & Lee (2017) SHAP.',
+            implementation: 'scikit-learn, xgboost, shap library — separate training from causal claims.',
+          },
+        },
+        {
+          title: 'Network science on states / OEMs',
+          desc: 'Graphs from correlation or flow similarity.',
+          payload: {
+            method: 'Weighted graphs, community detection, centrality',
+            vahan_use: 'Clusters of states with similar fuel-mix trajectories; OEM–state bipartite blocks.',
+            reference: 'Newman (2018) Networks; Fortunato (2010) community detection review.',
+            implementation: 'NetworkX, igraph; export from GET /data/aggregates.',
+          },
+        },
+      ];
+      advancedPayloads.forEach((a) => {
+        addCard(gAdv, {
+          kind: 'advanced',
+          title: a.title,
+          desc: a.desc,
+          detail: a.payload && a.payload.vahan_use
+            ? ('Vahan: ' + a.payload.vahan_use + ' — opens static methodology JSON; implement in Python/R for real estimation.')
+            : 'Static methodology notes and references; no live data run.',
+          btn: 'Methodology',
+          run: () => showResearchMethod(a.payload),
+        });
+      });
+
+      const gPlan = addTier(
+        catalog,
+        'planned',
+        'Planned integrations',
+        'Thin stubs until we add server-side experiment runners or notebook links.'
+      );
+      [
+        {
+          kind: 'planned',
+          title: 'Correlation graph export',
+          desc: 'NetworkX from state similarity matrix.',
+          run: () => outJson({ status: 'planned', hint: 'Query /data/aggregates multi-year, build correlation graph in notebook.' }),
+        },
+        {
+          kind: 'planned',
+          title: 'Policy timeline merge',
+          desc: 'External CSV of policy dates × YoY deltas.',
+          run: () => outJson({ status: 'planned', needs: 'policy_event.csv with state_code, date, instrument' }),
+        },
+      ].forEach((c) => addCard(gPlan, c));
+    }
+
+    document.getElementById('refresh').addEventListener('click', refresh);
+    document.getElementById('yearType').addEventListener('change', () => {
+      syncYearTypeUi();
+      populateFyYearSelect();
+      rebuildYearCheckboxes();
+      loadOemOptions();
+      refresh();
+    });
+    document.getElementById('yearFySelect').addEventListener('change', () => { loadOemOptions(); refresh(); });
+    document.getElementById('state').addEventListener('change', () => { loadOemOptions(); refresh(); });
+
+    (async function init() {
+      if (!API || API === 'null') {
+        document.body.innerHTML = '<p style="padding:2rem">Open via <code>http://127.0.0.1:8000/platform</code></p>';
+        return;
+      }
+      buildMonthMsBody();
+      buildFuelMsBody();
+      updateMonthSummary();
+      updateFuelSummary();
+      buildExperimentCards();
+      try {
+        await loadOptions();
+        await loadResearch();
+        await loadOemOptions();
+        await refresh();
+      } catch (e) {
+        showBanner('Init failed: ' + (e.message || e) + ' — start API with python run_api.py', true);
+      }
+    })();
+  </script>
+</body>
+</html>

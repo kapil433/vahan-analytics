@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vahan Scraper</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --border: #334155;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-hover: #7dd3fc;
+      --success-bg: #052e16;
+      --success-text: #4ade80;
+      --error-bg: #450a0a;
+      --error-text: #f87171;
+      --focus-ring: 0 0 0 3px rgba(56, 189, 248, 0.4);
+    }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 640px;
+      margin: 2rem auto;
+      padding: 1.5rem;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    h1 { font-size: 1.5rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; }
+    p { color: var(--text-muted); font-size: 0.95rem; }
+    code { background: var(--surface); padding: 0.2em 0.5em; border-radius: 4px; font-size: 0.9em; color: var(--accent); }
+    label { display: block; margin-top: 1.25rem; font-weight: 600; color: var(--text); font-size: 0.95rem; }
+    select[multiple] {
+      width: 100%;
+      min-height: 120px;
+      padding: 0.6rem;
+      background: var(--surface);
+      color: var(--text);
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.95rem;
+    }
+    select[multiple]:focus { outline: none; border-color: var(--accent); box-shadow: var(--focus-ring); }
+    select[multiple] option { padding: 0.4rem; }
+    select[multiple] option:checked { background: var(--accent); color: var(--bg); font-weight: 600; }
+    button {
+      margin-top: 1.5rem;
+      padding: 0.75rem 1.75rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+      border-radius: 8px;
+      transition: background 0.2s, transform 0.1s;
+    }
+    button:hover { background: var(--accent-hover); }
+    button:focus { outline: none; box-shadow: var(--focus-ring); }
+    button:active { transform: scale(0.98); }
+    button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .hint { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.35rem; display: block; }
+    .opt-row { display: flex; align-items: center; gap: 0.5rem; margin-top: 1rem; cursor: pointer; }
+    .opt-row input[type="number"] { background: var(--surface); color: var(--text); border: 2px solid var(--border); border-radius: 6px; padding: 0.3em; }
+    #message { margin-top: 1.25rem; padding: 1rem; border-radius: 8px; font-size: 0.95rem; font-weight: 500; }
+    #message.success { background: var(--success-bg); color: var(--success-text); border: 1px solid rgba(74, 222, 128, 0.3); }
+    #message.error { background: var(--error-bg); color: var(--error-text); border: 1px solid rgba(248, 113, 113, 0.3); }
+  </style>
+</head>
+<body>
+  <h1>Vahan Scraper</h1>
+  <p style="margin-bottom:0.75rem;"><a href="/platform" style="color: var(--accent); font-weight:600;">Vahan Analytics Platform →</a> (dashboard: KPIs, OEM, fuel, FY + research JSON) · <a href="/mock-portal" style="color: var(--accent);">Offline merge test notes</a></p>
+  <p>UI for <code>vahan_scraper_master</code>. Select states, fuels, years → Scrape. Output: <code>output/vahan_data/</code>. For <strong>all-India</strong> dashboard scope, select <strong>only</strong> the first state option (not a state + that option). <a href="/docs" style="color: var(--accent);">Swagger →</a></p>
+  <p class="hint" style="margin-top:0.75rem;">Progress (Chrome startup, page load) prints in the <strong>terminal</strong> where you ran <code>python run_api.py</code> — not in this page. First Chrome can take 1–2 minutes. <strong>Parallel windows</strong> only appear when you have <strong>more than one</strong> state×year job. <strong>Important:</strong> in the Years list you must <strong>hold Ctrl (Windows) or Cmd (Mac)</strong> while clicking each year, or use <strong>Select all years</strong> below. Clicking years without Ctrl replaces the previous selection — the API then receives only one year (or two if you used Shift-range), so concurrency stays at 1–2.</p>
+
+  <label for="states">States</label>
+  <select id="states" multiple></select>
+  <span class="hint">First row = all-India aggregate on the portal. For <strong>one state</strong>, select only that state (click it without Ctrl to replace). Ctrl/Cmd+click adds more states. Leaving “All Vahan4…” selected while adding e.g. Maharashtra used to scrape both — the app now drops the aggregate if any real state is selected.</span>
+
+  <label for="fuels">Fuels</label>
+  <select id="fuels" multiple></select>
+  <span class="hint">Leave empty = all (CNG, Petrol, Diesel, EV, Strong Hybrid).</span>
+
+  <details style="margin-top:1rem;border:1px solid var(--border);border-radius:8px;padding:0.75rem 1rem;background:var(--surface);">
+    <summary style="cursor:pointer;font-weight:600;color:var(--accent);">Portal top bar (Y-axis, X-axis, year type)</summary>
+    <p class="hint" style="margin-top:0.5rem;">Same order the scraper uses on <code>reportview.xhtml</code> after Type and State: Y-Axis → X-Axis → year type → year (year comes from your Years list above). Defaults from <code>/options</code>.</p>
+    <label for="yAxis">Y-Axis</label>
+    <select id="yAxis" style="width:100%;margin-top:0.35rem;padding:0.5rem;background:var(--bg);color:var(--text);border:2px solid var(--border);border-radius:8px;"></select>
+    <label for="xAxis">X-Axis</label>
+    <select id="xAxis" style="width:100%;margin-top:0.75rem;padding:0.5rem;background:var(--bg);color:var(--text);border:2px solid var(--border);border-radius:8px;"></select>
+    <label for="yearType">Year type</label>
+    <select id="yearType" style="width:100%;margin-top:0.75rem;padding:0.5rem;background:var(--bg);color:var(--text);border:2px solid var(--border);border-radius:8px;"></select>
+  </details>
+
+  <label for="years">Years</label>
+  <select id="years" multiple></select>
+  <div style="margin-top:0.5rem;display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;">
+    <button type="button" id="selectAllYears" style="margin-top:0;padding:0.45rem 1rem;font-size:0.9rem;">Select all years</button>
+    <button type="button" id="clearYears" style="margin-top:0;padding:0.45rem 1rem;font-size:0.9rem;background:var(--surface);color:var(--text);border:2px solid var(--border);">Clear years</button>
+  </div>
+  <span class="hint">2012–2026. Leave empty = all years. Check the line below — it must show the job count you expect.</span>
+  <div id="selectionSummary" style="margin-top:0.75rem;padding:0.75rem 1rem;background:var(--surface);border-radius:8px;border:1px solid var(--border);font-size:0.9rem;"></div>
+
+  <label class="opt-row">
+    <input type="checkbox" id="parallel" checked>
+    Multiple windows (parallel) — faster for many state×years
+  </label>
+  <label class="opt-row" id="workersRow">
+    <span>Max windows:</span>
+    <input type="number" id="maxWorkers" min="1" max="12" value="8" style="width:4em;">
+  </label>
+  <span class="hint">Hard limit on <strong>how many Chrome windows run at the same time</strong>. Extra state×year jobs wait in a queue — they are not auto-spun to match job count. On slow networks, use <strong>1–2</strong>. Response shows <code>concurrent_cap</code>.</span>
+
+  <button type="button" id="outputBtn">Scrape</button>
+
+  <div id="apiStatus" class="hint" style="margin-top:0.5rem;"></div>
+  <div id="message"></div>
+
+  <script>
+    const API = window.location.origin;
+    if (!API || API === 'null' || API.startsWith('file')) {
+      document.body.innerHTML = '<h1>Open via server</h1><p>Do not open this file directly. Start the API and go to <a href="http://localhost:8000/">http://localhost:8000/</a></p><pre>cd vahan-analytics\npython run_api.py</pre>';
+    } else {
+    const statesEl = document.getElementById('states');
+    const fuelsEl = document.getElementById('fuels');
+    const yearsEl = document.getElementById('years');
+    const parallelEl = document.getElementById('parallel');
+    const maxWorkersEl = document.getElementById('maxWorkers');
+    const workersRowEl = document.getElementById('workersRow');
+    const outputBtn = document.getElementById('outputBtn');
+    const messageEl = document.getElementById('message');
+    const apiStatusEl = document.getElementById('apiStatus');
+    const selectionSummaryEl = document.getElementById('selectionSummary');
+    const selectAllYearsBtn = document.getElementById('selectAllYears');
+    const clearYearsBtn = document.getElementById('clearYears');
+    const yAxisEl = document.getElementById('yAxis');
+    const xAxisEl = document.getElementById('xAxis');
+    const yearTypeEl = document.getElementById('yearType');
+
+    const ALL_INDIA_STATE_VALUE = 'All Vahan4 Running States (36/36)';
+
+    function fillPortalSelects(portal) {
+      if (!portal || !yAxisEl || !xAxisEl || !yearTypeEl) return;
+      function opts(list, defVal) {
+        const arr = list && list.length ? list : [defVal].filter(Boolean);
+        return arr.map(function (o) {
+          return '<option value="' + String(o).replace(/"/g, '&quot;') + '"' +
+            (o === defVal ? ' selected' : '') + '>' + o + '</option>';
+        }).join('');
+      }
+      yAxisEl.innerHTML = opts(portal.y_axis_options, portal.y_axis_default);
+      xAxisEl.innerHTML = opts(portal.x_axis_options, portal.x_axis_default);
+      yearTypeEl.innerHTML = opts(portal.year_type_options, portal.year_type_default);
+    }
+
+    let optionStateCount = 0;
+    let optionYearCount = 0;
+
+    /** Match server: if aggregate + real states selected, only real states are scraped. */
+    function coalesceStatesForPayload(raw) {
+      if (!raw || raw.length <= 1) return raw || [];
+      const hasAgg = raw.includes(ALL_INDIA_STATE_VALUE);
+      const rest = raw.filter((s) => s !== ALL_INDIA_STATE_VALUE);
+      if (hasAgg && rest.length > 0) return rest;
+      return raw;
+    }
+
+    parallelEl.onchange = () => { workersRowEl.style.opacity = parallelEl.checked ? '1' : '0.5'; };
+    workersRowEl.style.opacity = parallelEl.checked ? '1' : '0.5';
+
+    function updateSelectionSummary() {
+      if (!optionStateCount || !optionYearCount) {
+        selectionSummaryEl.textContent = 'Waiting for /options from API…';
+        return;
+      }
+      const rawStates = [...statesEl.selectedOptions].map((o) => o.value);
+      const effStates = coalesceStatesForPayload(rawStates);
+      if (effStates.length === 0) {
+        selectionSummaryEl.innerHTML =
+          '<strong>Select at least one state.</strong> For all-India data, select <strong>only</strong> “All Vahan4 Running States (36/36)”. For one state, click that state (so only it is highlighted).';
+        return;
+      }
+      const nStatesSel = effStates.length;
+      const nYearsSel = yearsEl.selectedOptions.length;
+      const statesForJobs = nStatesSel;
+      const yearsForJobs = nYearsSel === 0 ? optionYearCount : nYearsSel;
+      const jobs = statesForJobs * yearsForJobs;
+      const warnStates = '';
+      const warnYears = nYearsSel === 0 ? ' <strong>No year highlighted</strong> — API will use <em>all</em> ' + optionYearCount + ' years.' : '';
+      const lowYears = nYearsSel > 0 && nYearsSel < 4
+        ? ' Only <strong>' + nYearsSel + '</strong> year(s) selected — if you meant more, hold Ctrl/Cmd while clicking or use Select all years.'
+        : '';
+      selectionSummaryEl.innerHTML =
+        'This request will run <strong>' + jobs + '</strong> state×year job(s)' +
+        ' (' + nStatesSel + ' states × ' +
+        (nYearsSel === 0 ? 'all ' + optionYearCount : nYearsSel) + ' years).' +
+        warnStates + warnYears + lowYears;
+    }
+
+    selectAllYearsBtn.addEventListener('click', () => {
+      for (const o of yearsEl.options) o.selected = true;
+      updateSelectionSummary();
+    });
+    clearYearsBtn.addEventListener('click', () => {
+      for (const o of yearsEl.options) o.selected = false;
+      updateSelectionSummary();
+    });
+    statesEl.addEventListener('change', updateSelectionSummary);
+    yearsEl.addEventListener('change', updateSelectionSummary);
+
+    function show(msg, type = 'success') {
+      messageEl.textContent = msg;
+      messageEl.className = type;
+    }
+
+    async function loadOptions() {
+      apiStatusEl.textContent = 'Checking API...';
+      try {
+        const optRes = await fetch(API + '/options');
+        if (!optRes.ok) throw new Error('Options failed: ' + optRes.status);
+        const data = await optRes.json();
+        statesEl.innerHTML = data.states.map((s) =>
+          '<option value="' + s.replace(/"/g, '&quot;') + '">' + s + '</option>'
+        ).join('');
+        fuelsEl.innerHTML = data.fuels.map(f => '<option value="' + f + '">' + f + '</option>').join('');
+        yearsEl.innerHTML = data.years.map(y => '<option value="' + y + '">' + y + '</option>').join('');
+        fillPortalSelects(data.portal);
+        optionStateCount = data.states.length;
+        optionYearCount = data.years.length;
+        updateSelectionSummary();
+        apiStatusEl.textContent = 'API OK – ' + API;
+      } catch (e) {
+        apiStatusEl.textContent = 'API not reachable: ' + e.message;
+        apiStatusEl.style.color = 'var(--error-text)';
+        show('Start API first: cd vahan-analytics then python run_api.py, then open http://localhost:8000/', 'error');
+        outputBtn.disabled = true;
+      }
+    }
+
+    outputBtn.addEventListener('click', async function() {
+      const rawStates = [...statesEl.selectedOptions].map(o => o.value);
+      const states = coalesceStatesForPayload(rawStates);
+      if (states.length === 0) {
+        show('Select at least one state. For all-India scope, select only “All Vahan4 Running States (36/36)”.', 'error');
+        return;
+      }
+      const fuels = [...fuelsEl.selectedOptions].map(o => o.value);
+      const years = [...yearsEl.selectedOptions].map(o => parseInt(o.value, 10)).filter(n => !isNaN(n));
+      const nStates = states.length;
+      const nYears = years.length === 0 ? optionYearCount : years.length;
+      const jobCount = nStates * nYears;
+      const max_workers = Math.min(12, Math.max(1, parseInt(maxWorkersEl.value, 10) || 8));
+
+      outputBtn.disabled = true;
+      show('Sending request...', 'success');
+
+      try {
+        const payload = {
+          states,
+          fuels,
+          years,
+          parallel: Boolean(parallelEl.checked),
+          max_workers: max_workers,
+        };
+        if (yAxisEl && xAxisEl && yearTypeEl) {
+          payload.y_axis = yAxisEl.value;
+          payload.x_axis = xAxisEl.value;
+          payload.year_type = yearTypeEl.value;
+        }
+        const res = await fetch(API + '/scrape', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          const msg = Array.isArray(data.detail) ? data.detail.map(d => (d.msg || d.loc) || JSON.stringify(d)).join('; ') : (data.detail || data.message || 'Request failed');
+          throw new Error(String(msg));
+        }
+        const jobs = data.batch_jobs != null ? data.batch_jobs : data.total;
+        const cap = data.concurrent_cap != null ? data.concurrent_cap : jobs;
+        const modeLine = ' API: parallel=' + data.parallel + ', max_windows=' + data.max_workers + ', jobs=' + jobs + ', concurrent_cap=' + cap + '.';
+        show(data.message + modeLine + ' Checking for errors...', 'success');
+        // Poll for background task errors (scrape runs in background)
+        let pollCount = 0;
+        const pollErr = setInterval(async () => {
+          pollCount++;
+          if (pollCount > 30) { clearInterval(pollErr); return; }
+          try {
+            const st = await fetch(API + '/scrape/status');
+            const j = await st.json();
+            if (j.error) {
+              clearInterval(pollErr);
+              show('Scrape failed: ' + j.error, 'error');
+            } else if (pollCount === 5) {
+              show(data.message + ' (running - check Chrome windows)', 'success');
+            }
+          } catch (_) {}
+        }, 2000);
+      } catch (e) {
+        show('Error: ' + (e.message || String(e)), 'error');
+      } finally {
+        outputBtn.disabled = false;
+      }
+    });
+
+    updateSelectionSummary();
+    loadOptions();
+    }
+  </script>
+</body>
+</html>

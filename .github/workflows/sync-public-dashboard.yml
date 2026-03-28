@@ -1,0 +1,48 @@
+# Push site to https://github.com/kapil433/ALL-India-Vahan-Analytics-Dashboard
+# Secrets on THIS repo:
+#   PUBLIC_DASHBOARD_TOKEN — PAT with contents:write on the public repo
+#   VAHAN_API_BASE_URL (optional) — e.g. https://your-app.onrender.com (no trailing slash)
+name: Sync public dashboard
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+    paths:
+      - "api/static/dashboard/index.html"
+      - "deploy/github-pages/**"
+      - "docs/data/vahan_master.json"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build publish folder
+        env:
+          API_BASE: ${{ secrets.VAHAN_API_BASE_URL }}
+        run: |
+          mkdir -p _public/data _public/dashboard _public/legacy
+          touch _public/.nojekyll
+          cp deploy/github-pages/index.html _public/index.html
+          cp deploy/github-pages/legacy/README.md _public/legacy/README.md
+          if [ -n "$API_BASE" ]; then
+            {
+              printf '%s\n' "<script>window.__VAHAN_API_BASE__='${API_BASE}';</script>"
+              cat api/static/dashboard/index.html
+            } > _public/dashboard/index.html
+          fi
+          if [ -f docs/data/vahan_master.json ]; then
+            cp docs/data/vahan_master.json _public/data/vahan_master.json
+          fi
+
+      - name: Push to ALL-India-Vahan-Analytics-Dashboard
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: _public
+          branch: main
+          repository-name: kapil433/ALL-India-Vahan-Analytics-Dashboard
+          token: ${{ secrets.PUBLIC_DASHBOARD_TOKEN }}
+          commit-message: "chore: sync site from vahan-analytics"
+          clean: false

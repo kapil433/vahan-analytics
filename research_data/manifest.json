@@ -1,0 +1,66 @@
+{
+  "datasets": [
+    {
+      "name": "population",
+      "rows": 525,
+      "columns": [
+        "state_code",
+        "state_name",
+        "year",
+        "population",
+        "reference_date",
+        "source"
+      ],
+      "csv": "population.csv",
+      "json": "population.json"
+    },
+    {
+      "name": "pci",
+      "rows": 116,
+      "columns": [
+        "state_code",
+        "state_name",
+        "fy",
+        "pci_rs",
+        "source"
+      ],
+      "csv": "pci.csv",
+      "json": "pci.json"
+    },
+    {
+      "name": "cng",
+      "rows": 62,
+      "columns": [
+        "state_code",
+        "state_name",
+        "year",
+        "month",
+        "station_count",
+        "source"
+      ],
+      "csv": "cng.csv",
+      "json": "cng.json"
+    },
+    {
+      "name": "ev_chargers",
+      "rows": 62,
+      "columns": [
+        "state_code",
+        "state_name",
+        "year",
+        "month",
+        "charger_count",
+        "charger_type",
+        "source"
+      ],
+      "csv": "ev_chargers.csv",
+      "json": "ev_chargers.json"
+    }
+  ],
+  "sources": {
+    "population": "Census India 2011 + MOHFW Technical Group Projections 2011-2036",
+    "pci": "MOSPI/RBI Per Capita NSDP (2011-12 series)",
+    "cng": "PNGRB/PPAC CGD MIS, data.gov.in",
+    "ev_chargers": "Ministry of Power, data.gov.in"
+  }
+}
