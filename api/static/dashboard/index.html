@@ -1304,8 +1304,8 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
 
 <script>
 // ═══════════════════════════════════════════════════════════════
-// API BASE — same-origin when served from Render/FastAPI; for GitHub Pages set BEFORE this script:
-//   <script>window.__VAHAN_API_BASE__='https://your-service.onrender.com'</script>
+// API BASE — same-origin on Render/FastAPI. On GitHub Pages inject window.__VAHAN_API_BASE__
+// in <head> (see DEPLOY.md / inject_pages_api_base.py). Do not write a literal closing script tag in comments here.
 // ═══════════════════════════════════════════════════════════════
 if (typeof window !== 'undefined' && window.__VAHAN_API_BASE__ === undefined) {
   window.__VAHAN_API_BASE__ = '';
