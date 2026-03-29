@@ -734,23 +734,72 @@ def _try_postgres():
         return None
 
 
+def _pg_has_registration_rows(conn) -> bool:
+    """True if vahan_registrations exists and has at least one row (Postgres + RealDictCursor)."""
+    try:
+        cur = conn.cursor()
+        try:
+            cur.execute("SELECT 1 FROM vahan_registrations LIMIT 1")
+            return cur.fetchone() is not None
+        finally:
+            cur.close()
+    except Exception:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        return False
+
+
+def _try_sqlite_registrations():
+    """
+    Open data/vahan_local.db if it exists and has at least one vahan_registrations row.
+    Returns (connection, 'sqlite') or (None, None).
+    """
+    if not SQLITE_LOCAL.is_file():
+        return None, None
+    try:
+        c = sqlite3.connect(str(SQLITE_LOCAL), check_same_thread=False)
+        c.row_factory = sqlite3.Row
+        cur = c.execute("SELECT 1 FROM vahan_registrations LIMIT 1")
+        if cur.fetchone() is None:
+            c.close()
+            return None, None
+        return c, "sqlite"
+    except sqlite3.Error as e:
+        _last_pg_connect_error = f"SQLite {SQLITE_LOCAL.name}: {e}"
+        return None, None
+
+
 def _connect_data():
     """
-    Prefer PostgreSQL; if unavailable, use data/vahan_local.db when present (see scripts/setup_local_sqlite.py).
+    Prefer PostgreSQL when it has registration data.
+
+    If DATABASE_URL connects but ``vahan_registrations`` is empty or missing (typical Render Postgres
+    before load_vahan_to_db), fall back to ``data/vahan_local.db`` when that file has rows — so the
+    shipped SQLite dataset is used by the dashboard without manual env changes.
+
     Returns (connection, 'postgres'|'sqlite') or (None, None).
     """
+    sl, sl_kind = _try_sqlite_registrations()
     pg = _try_postgres()
     if pg is not None:
+        if _pg_has_registration_rows(pg):
+            if sl is not None:
+                try:
+                    sl.close()
+                except sqlite3.Error:
+                    pass
+            return pg, "postgres"
+        if sl is not None:
+            try:
+                pg.close()
+            except Exception:
+                pass
+            return sl, sl_kind
         return pg, "postgres"
-    if SQLITE_LOCAL.is_file():
-        try:
-            c = sqlite3.connect(str(SQLITE_LOCAL), check_same_thread=False)
-            c.row_factory = sqlite3.Row
-            c.execute("SELECT 1 FROM vahan_registrations LIMIT 1")
-            return c, "sqlite"
-        except sqlite3.Error as e:
-            _last_pg_connect_error = f"SQLite {SQLITE_LOCAL.name}: {e}"
-            return None, None
+    if sl is not None:
+        return sl, sl_kind
     return None, None
 
 
