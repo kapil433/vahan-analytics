@@ -402,7 +402,7 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
 .geomap-tooltip .gtt-nodata{color:var(--text-dim);font-style:italic;font-size:12px}
 .geomap-legend{display:flex;align-items:center;gap:8px;margin-top:12px;padding:0 4px}
 .geomap-legend span{font-size:11px;color:var(--text-dim);font-family:var(--mono)}
-.geomap-legend-bar{flex:1;height:8px;border-radius:4px}
+.geomap-legend-bar{flex:1;height:10px;border-radius:4px;border:1px solid var(--border)}
 .geomap-rank-row{
   display:grid;grid-template-columns:24px 1fr 130px;align-items:center;gap:6px;
   padding:8px 6px;border-bottom:1px solid var(--border);cursor:pointer;
@@ -693,7 +693,6 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
   <button type="button" class="btn-filter-reset" onclick="resetGlobalFilters()" title="Reset geography, year, month, OEM, and fuel to defaults">Reset filters</button>
   <span class="global-data-stamp" id="global-data-stamp" title="Dataset build date from loaded bundle"></span>
   <p id="filter-active-summary" class="filter-active-summary" aria-live="polite"></p>
-  <p class="filter-dependency-hint" style="flex-basis:100%;order:100;margin:0;font-size:11px;color:var(--text-dim);line-height:1.45">Changing <strong>year type</strong> (FY/CY) or <strong>geography</strong> refreshes the year and month lists so only valid combinations appear.</p>
 </div>
 </div><!-- /sticky-toolbar -->
 
@@ -788,7 +787,7 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
         </div>
         <div class="geomap-legend">
           <span id="gm-leg-min">0</span>
-          <div class="geomap-legend-bar" id="gm-leg-bar" style="background:linear-gradient(to right,#cbd5e1,#64748b,#2563eb,#60a5fa,#bfdbfe)"></div>
+          <div class="geomap-legend-bar" id="gm-leg-bar" style="background:linear-gradient(to right,#eff6ff,#38bdf8,#2563eb,#1d4ed8,#0f172a)"></div>
           <span id="gm-leg-max">—</span>
         </div>
       </div>
@@ -3847,14 +3846,17 @@ function _geoRenderStates(stateData, metric) {
     const absMax = Math.max(Math.abs(d3.min(vals)||0), Math.abs(maxVal));
     colorScale = d3.scaleDiverging().domain([-absMax, 0, absMax]).interpolator(d3.interpolateRdYlGn);
   } else {
-    colorScale = d3.scaleSequential().domain([0, maxVal]).interpolator(d3.interpolateBlues);
+    // Stronger contrast than interpolateBlues: readable lows + deep navy highs on light UI chrome
+    colorScale = d3.scaleSequential()
+      .domain([0, maxVal])
+      .interpolator(d3.interpolateRgbBasis(['#eff6ff', '#38bdf8', '#2563eb', '#1d4ed8', '#0f172a']));
   }
   
   document.getElementById('gm-leg-min').textContent = metric === 'yoy' ? `${(d3.min(vals)||0).toFixed(0)}%` : fmt(minVal);
   document.getElementById('gm-leg-max').textContent = metric === 'yoy' ? `${maxVal.toFixed(0)}%` : fmt(maxVal);
   document.getElementById('gm-leg-bar').style.background = metric === 'yoy'
-    ? 'linear-gradient(to right,#dc2626,#fef08a,#16a34a)'
-    : 'linear-gradient(to right,#cbd5e1,#64748b,#2563eb,#60a5fa,#bfdbfe)';
+    ? 'linear-gradient(to right,#b91c1c,#fef08a,#15803d)'
+    : 'linear-gradient(to right,#eff6ff,#38bdf8,#2563eb,#1d4ed8,#0f172a)';
   
   const g = _geoSvg.select('.states-g');
   const nameProp = _geoJSON.features[0]?.properties?.ST_NM ? 'ST_NM' : 
@@ -3865,16 +3867,16 @@ function _geoRenderStates(stateData, metric) {
   paths.enter()
     .append('path')
     .attr('d', _geoPath)
-    .attr('stroke', '#94a3b8')
-    .attr('stroke-width', 0.6)
+    .attr('stroke', '#334155')
+    .attr('stroke-width', 0.9)
     .attr('cursor', 'pointer')
     .on('mouseenter', function(ev, d) {
-      d3.select(this).attr('stroke','#fbbf24').attr('stroke-width',2).raise();
+      d3.select(this).attr('stroke','#f59e0b').attr('stroke-width',2.2).raise();
       _geoShowTip(ev, d, stateData, nameProp, metric);
     })
     .on('mousemove', function(ev) { _geoMoveTip(ev); })
     .on('mouseleave', function() {
-      d3.select(this).attr('stroke','#94a3b8').attr('stroke-width',0.6);
+      d3.select(this).attr('stroke','#334155').attr('stroke-width',0.9);
       document.getElementById('gm-tooltip').classList.remove('visible');
     })
     .merge(paths)
@@ -3882,10 +3884,10 @@ function _geoRenderStates(stateData, metric) {
     .attr('fill', d => {
       const sName = _geoNorm(d.properties[nameProp]);
       const sd = stateData[sName];
-      if (!sd || sd.total === 0) return '#e2e8f0';
+      if (!sd || sd.total === 0) return '#cbd5e1';
       if (metric === 'yoy') {
         const yoy = sd.priorTotal > 0 ? ((sd.total - sd.priorTotal)/sd.priorTotal*100) : null;
-        return yoy !== null ? colorScale(yoy) : '#e2e8f0';
+        return yoy !== null ? colorScale(yoy) : '#cbd5e1';
       }
       return colorScale(sd.total);
     });
