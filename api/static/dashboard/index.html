@@ -3480,8 +3480,8 @@ function switchPage(page) {
   const fuelG  = document.getElementById('ms-fuel-wrapper')?.closest('.filter-group');
   const monthG = document.getElementById('month-group');
 
-  // Static / tool pages: hide global filters (or they use their own internal filters)
-  const hideAll = ['blog','info','about'].includes(page);
+  // Static / tool pages + Forecast: hide global filters (Forecast uses fc-* panel only; global bar does not affect runForecast)
+  const hideAll = ['blog','info','about','forecast'].includes(page);
   if (filterBar) filterBar.style.display = hideAll ? 'none' : '';
 
   if (!hideAll) {
