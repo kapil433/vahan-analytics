@@ -56,7 +56,11 @@ STATE_MAP = {
     "Lakshadweep": ("LD", "Lakshadweep"),
     "Andaman and Nicobar Islands": ("AN", "Andaman and Nicobar Islands"),
     "Andaman & Nicobar Islands": ("AN", "Andaman and Nicobar Islands"),
+    # Portal FUELWISE folder uses singular "Island"
+    "Andaman & Nicobar Island": ("AN", "Andaman and Nicobar Islands"),
+    "Andaman and Nicobar Island": ("AN", "Andaman and Nicobar Islands"),
     "Dadra and Nagar Haveli and Daman and Diu": ("DN", "Dadra and Nagar Haveli and Daman and Diu"),
+    "UT of DNH and DD": ("DN", "Dadra and Nagar Haveli and Daman and Diu"),
     "Chandigarh": ("CHD", "Chandigarh"),
     "Ladakh": ("LA", "Ladakh"),
     "All Vahan4 Running States (36/36)": ("ALL", "All India"),
