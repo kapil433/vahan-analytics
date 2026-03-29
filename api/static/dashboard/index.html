@@ -501,47 +501,53 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
 .footer-brand{display:flex;align-items:center;gap:10px;margin-bottom:8px}
 .footer-logo{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#1d4ed8,#0ea5e9);color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
 
-/* State vs All India — mirrors main filter bar; refresh sits below all rows */
+/* State vs All India — same row layout as sticky .filter-bar (label left of control) */
 .cmp-filter-bar{
   background:var(--surface2);
   border:1px solid var(--border);
   border-radius:8px;
-  padding:12px 16px 16px;
-  margin-bottom:16px;
+  padding:10px 24px;
+  margin-bottom:12px;
   display:flex;
   flex-direction:column;
-  gap:10px;
+  gap:0;
 }
 .cmp-filter-row{
   display:flex;
-  align-items:flex-start;
+  align-items:center;
   flex-wrap:wrap;
-  gap:12px 16px;
+  gap:12px;
+  row-gap:10px;
 }
 .cmp-filter-row .filter-group{
   display:flex;
-  flex-direction:column;
-  align-items:flex-start;
-  gap:4px;
+  flex-direction:row;
+  align-items:center;
+  gap:6px;
   min-height:auto;
-  justify-content:flex-start;
 }
 .cmp-filter-row .filter-sep{
-  align-self:stretch;
-  min-height:36px;
+  align-self:center;
+  width:1px;
+  height:24px;
+  background:var(--border);
+  margin:0 4px;
+  flex-shrink:0;
 }
-.cmp-filter-refresh-row{
-  display:flex;
-  justify-content:flex-end;
-  width:100%;
-  padding-top:4px;
-  border-top:1px solid var(--border);
-  margin-top:4px;
+.cmp-filter-row .btn.btn-primary{
+  margin-left:auto;
+  padding:6px 14px;
+  font-size:12px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
 }
-.cmp-filter-refresh-row .btn{padding:8px 18px;display:inline-flex;align-items:center;gap:6px}
 @media(max-width:900px){
-  .cmp-filter-refresh-row{justify-content:stretch}
-  .cmp-filter-refresh-row .btn{width:100%;justify-content:center}
+  .cmp-filter-row .btn.btn-primary{margin-left:0;width:100%;justify-content:center}
+}
+/* Tighter gap between sticky global filters and this bar */
+.main:has(#page-compare.active){
+  padding-top:12px;
 }
 
 /* Sticky nav + filters under header */
@@ -1044,17 +1050,14 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
             </div>
           </div>
         </div>
-      </div>
-      <div class="cmp-filter-row">
+        <div class="filter-sep"></div>
         <div class="filter-group"><span class="filter-label">VIEW</span>
-          <select class="filter-select" id="cmp-view">
+          <select class="filter-select" id="cmp-view" style="min-width:140px;max-width:min(280px,42vw)">
             <option value="sidebyside">Side by Side</option>
             <option value="overlay">Overlaid</option>
             <option value="index">Index View (State as % of All India)</option>
           </select>
         </div>
-      </div>
-      <div class="cmp-filter-refresh-row">
         <button type="button" class="btn btn-primary" onclick="buildComparePage()">⟳ Refresh</button>
       </div>
     </div>
