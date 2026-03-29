@@ -4742,6 +4742,24 @@ const METHOD_DESC = {
     Includes seasonal adjustment using historical monthly patterns.`
 };
 
+/**
+ * Forecast history should not end in the viewer's current calendar month: that month is
+ * still in progress in the portal data. Drop trailing point(s) matching (today Y, today M).
+ */
+function trimForecastSeriesDropCurrentCalendarMonth(series) {
+  if (!series || !series.length) return series;
+  const now = new Date();
+  const cy = now.getFullYear();
+  const cm = now.getMonth() + 1;
+  let end = series.length;
+  while (end > 0) {
+    const pt = series[end - 1];
+    if (pt.year === cy && pt.month === cm) end--;
+    else break;
+  }
+  return series.slice(0, end);
+}
+
 // ── Get monthly time-series for selected metric ─────────────────
 function getForecastSeries(metric, fuel, oem) {
   if (!DATA) return [];
@@ -4767,17 +4785,7 @@ function getForecastSeries(metric, fuel, oem) {
   // Strip trailing zeros (future months with no data)
   let end = raw.length;
   while (end > 0 && raw[end-1].value === 0) end--;
-  // Strip any final month that looks incomplete:
-  // if last month value < 40% of same month prior year → incomplete
-  if (end > 13) {
-    const last = raw[end-1];
-    const sameMonthPrior = raw.slice(0, end-1).reverse().find(p => p.month === last.month);
-    if (sameMonthPrior && sameMonthPrior.value > 0) {
-      const ratio = last.value / sameMonthPrior.value;
-      if (ratio < 0.4) end--; // drop incomplete final month
-    }
-  }
-  return raw.slice(0, end);
+  return trimForecastSeriesDropCurrentCalendarMonth(raw.slice(0, end));
 }
 
 // ── Filter series from a start year ────────────────────────────
@@ -4958,14 +4966,7 @@ function runForecast() {
   while (series.length > 0 && series[series.length-1].value === 0) {
     series.pop();
   }
-  // Strip final month if incomplete (< 40% of same month prior year)
-  if (series.length > 13) {
-    const last = series[series.length-1];
-    const sameMonthPrior = [...series].reverse().slice(1).find(p => p.month === last.month);
-    if (sameMonthPrior && sameMonthPrior.value > 0 && last.value / sameMonthPrior.value < 0.4) {
-      series.pop();
-    }
-  }
+  series = trimForecastSeriesDropCurrentCalendarMonth(series);
 
   if (series.length < 24) {
     alert('Need at least 24 months of data. Select an earlier start year.');
