@@ -29,6 +29,7 @@ Pipeline steps:
 from __future__ import annotations
 
 import argparse
+import gzip
 import json
 import re
 import sqlite3
@@ -444,14 +445,24 @@ def export_master_json(db_path: Path, out_path: Path, verbose: bool = True) -> b
         bundle = _simple_json_export(db_path)
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
+    raw_bytes = json.dumps(bundle, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+
+    # Write raw JSON
     tmp = out_path.with_suffix(".tmp.json")
-    with open(tmp, "w", encoding="utf-8") as f:
-        json.dump(bundle, f, ensure_ascii=False, separators=(",", ":"))
+    tmp.write_bytes(raw_bytes)
     tmp.replace(out_path)
 
-    size_kb = out_path.stat().st_size / 1024
+    # Write pre-gzipped copy — API serves this directly (no runtime gzip overhead)
+    gz_path = out_path.with_suffix(".json.gz")
+    gz_bytes = gzip.compress(raw_bytes, compresslevel=6)
+    tmp_gz = gz_path.with_suffix(".tmp.gz")
+    tmp_gz.write_bytes(gz_bytes)
+    tmp_gz.replace(gz_path)
+
+    size_kb  = len(raw_bytes) / 1024
+    gz_kb    = len(gz_bytes)  / 1024
     if verbose:
-        print(f"  Exported {out_path} ({size_kb:.0f} KB)")
+        print(f"  Exported {out_path} ({size_kb:.0f} KB raw | {gz_kb:.0f} KB gzip)")
     return True
 
 

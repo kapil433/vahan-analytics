@@ -15,6 +15,8 @@ from scraper.console_win import configure_stdio_utf8
 
 configure_stdio_utf8()
 
+import gzip as _gzip
+import hashlib as _hashlib
 import json
 import re
 import signal
@@ -25,7 +27,7 @@ os.environ.setdefault("VAHAN_SCRAPER_BACKEND", "selenium")
 
 from typing import Annotated, Any, Optional
 
-from fastapi import FastAPI, BackgroundTasks, HTTPException, Query
+from fastapi import FastAPI, BackgroundTasks, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, RedirectResponse, Response
@@ -99,7 +101,8 @@ OUTPUT_BASE = PROJECT_ROOT / "output" / "vahan_data"
 RESEARCH_DIR = PROJECT_ROOT / "research_data"
 SQLITE_LOCAL = PROJECT_ROOT / "data" / "vahan_local.db"
 # Bundled demo dataset when no DB (fresh Render / local API without PostgreSQL or SQLite load).
-STATIC_MASTER_JSON = PROJECT_ROOT / "docs" / "data" / "vahan_master.json"
+STATIC_MASTER_JSON     = PROJECT_ROOT / "docs" / "data" / "vahan_master.json"
+STATIC_MASTER_JSON_GZ  = PROJECT_ROOT / "docs" / "data" / "vahan_master.json.gz"
 
 # In-memory cache for GET /data/vahan_master_compat: serialized JSON bytes + fingerprint.
 # Invalidates when row count or latest loaded_at changes (reload / upsert).
@@ -107,12 +110,15 @@ _vahan_bundle_cache_fp: tuple[int, str] | None = None
 _vahan_bundle_cache_body: bytes | None = None
 
 # ── Fast static-JSON cache ──────────────────────────────────────────────────
-# After scripts/pipeline.py runs, docs/data/vahan_master.json is pre-built.
-# We serve it directly (no DB query) if its mtime is newer than the DB's latest
-# loaded_at. This makes dashboard cold-start near-instant.
+# After scripts/pipeline.py runs, docs/data/vahan_master.json(.gz) is pre-built.
+# We serve pre-compressed bytes directly — no runtime gzip overhead (~215ms saved).
+# ETag = first 16 chars of SHA-1 of the pre-gzipped bytes, stable across restarts.
 import os as _os
 _static_json_mtime: float = 0.0
-_static_json_body: bytes | None = None
+_static_json_body: bytes | None = None        # raw JSON bytes (for DB-build path)
+_static_gz_mtime:  float = 0.0
+_static_gz_body:   bytes | None = None        # pre-compressed bytes
+_static_gz_etag:   str   = ""
 
 
 def _static_json_is_fresh() -> bool:
@@ -121,7 +127,6 @@ def _static_json_is_fresh() -> bool:
         return False
     try:
         json_mtime = STATIC_MASTER_JSON.stat().st_mtime
-        # If DB doesn't exist, static JSON is always valid
         if not SQLITE_LOCAL.exists():
             return True
         db_mtime = SQLITE_LOCAL.stat().st_mtime
@@ -131,7 +136,7 @@ def _static_json_is_fresh() -> bool:
 
 
 def _read_static_json_cached() -> bytes | None:
-    """Read static JSON into memory, cache until file changes."""
+    """Read static JSON into memory, cache until file changes (raw bytes for fallback)."""
     global _static_json_mtime, _static_json_body
     if not STATIC_MASTER_JSON.is_file():
         return None
@@ -142,6 +147,38 @@ def _read_static_json_cached() -> bytes | None:
         _static_json_body = STATIC_MASTER_JSON.read_bytes()
         _static_json_mtime = mtime
         return _static_json_body
+    except OSError:
+        return None
+
+
+def _read_static_gz_cached() -> tuple[bytes, str] | None:
+    """
+    Return (gzipped_bytes, etag).  Prefers the pre-built .gz file.
+    Falls back to compressing the .json file in-process (level 1 = 52 ms).
+    Result is cached in-memory until the source file changes.
+    """
+    global _static_gz_mtime, _static_gz_body, _static_gz_etag
+    try:
+        # Use .gz if it exists and is at least as new as the .json
+        src = STATIC_MASTER_JSON_GZ if STATIC_MASTER_JSON_GZ.is_file() else None
+        ref = STATIC_MASTER_JSON if STATIC_MASTER_JSON.is_file() else None
+        if src is None and ref is None:
+            return None
+        mtime = (src or ref).stat().st_mtime
+        if ref and src:
+            mtime = max(src.stat().st_mtime, ref.stat().st_mtime)
+        if mtime == _static_gz_mtime and _static_gz_body is not None:
+            return _static_gz_body, _static_gz_etag
+        if src and src.is_file():
+            gz_bytes = src.read_bytes()
+        else:
+            raw = ref.read_bytes()
+            gz_bytes = _gzip.compress(raw, compresslevel=1)
+        etag = '"' + _hashlib.sha1(gz_bytes).hexdigest()[:16] + '"'
+        _static_gz_body  = gz_bytes
+        _static_gz_etag  = etag
+        _static_gz_mtime = mtime
+        return gz_bytes, etag
     except OSError:
         return None
 
@@ -250,8 +287,37 @@ app.include_router(payments_router, prefix="/api/payments")
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 DASHBOARD_DIR = STATIC_DIR / "dashboard"
+DOCS_DATA_DIR = PROJECT_ROOT / "docs" / "data"
 if STATIC_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+# Serve pre-built static data files (JSON + .gz) directly from docs/data/
+# with a 24-hour cache — GitHub Pages users also benefit via the same path.
+if DOCS_DATA_DIR.exists():
+    app.mount(
+        "/docs-data",
+        StaticFiles(directory=str(DOCS_DATA_DIR)),
+        name="docs-data",
+    )
+
+
+@app.get("/healthz/warm", include_in_schema=False)
+def healthz_warm():
+    """
+    Lightweight keep-alive endpoint.  Render's health-check pings this every 30s
+    so the free dyno never goes cold.  Also pre-loads the static JSON into the
+    in-process cache so the very first real user request is instant.
+    """
+    _read_static_gz_cached()   # prime cache if not already loaded
+    gz = _static_gz_body
+    return Response(
+        content=json.dumps({
+            "ok": True,
+            "json_cached": gz is not None,
+            "json_kb": round(len(gz) / 1024) if gz else 0,
+        }).encode(),
+        media_type="application/json",
+        headers={"Cache-Control": "no-store"},
+    )
 
 
 @app.get("/robots.txt", include_in_schema=False)
@@ -677,31 +743,45 @@ def redirect_dashboard_to_canonical_root():
 
 
 @app.get("/data/vahan_master_compat")
-def vahan_master_compat():
+def vahan_master_compat(request: Request):
     """
-    Legacy vahan_master.json-shaped bundle for the dashboard (regions, makers, fuels, encoded data rows).
-    Merges static analytics overlay from api/static/dashboard/legacy_overlay.json for Intelligence pages.
+    Dashboard data bundle — regions, makers, fuels, encoded data rows.
 
     Serving priority (fastest first):
-      1. docs/data/vahan_master.json  — pre-built by scripts/pipeline.py, served instantly from disk cache
+      1. Pre-gzipped docs/data/vahan_master.json.gz — served in <5 ms, no runtime compression
       2. In-process memory cache (fingerprinted against DB row count + loaded_at)
-      3. Build fresh from DB (slowest; result is cached in-process and written to static JSON)
+      3. Build fresh from DB (slowest; result cached + written to static files)
 
-    Responses are gzip-compressed when large (see GZipMiddleware).
+    Cache strategy:
+      - ETag based on SHA-1 of gzipped content → 304 Not Modified on repeat hits
+      - Cache-Control: public, max-age=86400 → browser caches 24 hr (0 ms on return visit)
+      - Content-Encoding: gzip → bypass GZipMiddleware, no double-compression
     """
-    # ── Priority 1: pre-built static JSON (instant, no DB hit) ───────────────
-    if _static_json_is_fresh():
-        body = _read_static_json_cached()
-        if body:
-            return Response(
-                content=body,
-                media_type="application/json; charset=utf-8",
-                headers={
-                    "X-Vahan-Data-Source": "static-prebuilt",
-                    "Cache-Control": "public, max-age=300",
-                },
-            )
+    # ── Conditional GET: honour If-None-Match ─────────────────────────────────
+    def _gz_response(gz_bytes: bytes, etag: str, source: str) -> Response:
+        inm = request.headers.get("if-none-match", "")
+        if inm and etag and (inm == etag or f'W/{etag}' == inm or inm == f'W/{etag}'):
+            return Response(status_code=304, headers={"ETag": etag, "Cache-Control": "public, max-age=86400"})
+        return Response(
+            content=gz_bytes,
+            media_type="application/json; charset=utf-8",
+            headers={
+                "Content-Encoding": "gzip",
+                "ETag": etag,
+                "Cache-Control": "public, max-age=86400",
+                "Vary": "Accept-Encoding",
+                "X-Vahan-Data-Source": source,
+            },
+        )
 
+    # ── Priority 1: pre-built pre-gzipped static file ────────────────────────
+    if _static_json_is_fresh():
+        cached = _read_static_gz_cached()
+        if cached:
+            gz_bytes, etag = cached
+            return _gz_response(gz_bytes, etag, "static-prebuilt-gz")
+
+    # ── Priority 2 / 3: build from DB ────────────────────────────────────────
     global _vahan_bundle_cache_fp, _vahan_bundle_cache_body
     conn, dialect = _connect_data()
     if conn:
@@ -712,47 +792,48 @@ def vahan_master_compat():
                 and fp == _vahan_bundle_cache_fp
                 and _vahan_bundle_cache_body is not None
             ):
-                return Response(
-                    content=_vahan_bundle_cache_body,
-                    media_type="application/json; charset=utf-8",
-                    headers={
-                        "X-Vahan-Data-Source": "database-cache",
-                        "Cache-Control": "public, max-age=300",
-                    },
-                )
+                gz_bytes = _gzip.compress(_vahan_bundle_cache_body, compresslevel=1)
+                etag = '"' + _hashlib.sha1(gz_bytes).hexdigest()[:16] + '"'
+                return _gz_response(gz_bytes, etag, "database-cache-gz")
             bundle = build_vahan_master_bundle(conn, dialect=dialect)
             body = json.dumps(bundle, ensure_ascii=False).encode("utf-8")
             if fp is not None:
                 _vahan_bundle_cache_fp = fp
                 _vahan_bundle_cache_body = body
-            # Auto-persist to static JSON so next cold-start is instant
+            # Auto-persist static JSON + pre-gzipped copy for next cold-start
             try:
                 STATIC_MASTER_JSON.parent.mkdir(parents=True, exist_ok=True)
                 _tmp = STATIC_MASTER_JSON.with_suffix(".tmp.json")
                 _tmp.write_bytes(body)
                 _tmp.replace(STATIC_MASTER_JSON)
+                gz_body = _gzip.compress(body, compresslevel=6)
+                _tmp_gz = STATIC_MASTER_JSON_GZ.with_suffix(".tmp.gz")
+                _tmp_gz.write_bytes(gz_body)
+                _tmp_gz.replace(STATIC_MASTER_JSON_GZ)
                 global _static_json_mtime, _static_json_body
                 _static_json_mtime = STATIC_MASTER_JSON.stat().st_mtime
                 _static_json_body = body
             except Exception:
-                pass  # Non-critical: static export failed but response still succeeds
-            return Response(
-                content=body,
-                media_type="application/json; charset=utf-8",
-                headers={
-                    "X-Vahan-Data-Source": "database",
-                    "Cache-Control": "public, max-age=300",
-                },
-            )
+                pass
+            gz_bytes = _gzip.compress(body, compresslevel=1)
+            etag = '"' + _hashlib.sha1(gz_bytes).hexdigest()[:16] + '"'
+            return _gz_response(gz_bytes, etag, "database-gz")
         except Exception as e:
             raise HTTPException(500, str(e))
         finally:
             conn.close()
     if STATIC_MASTER_JSON.is_file():
+        cached = _read_static_gz_cached()
+        if cached:
+            gz_bytes, etag = cached
+            return _gz_response(gz_bytes, etag, "static-fallback-gz")
         return FileResponse(
             str(STATIC_MASTER_JSON),
             media_type="application/json",
-            headers={"X-Vahan-Data-Source": "static-docs-data"},
+            headers={
+                "Cache-Control": "public, max-age=86400",
+                "X-Vahan-Data-Source": "static-docs-data",
+            },
         )
     raise HTTPException(503, _database_unavailable_detail())
 
