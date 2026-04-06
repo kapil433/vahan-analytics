@@ -343,12 +343,15 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
 .data-badge .load-pulse{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--text-mid)}
 .data-badge .load-dot{width:8px;height:8px;border-radius:50%;background:var(--blue);animation:pulseDot 0.9s ease-in-out infinite}
 @keyframes pulseDot{0%,100%{opacity:0.35;transform:scale(0.9)}50%{opacity:1;transform:scale(1)}}
-.filter-bar .btn-filter-reset{
-  margin-left:auto;font-size:10px;padding:3px 10px;border-radius:4px;border:1px solid var(--border);
+.filter-bar .btn-filter-reset,.filter-bar .btn-export-csv{
+  font-size:10px;padding:3px 10px;border-radius:4px;border:1px solid var(--border);
   background:transparent;color:var(--text-dim);cursor:pointer;font-family:var(--mono);white-space:nowrap;
   flex-shrink:0;letter-spacing:0.03em;
 }
-.filter-bar .btn-filter-reset:hover{border-color:var(--blue);color:var(--blue)}
+.filter-bar .btn-filter-reset{margin-left:auto}
+.filter-bar .btn-filter-reset:hover,.filter-bar .btn-export-csv:hover{border-color:var(--blue);color:var(--blue)}
+.filter-bar .btn-export-csv{color:var(--green,#10b981);border-color:rgba(16,185,129,.35)}
+.filter-bar .btn-export-csv:hover{border-color:var(--green,#10b981)}
 .filter-active-summary{
   display:none; /* hidden inline — only shown as tooltip or badge, not a separate row */
 }
@@ -1021,7 +1024,8 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
       </div>
     </div>
   </div>
-  <button type="button" class="btn-filter-reset" onclick="resetGlobalFilters()" title="Reset geography, year, month, OEM, and fuel to defaults">Reset filters</button>
+  <button type="button" class="btn-filter-reset" onclick="resetGlobalFilters()" title="Reset geography, year, month, OEM, and fuel to defaults">Reset</button>
+  <button type="button" class="btn-export-csv" onclick="exportFilteredCSV('global')" title="Download current filtered data as CSV">↓ CSV</button>
   <span class="global-data-stamp" id="global-data-stamp" title="Dataset build date from loaded bundle"></span>
   <p id="filter-active-summary" class="filter-active-summary" aria-live="polite"></p>
   </div><!-- /filter-bar-inner -->
@@ -1729,15 +1733,14 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
           <div style="font-size:28px;font-weight:800;color:var(--text);font-family:var(--mono);margin-bottom:4px">₹0</div>
           <div style="font-size:11px;color:var(--text-dim);margin-bottom:16px">Forever free</div>
           <ul style="list-style:none;padding:0;font-size:12px;color:var(--text-mid);line-height:2">
-            <li>✅ Full India map (all states visible)</li>
-            <li>✅ All India data — always free</li>
+            <li>✅ All India — all filters, all years</li>
             <li>✅ Andhra Pradesh — always free</li>
             <li>✅ Chhattisgarh — always free</li>
             <li>✅ Odisha — always free</li>
-            <li>✅ Full 2012–present for free states</li>
-            <li>✅ Fuel mix &amp; OEM charts</li>
-            <li style="color:var(--text-dim)">❌ All other 32+ states</li>
-            <li style="color:var(--text-dim)">❌ CSV export</li>
+            <li>✅ All tabs — Overview, Fuel, OEM, EV, Map, Forecast, Compare</li>
+            <li>✅ All filters — year, month, OEM, fuel</li>
+            <li>✅ CSV export (for free states)</li>
+            <li style="color:var(--text-dim)">❌ 32 other states &amp; UTs</li>
             <li style="color:var(--text-dim)">❌ API access</li>
           </ul>
           <div style="margin-top:16px;font-size:12px;color:var(--text-dim);text-align:center">No signup required</div>
@@ -8222,6 +8225,7 @@ async function loadUserTier() {
     if (res.ok) {
       const data = await res.json();
       VAHAN_TIER = data.tier;
+      window.VAHAN_TIER_LIVE = data.tier;
       applyTierToUI(data);
     }
   } catch(e) { /* offline / API unavailable — stay on free tier */ }
@@ -8255,55 +8259,26 @@ function applyTierToUI(data) {
   const upgradeBtn = document.getElementById('header-upgrade-btn');
   if (upgradeBtn) upgradeBtn.style.display = isPro ? 'none' : '';
 
-  // ── Gate locked nav tabs (compare / forecast) ───────────────────────────
-  const lockedTabs = ['compare', 'forecast'];
-  lockedTabs.forEach(tab => {
-    const el = document.getElementById('tab-' + tab);
-    if (!el) return;
-    if (!isPro) {
-      el.setAttribute('aria-label', el.textContent.trim() + ' — Pro only');
-      // Add lock icon if not already there
-      if (!el.querySelector('.tab-lock')) {
-        const lock = document.createElement('span');
-        lock.className = 'tab-lock';
-        lock.textContent = ' 🔒';
-        lock.style.cssText = 'font-size:9px;vertical-align:middle;opacity:.6';
-        el.appendChild(lock);
-      }
-      el.style.opacity = '0.6';
-      el._vahanProGate = true;
-    } else {
-      el.style.opacity = '';
-      el.querySelectorAll('.tab-lock').forEach(l => l.remove());
-      el._vahanProGate = false;
-    }
+  // ── All nav tabs are accessible for free users (only geo is gated) ────────
+  // Remove any stale lock icons from previous sessions
+  document.querySelectorAll('.tab-lock').forEach(l => l.remove());
+  document.querySelectorAll('.nav-tab').forEach(el => {
+    el.style.opacity = '';
+    el._vahanProGate = false;
   });
 
-  // Single delegated handler on nav (avoids duplicate listeners on re-render)
-  const nav = document.querySelector('.nav');
-  if (nav && !nav._vahanGateAttached) {
-    nav._vahanGateAttached = true;
-    nav.addEventListener('click', function(e) {
-      const tab = e.target.closest('.nav-tab');
-      if (!tab || !tab._vahanProGate) return;
-      e.stopImmediatePropagation();
-      e.preventDefault();
-      showUpgradePrompt(tab.dataset.page || 'this feature');
-    }, true);
-  }
-
-  // ── Geo multi-select: lock non-free states for free tier ────────────────
-  const geoWrapper = document.getElementById('ms-geo-wrapper');
-  if (geoWrapper) {
+  // ── Geo multi-select: lock non-free states in BOTH filter bars ───────────
+  function applyGeoLock(wrapperId) {
+    const geoWrapper = document.getElementById(wrapperId);
+    if (!geoWrapper) return;
     if (!isPro) {
       geoWrapper.classList.add('geo-locked');
-      // Intercept ms-item clicks and reject locked states
       if (!geoWrapper._vahanGeoGate) {
         geoWrapper._vahanGeoGate = true;
         geoWrapper.addEventListener('click', function(e) {
           const item = e.target.closest('.ms-item');
           if (!item) return;
-          const stateName = item.dataset.value || item.textContent.replace(/✓/g,'').trim();
+          const stateName = item.dataset.value || item.textContent.replace(/[✓✗🔒]/g,'').trim();
           if (!ALWAYS_FREE_STATES.has(stateName)) {
             e.stopImmediatePropagation();
             showUpgradePrompt('state data for ' + stateName);
@@ -8312,12 +8287,12 @@ function applyTierToUI(data) {
       }
       // Visually mark locked items
       geoWrapper.querySelectorAll('.ms-item').forEach(item => {
-        const name = item.dataset.value || item.textContent.replace(/[✓✗]/g,'').trim();
+        const name = item.dataset.value || item.textContent.replace(/[✓✗🔒]/g,'').trim();
         if (!ALWAYS_FREE_STATES.has(name) && !item.querySelector('.ms-lock')) {
           const lock = document.createElement('span');
           lock.className = 'ms-lock';
           lock.textContent = ' 🔒';
-          lock.style.cssText = 'font-size:9px;opacity:.5;margin-left:auto';
+          lock.style.cssText = 'font-size:9px;opacity:.5;margin-left:auto;flex-shrink:0';
           item.appendChild(lock);
         }
       });
@@ -8326,6 +8301,8 @@ function applyTierToUI(data) {
       geoWrapper.querySelectorAll('.ms-lock').forEach(l => l.remove());
     }
   }
+  applyGeoLock('ms-geo-wrapper');       // global filter bar
+  applyGeoLock('cmp-ms-geo-wrapper');   // State drill-down page
 
   // ── Inject upgrade nudge on overview page for free users ───────────────
   const nudgeId = 'vahan-upgrade-nudge';
@@ -8335,7 +8312,7 @@ function applyTierToUI(data) {
     nudge.className = 'upgrade-nudge';
     nudge.innerHTML = `<span style="font-size:18px">⚡</span>
       <div><strong>Upgrade to Pro — ₹100/year</strong> &nbsp;·&nbsp;
-      Unlock all 37 states, Compare & Forecast tabs, full 2012–present history</div>
+      Unlock all 36 states &amp; UTs — all filters &amp; tabs already free for All India, AP, CG, Odisha</div>
       <span style="margin-left:auto;background:rgba(255,255,255,.15);padding:4px 10px;border-radius:5px;font-size:11px;white-space:nowrap">View plans →</span>`;
     nudge.onclick = () => document.getElementById('tab-pricing')?.click();
     // Insert at top of each main page (lazy — on first page show)
@@ -8388,6 +8365,83 @@ function showUpgradePrompt(feature) {
   `;
   document.body.appendChild(toast);
   setTimeout(() => toast?.remove(), 5000);
+}
+
+// ── Export helpers ─────────────────────────────────────────────────────────
+
+/** Geo-safety check: free users may only export always-free states */
+function _exportGeoAllowed(geoList) {
+  const tier = window.VAHAN_TIER_LIVE || { tier: 'free' };
+  if (tier.tier === 'pro') return true;
+  const blocked = geoList.filter(g => !ALWAYS_FREE_STATES.has(g));
+  if (blocked.length) {
+    showUpgradePrompt('Export for ' + blocked.slice(0,2).join(', '));
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Export the currently filtered dataset as a CSV download.
+ * Works on all pages — pulls from DATA.raw filtered by current global filters.
+ */
+function exportFilteredCSV(sourceLabel) {
+  if (!DATA || !DATA.raw) { alert('Data not loaded yet — please wait.'); return; }
+  const f = getFilters();
+  const geoList = Array.isArray(f.geo) ? f.geo : [f.geo || 'All India'];
+  if (!_exportGeoAllowed(geoList)) return;
+
+  const rows = filterRows(f);
+  if (!rows.length) { alert('No data matches current filters.'); return; }
+
+  const MONTHS = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const yt = f.yeartype === 'fy' ? 'Financial Year' : 'Calendar Year';
+  const header = 'Region,Year Type,Year,Month,OEM,Fuel,Registrations';
+  const lines = rows
+    .filter(r => r.registrations > 0)
+    .map(r => {
+      const yr = f.yeartype === 'fy' ? (r.fy || '') : String(r.cal_year || '');
+      const mo = MONTHS[r.month] || r.month || '';
+      return [r.region, yt, yr, mo, r.maker, r.fuel, r.registrations]
+        .map(v => '"' + String(v).replace(/"/g,'""') + '"').join(',');
+    });
+
+  const geo = geoList.join('+').replace(/\s+/g,'_').slice(0,40);
+  const now = new Date().toISOString().slice(0,10);
+  const filename = `vahan_${geo}_${now}.csv`;
+  const blob = new Blob([header + '\n' + lines.join('\n')], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showExportToast(lines.length + ' rows → ' + filename);
+}
+
+/**
+ * Export a Chart.js canvas as a PNG image.
+ * @param {string} canvasId  - id of the <canvas> element
+ * @param {string} label     - name to use in filename
+ */
+function exportChartPNG(canvasId, label) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const url = canvas.toDataURL('image/png');
+  const a = document.createElement('a');
+  const name = (label || canvasId).replace(/\s+/g,'_').replace(/[^a-z0-9_-]/gi,'') + '_' + new Date().toISOString().slice(0,10) + '.png';
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  showExportToast('Saved: ' + name);
+}
+
+function showExportToast(msg) {
+  const t = document.createElement('div');
+  t.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#064e3b;border:1px solid #10b981;color:#a7f3d0;border-radius:8px;padding:10px 16px;font-size:12px;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.4);max-width:340px;font-family:var(--mono)';
+  t.innerHTML = '✅ ' + msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
 }
 
 // ── Razorpay checkout ──────────────────────────────────────────────────────
@@ -8476,6 +8530,87 @@ document.addEventListener('DOMContentLoaded', () => {
   resizePricingGrid();
   window.addEventListener('resize', resizePricingGrid, {passive: true});
 });
+
+// ── Inject ↓ PNG export buttons into every chart-card after data loads ──────
+const CHART_EXPORT_MAP = {
+  'chart-trend':         'Registrations_Trend',
+  'chart-donut':         'Fuel_Mix',
+  'chart-yoy':           'YoY_Growth',
+  'chart-topoem':        'Top_OEMs',
+  'chart-fuelstack':     'Fuel_Stack',
+  'chart-monthly':       'Monthly_Trend',
+  'chart-oembar':        'OEM_Share',
+  'chart-oempie':        'OEM_Pie',
+  'chart-oemtrend':      'OEM_Trends',
+  'chart-ev-trend':      'EV_Trend',
+  'chart-ev-oem':        'EV_OEM',
+  'chart-green':         'Green_Vehicles',
+  'chart-forecast':      'Forecast',
+  'chart-seasonal':      'Seasonality',
+  'chart-cmp-state-vol': 'State_Volume',
+  'chart-cmp-ai-vol':    'AllIndia_Volume',
+  'chart-cmp-state-fuel':'State_Fuel_Mix',
+  'chart-cmp-ai-fuel':   'AllIndia_Fuel_Mix',
+  'chart-cmp-state-oem': 'State_OEM',
+  'chart-cmp-ai-oem':    'AllIndia_OEM',
+};
+
+function injectChartExportButtons() {
+  Object.entries(CHART_EXPORT_MAP).forEach(([canvasId, label]) => {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const card = canvas.closest('.chart-card');
+    if (!card) return;
+    const actions = card.querySelector('.chart-actions');
+    if (!actions || actions.querySelector('.chart-export-btn')) return;
+    const btn = document.createElement('button');
+    btn.className = 'chart-btn chart-export-btn';
+    btn.title = 'Save chart as PNG';
+    btn.innerHTML = '↓ PNG';
+    btn.style.cssText = 'margin-left:auto;color:var(--text-dim);opacity:.7;';
+    btn.addEventListener('click', () => exportChartPNG(canvasId, label));
+    actions.appendChild(btn);
+  });
+}
+
+// Also add CSV export to compare page filter bar (injected once on first compare visit)
+function injectCompareExport() {
+  const bar = document.querySelector('#page-compare .cmp-filter-row');
+  if (!bar || bar.querySelector('.btn-export-csv')) return;
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'btn-filter-reset btn-export-csv';
+  btn.style.cssText = 'margin-left:auto;font-size:10px;padding:3px 10px;border-radius:4px;border:1px solid rgba(16,185,129,.35);background:transparent;color:var(--green,#10b981);cursor:pointer;font-family:var(--mono);white-space:nowrap;letter-spacing:.03em';
+  btn.textContent = '↓ CSV';
+  btn.title = 'Download compare page filtered data as CSV';
+  btn.addEventListener('click', () => exportFilteredCSV('compare'));
+  bar.appendChild(btn);
+}
+
+// Hook into page navigation to inject buttons when pages become visible
+(function() {
+  const origShowPage = window.showPage;
+  window.showPage = function(page) {
+    if (origShowPage) origShowPage(page);
+    setTimeout(() => {
+      injectChartExportButtons();
+      if (page === 'compare') injectCompareExport();
+    }, 300);
+  };
+  // Also inject after initial data load
+  const origBuildOverview = window.buildOverview;
+  if (origBuildOverview) {
+    window.buildOverview = function() {
+      origBuildOverview.apply(this, arguments);
+      setTimeout(injectChartExportButtons, 400);
+    };
+  }
+  // Fallback: inject after a delay on load
+  window.addEventListener('load', () => setTimeout(() => {
+    injectChartExportButtons();
+    injectCompareExport();
+  }, 1500));
+})();
 </script>
 
 </body>
