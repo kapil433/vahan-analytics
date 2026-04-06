@@ -917,7 +917,7 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
   <div class="header-right">
     <span id="header-pro-badge" title="Pro access active">⚡ PRO</span>
     <span class="data-badge" id="dataBadge"><span class="load-pulse"><span class="load-dot" aria-hidden="true"></span><span id="dataBadgeText">Fetching registration records…</span></span></span>
-    <button onclick="document.getElementById('tab-pricing')?.click()" style="font-size:11px;font-family:var(--mono);font-weight:600;background:linear-gradient(135deg,#f59e0b,#d97706);color:#000;border:none;padding:4px 10px;border-radius:5px;cursor:pointer;white-space:nowrap;letter-spacing:.04em" title="Upgrade to Pro">⚡ Pro</button>
+    <button id="header-upgrade-btn" onclick="document.getElementById('tab-pricing')?.click()" style="font-size:11px;font-family:var(--mono);font-weight:600;background:linear-gradient(135deg,#f59e0b,#d97706);color:#000;border:none;padding:4px 10px;border-radius:5px;cursor:pointer;white-space:nowrap;letter-spacing:.04em" title="Upgrade to Pro">⚡ Pro</button>
   </div>
 </div>
 
@@ -8229,9 +8229,11 @@ function applyTierToUI(data) {
       if (detail) detail.textContent = `${data.plan || 'Pro'} · expires ${exp}`;
     }
   }
-  // Header Pro pill (small badge next to logo)
+  // Header Pro pill: show when pro, hide upgrade button
   const hbadge = document.getElementById('header-pro-badge');
   if (hbadge) hbadge.style.display = isPro ? 'inline-flex' : 'none';
+  const upgradeBtn = document.getElementById('header-upgrade-btn');
+  if (upgradeBtn) upgradeBtn.style.display = isPro ? 'none' : '';
 
   // ── Gate locked nav tabs (compare / forecast) ───────────────────────────
   const lockedTabs = ['compare', 'forecast'];

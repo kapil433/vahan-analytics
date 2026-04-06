@@ -10,9 +10,18 @@ services:
     buildCommand: pip install -r requirements-render.txt
     startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /healthz/warm
-    # envVars:
-    #   - key: DATABASE_URL
-    #     sync: false   # set to your Render PostgreSQL Internal URL
-    #   - key: CORS_ALLOW_ORIGINS
-    #     value: https://www.vahanintelligence.in,https://your-staging.example
-    #     # optional; defaults include www + apex + kapil433.github.io + localhost
+    envVars:
+      # ── Required for Razorpay payments ─────────────────────────────────────
+      - key: RAZORPAY_KEY_ID
+        sync: false       # paste your rzp_live_xxx or rzp_test_xxx key here in Render dashboard
+      - key: RAZORPAY_KEY_SECRET
+        sync: false       # paste your Razorpay secret here (never commit to git)
+      # ── Required for JWT token signing ──────────────────────────────────────
+      - key: JWT_SECRET
+        generateValue: true   # Render auto-generates a secure random string
+      # ── Optional: PostgreSQL (leave unset to use bundled SQLite) ─────────────
+      # - key: DATABASE_URL
+      #   sync: false         # set to your Render PostgreSQL Internal URL
+      # ── Optional: CORS allow-list ────────────────────────────────────────────
+      # - key: CORS_ALLOW_ORIGINS
+      #   value: https://www.vahanintelligence.in
