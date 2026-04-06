@@ -151,25 +151,23 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
 .filter-bar{
   background:var(--surface2);
   border-bottom:1px solid var(--border);
-  padding:0 20px;
-  display:flex;align-items:center;gap:0;
-  min-height:40px;overflow:visible;
+  padding:8px 20px;
+  display:flex;align-items:center;gap:8px;flex-wrap:nowrap;overflow:visible;
 }
-.filter-group{display:flex;align-items:center;gap:5px;padding:0 10px;flex-shrink:0}
-.filter-group:first-child{padding-left:0}
+.filter-group{display:flex;align-items:center;gap:6px;flex-shrink:0}
 .filter-label{font-size:10px;color:var(--text-dim);font-family:var(--mono);letter-spacing:0.06em;white-space:nowrap;text-transform:uppercase}
 .filter-select{
-  background:transparent;border:none;
+  background:var(--surface);border:1px solid var(--border);
   color:var(--text);font-size:12px;font-family:var(--font);
-  padding:2px 20px 2px 4px;cursor:pointer;
+  padding:4px 24px 4px 8px;border-radius:5px;cursor:pointer;
   appearance:none;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%23475569'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 2px center;
-  transition:color 0.15s;min-width:90px;font-weight:500;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23475569'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 7px center;
+  transition:border-color 0.15s;min-width:100px;
 }
-.filter-select:hover{color:var(--blue)}
-.filter-select:focus{outline:none;color:var(--blue)}
-.filter-sep{width:1px;height:20px;background:var(--border);margin:0 2px;flex-shrink:0;align-self:center}
+.filter-select:hover{border-color:var(--blue)}
+.filter-select:focus{outline:none;border-color:var(--blue)}
+.filter-sep{width:1px;height:20px;background:var(--border);margin:0 2px;flex-shrink:0}
 
 /* MAIN CONTENT */
 .main{position:relative;padding:20px 24px;min-height:calc(100vh - 120px)}
@@ -431,17 +429,17 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
 }
 
 /* ─── MULTI-SELECT DROPDOWN ─── */
-.ms-wrapper{position:relative;display:inline-flex;align-items:center}
+.ms-wrapper{position:relative;display:inline-block}
 .ms-trigger{
-  background:transparent;border:none;
-  color:var(--text);font-size:12px;font-family:var(--font);font-weight:500;
-  padding:2px 18px 2px 4px;cursor:pointer;
-  min-width:80px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%23475569'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 2px center;
-  transition:color 0.15s;user-select:none;
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--text);font-size:12px;font-family:var(--font);
+  padding:4px 28px 4px 10px;border-radius:5px;cursor:pointer;
+  min-width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23475569'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 8px center;
+  transition:border-color 0.15s;user-select:none;
 }
-.ms-trigger:hover,.ms-trigger.open{color:var(--blue)}
+.ms-trigger:hover,.ms-trigger.open{border-color:var(--blue)}
 .ms-dropdown{
   display:none;position:absolute;top:calc(100% + 4px);left:0;
   background:var(--surface2);border:1px solid var(--border);
@@ -565,10 +563,9 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
 .sticky-toolbar .nav{border-bottom:none;margin:0}
 .sticky-toolbar .filter-bar{border-bottom:none}
 
-/* filter-bar-inner: full-width flex row on desktop, collapsible on mobile */
+/* filter-bar-inner: flex row on desktop, collapsible on mobile */
 .filter-bar-inner{
-  display:flex;flex-wrap:nowrap;align-items:center;gap:0;flex:1;min-width:0;
-  overflow-x:auto;overflow-y:visible;scrollbar-width:none;
+  display:flex;flex-wrap:nowrap;align-items:center;gap:8px;flex:1;min-width:0;
 }
 .filter-bar-inner::-webkit-scrollbar{display:none}
 
@@ -649,12 +646,11 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
   .nav::-webkit-scrollbar{display:none}
   .nav-tab{padding:8px 12px;font-size:12px}
 
-  /* Filter bar: slightly more compact on tablet, still single row */
-  .filter-bar{padding:0 14px;height:38px}
-  .filter-group{padding:0 7px}
+  /* Filter bar: wrap on tablet */
+  .filter-bar{padding:6px 14px;gap:6px;flex-wrap:wrap}
   .filter-label{font-size:9px}
-  .filter-select{font-size:11px;min-width:70px}
-  .ms-trigger{min-width:65px;font-size:11px}
+  .filter-select{font-size:11px;min-width:80px;padding:3px 22px 3px 7px}
+  .ms-trigger{min-width:80px;font-size:11px;padding:3px 24px 3px 8px}
 
   /* Main padding */
   .main{padding:14px 14px}
@@ -703,20 +699,14 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
 /* ── 640px: large phone ── */
 @media(max-width:640px){
   /* Filter bar: collapse to toggle button on phones */
-  .filter-bar{height:auto;padding:6px 14px;flex-wrap:wrap}
+  .filter-bar{padding:6px 14px;flex-wrap:wrap;gap:0}
   .filter-toggle{display:flex;align-items:center;gap:6px}
   .filter-bar-inner{
-    display:none;flex-wrap:wrap;gap:6px 10px;width:100%;overflow-x:visible;
-    padding-top:8px;border-top:1px solid var(--border);margin-top:2px;
-    align-items:center;
+    display:none;flex-wrap:wrap;gap:6px;width:100%;
+    padding-top:8px;border-top:1px solid var(--border);margin-top:6px;
   }
   .filter-bar--open .filter-bar-inner{display:flex}
-  .filter-bar-inner .filter-group{padding:0;flex-shrink:0}
   .filter-bar-inner .filter-sep{display:none}
-  .filter-bar-inner .ms-trigger,.filter-bar-inner .filter-select{
-    border:1px solid var(--border);border-radius:4px;background:var(--surface);
-    padding:4px 20px 4px 8px;min-width:80px;
-  }
   .global-data-stamp{display:none}
 
   /* KPI: 2-col stays, but tighter */
