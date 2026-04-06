@@ -604,6 +604,162 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
   .heatmap-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 }
 
+/* ============================================================
+   COMPREHENSIVE MOBILE RESPONSIVE OVERRIDES
+   Breakpoints: 480px (phone), 640px (large phone), 768px (tablet)
+   ============================================================ */
+
+/* ── Hamburger toggle (injected by JS below) ── */
+.nav-toggle{
+  display:none;background:none;border:1px solid var(--border);border-radius:5px;
+  padding:5px 9px;cursor:pointer;color:var(--text-dim);font-size:18px;line-height:1;
+}
+.nav-toggle:focus-visible{outline:2px solid var(--blue)}
+.filter-toggle{
+  display:none;background:var(--surface2);border:1px solid var(--border);border-radius:5px;
+  padding:5px 12px;cursor:pointer;color:var(--text-dim);font-size:12px;
+  font-family:var(--mono);white-space:nowrap;flex-shrink:0;
+}
+
+/* ── 768px: tablet ── */
+@media(max-width:768px){
+  /* Header: hide subtitle on small screens */
+  .header{padding:0 14px;height:52px}
+  .header-brand .subtitle{display:none}
+  .header-brand .logo-mark{width:34px;height:34px;font-size:13px}
+  .header-brand .title{font-size:15px}
+  .data-badge{display:none}
+
+  /* Nav tabs: horizontal scroll */
+  .nav{padding:0 4px;overflow-x:auto;-webkit-overflow-scrolling:touch;
+       scrollbar-width:none;flex-shrink:0}
+  .nav::-webkit-scrollbar{display:none}
+  .nav-tab{padding:8px 12px;font-size:12px}
+
+  /* Filter bar: toggle collapse */
+  .filter-bar{padding:8px 14px;gap:8px}
+  .filter-label{font-size:10px}
+  .filter-select{font-size:11px;padding:4px 24px 4px 8px;min-width:90px}
+
+  /* Main padding */
+  .main{padding:14px 14px}
+
+  /* KPI cards: 2 per row */
+  .kpi-row{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+  .kpi-value{font-size:20px}
+  .kpi-card{padding:10px 12px}
+
+  /* Charts: stack single col */
+  .chart-grid,.chart-grid-3{grid-template-columns:1fr;gap:10px}
+  .chart-card{padding:12px 12px}
+  .chart-wrap canvas{max-height:220px}
+  .chart-wrap-tall canvas{max-height:260px}
+
+  /* Tables: horizontal scroll */
+  .data-table-wrap,.preview-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .data-table{font-size:11px}
+  .data-table th,.data-table td{padding:6px 8px;white-space:nowrap}
+
+  /* Geo map: stack */
+  .geomap-layout{flex-direction:column!important}
+  .geomap-side{border-left:none!important;border-top:1px solid var(--border);
+               max-height:280px!important;padding:12px 12px!important}
+  #geomap-svg-wrap{min-height:300px!important}
+
+  /* Sticky toolbar */
+  .sticky-toolbar{top:52px}
+
+  /* Hero intro */
+  .hero-intro{padding:12px 14px}
+  .hero-intro h1{font-size:13px}
+  .hero-intro p{font-size:11px}
+
+  /* Blog */
+  .blog-list > article{padding:14px 14px}
+  .blog-list article h2{font-size:15px}
+
+  /* Footer grid: single col */
+  .site-footer-inner{grid-template-columns:1fr!important}
+
+  /* Forecast table */
+  #fc-table{overflow-x:auto;-webkit-overflow-scrolling:touch}
+}
+
+/* ── 640px: large phone ── */
+@media(max-width:640px){
+  /* Filter bar: collapsible (JS toggles .filter-bar--open) */
+  .filter-toggle{display:flex;align-items:center;gap:6px;margin-bottom:0}
+  .filter-bar-inner{
+    display:none;flex-wrap:wrap;gap:8px;width:100%;
+    padding-top:8px;border-top:1px solid var(--border);margin-top:4px;
+  }
+  .filter-bar--open .filter-bar-inner{display:flex}
+  .global-data-stamp{display:none}
+
+  /* KPI: 2-col stays, but tighter */
+  .kpi-row{gap:6px}
+  .kpi-value{font-size:18px}
+  .kpi-label{font-size:10px}
+
+  /* Chart buttons: hide text if too many */
+  .chart-actions{gap:4px}
+  .chart-btn{font-size:10px;padding:2px 6px}
+
+  /* Compare page filters */
+  .cmp-filter-row{flex-direction:column;gap:6px}
+  .cmp-filter-row .btn{width:100%;justify-content:center}
+
+  /* State drill-down panel: full-width modal */
+  .modal-panel,.drill-panel{width:100%!important;max-width:100%!important;
+    left:0!important;right:0!important;border-radius:12px 12px 0 0!important;
+    bottom:0!important;top:auto!important;position:fixed!important;max-height:80vh!important;
+    overflow-y:auto!important;}
+
+  /* Dropdown modal-style: no min-width */
+  .filter-select{min-width:0;width:100%;max-width:100%}
+  .filter-group{width:100%;justify-content:space-between}
+}
+
+/* ── 480px: phone ── */
+@media(max-width:480px){
+  /* KPI: single col on very small phones */
+  .kpi-row{grid-template-columns:1fr}
+
+  /* Nav tab text: shorter */
+  .nav-tab{padding:8px 10px;font-size:11px}
+
+  /* Header brand */
+  .header-brand .title{font-size:14px}
+  .header-brand .logo-mark{width:30px;height:30px;font-size:12px;border-radius:7px}
+
+  /* Reduce main padding */
+  .main{padding:10px 10px}
+
+  /* Chart height cap */
+  .chart-wrap canvas{max-height:180px}
+
+  /* OEM cards: single col */
+  .oem-grid{grid-template-columns:1fr!important}
+}
+
+/* ── Touch UX improvements ── */
+@media(hover:none){
+  /* Larger tap targets */
+  .nav-tab{min-height:44px;display:inline-flex;align-items:center}
+  .filter-select{min-height:36px}
+  .chart-btn{min-height:32px;padding:4px 10px}
+  .btn{min-height:36px}
+
+  /* Remove hover-only effects that confuse touch */
+  .data-table tr:hover td{background:transparent}
+}
+
+/* ── Prevent text zoom on input focus (iOS) ── */
+@media(max-width:768px){
+  .filter-select,.filter-toggle,input,select,textarea{font-size:16px!important}
+  .filter-label,.chart-btn,.nav-tab,.kpi-label{font-size:max(10px,0.7rem)}
+}
+
 </style>
 </head>
 <body>
@@ -637,10 +793,16 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
   <button type="button" class="nav-tab" data-page="blog" role="tab" aria-selected="false" id="tab-blog" aria-controls="page-blog" tabindex="-1"><span aria-hidden="true">📰</span> Blog</button>
   <button type="button" class="nav-tab" data-page="info" role="tab" aria-selected="false" id="tab-info" aria-controls="page-info" tabindex="-1"><span aria-hidden="true">ℹ️</span> Info</button>
   <button type="button" class="nav-tab" data-page="about" role="tab" aria-selected="false" id="tab-about" aria-controls="page-about" tabindex="-1">About</button>
+  <button type="button" class="nav-tab nav-tab-pro" data-page="pricing" role="tab" aria-selected="false" id="tab-pricing" aria-controls="page-pricing" tabindex="-1" style="margin-left:auto;color:#f59e0b;font-weight:600">⚡ Pro</button>
 </div>
 
 <!-- FILTER BAR -->
-<div class="filter-bar">
+<div class="filter-bar" id="global-filter-bar">
+  <!-- Mobile toggle button (shown ≤640px via CSS) -->
+  <button type="button" class="filter-toggle" id="filter-toggle-btn" onclick="toggleFilterBar()" aria-expanded="false" aria-controls="filter-bar-inner">
+    ⚙ Filters
+  </button>
+  <div class="filter-bar-inner" id="filter-bar-inner">
   <div class="filter-group">
     <span class="filter-label">GEOGRAPHY</span>
     <div class="ms-wrapper" id="ms-geo-wrapper">
@@ -699,6 +861,7 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
   <button type="button" class="btn-filter-reset" onclick="resetGlobalFilters()" title="Reset geography, year, month, OEM, and fuel to defaults">Reset filters</button>
   <span class="global-data-stamp" id="global-data-stamp" title="Dataset build date from loaded bundle"></span>
   <p id="filter-active-summary" class="filter-active-summary" aria-live="polite"></p>
+  </div><!-- /filter-bar-inner -->
 </div>
 </div><!-- /sticky-toolbar -->
 
@@ -1376,6 +1539,95 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
 
       <h3>Independence</h3>
       <p>Vahan Intelligence is <strong>not affiliated with the Government of India</strong>. It interprets published statistics only. For statutory, compliance, or official reporting, always cite <strong>original VAHAN / MoRTH / Parivahan</strong> sources.</p>
+    </div>
+  </div>
+
+  <!-- PRICING PAGE -->
+  <div class="page" id="page-pricing" role="tabpanel" aria-labelledby="tab-pricing">
+    <div class="static-page" style="max-width:900px">
+
+      <div id="pricing-pro-banner" style="display:none;background:linear-gradient(135deg,#065f46,#047857);border:1px solid #10b981;border-radius:10px;padding:14px 18px;margin-bottom:24px;display:none;align-items:center;gap:12px">
+        <span style="font-size:20px">✅</span>
+        <div>
+          <div style="font-weight:700;color:#d1fae5;font-size:15px">You have Pro access</div>
+          <div style="font-size:12px;color:#a7f3d0" id="pricing-pro-detail">All features unlocked</div>
+        </div>
+      </div>
+
+      <h2 style="font-size:22px;margin-bottom:6px">Upgrade to Vahan Intelligence Pro</h2>
+      <p style="font-size:13px;color:var(--text-mid);margin-bottom:24px">Unlock all 37 states, full 2012–present history, CSV exports, and API access.</p>
+
+      <!-- Plan cards -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:32px" id="pricing-grid">
+
+        <!-- Free -->
+        <div class="chart-card" style="border:1px solid var(--border)">
+          <div style="font-size:12px;font-weight:700;color:var(--text-dim);font-family:var(--mono);letter-spacing:.06em;margin-bottom:8px">FREE</div>
+          <div style="font-size:28px;font-weight:800;color:var(--text);font-family:var(--mono);margin-bottom:4px">₹0</div>
+          <div style="font-size:11px;color:var(--text-dim);margin-bottom:16px">Forever free</div>
+          <ul style="list-style:none;padding:0;font-size:12px;color:var(--text-mid);line-height:2">
+            <li>✅ Full India map (all states visible)</li>
+            <li>✅ All India data — always free</li>
+            <li>✅ Andhra Pradesh — always free</li>
+            <li>✅ Chhattisgarh — always free</li>
+            <li>✅ Odisha — always free</li>
+            <li>✅ Full 2012–present for free states</li>
+            <li>✅ Fuel mix &amp; OEM charts</li>
+            <li style="color:var(--text-dim)">❌ All other 32+ states</li>
+            <li style="color:var(--text-dim)">❌ CSV export</li>
+            <li style="color:var(--text-dim)">❌ API access</li>
+          </ul>
+          <div style="margin-top:16px;font-size:12px;color:var(--text-dim);text-align:center">No signup required</div>
+        </div>
+
+        <!-- Pro Annual -->
+        <div class="chart-card" style="border:2px solid var(--blue);position:relative">
+          <div style="position:absolute;top:-10px;right:12px;background:var(--blue);color:#fff;font-size:10px;font-weight:700;padding:2px 10px;border-radius:10px;letter-spacing:.06em">MOST POPULAR</div>
+          <div style="font-size:12px;font-weight:700;color:var(--blue);font-family:var(--mono);letter-spacing:.06em;margin-bottom:8px">PRO — 1 YEAR</div>
+          <div style="font-size:28px;font-weight:800;color:var(--text);font-family:var(--mono);margin-bottom:4px">₹100</div>
+          <div style="font-size:11px;color:var(--text-dim);margin-bottom:16px">per year</div>
+          <ul style="list-style:none;padding:0;font-size:12px;color:var(--text-mid);line-height:2">
+            <li>✅ All 37 states + UTs</li>
+            <li>✅ Full 2012–present history</li>
+            <li>✅ State drill-downs &amp; comparisons</li>
+            <li>✅ OEM + fuel deep dives</li>
+            <li>✅ CSV data export</li>
+            <li>✅ API access</li>
+          </ul>
+          <button class="btn btn-primary" style="width:100%;margin-top:16px;justify-content:center"
+            onclick="openRazorpay('annual')">Get Pro — ₹100/yr</button>
+        </div>
+
+        <!-- Pro Lifetime -->
+        <div class="chart-card" style="border:2px solid #f59e0b;position:relative">
+          <div style="position:absolute;top:-10px;right:12px;background:#f59e0b;color:#000;font-size:10px;font-weight:700;padding:2px 10px;border-radius:10px;letter-spacing:.06em">BEST VALUE</div>
+          <div style="font-size:12px;font-weight:700;color:#f59e0b;font-family:var(--mono);letter-spacing:.06em;margin-bottom:8px">PRO — LIFETIME</div>
+          <div style="font-size:28px;font-weight:800;color:var(--text);font-family:var(--mono);margin-bottom:2px">₹499</div>
+          <div style="font-size:11px;color:#10b981;margin-bottom:16px">one-time, never pay again</div>
+          <ul style="list-style:none;padding:0;font-size:12px;color:var(--text-mid);line-height:2">
+            <li>✅ Everything in Pro Annual</li>
+            <li>✅ Never pay again</li>
+            <li>✅ All future updates included</li>
+            <li>✅ Priority support</li>
+          </ul>
+          <button class="btn btn-primary" style="width:100%;margin-top:16px;justify-content:center;background:#f59e0b;border-color:#f59e0b;color:#000"
+            onclick="openRazorpay('lifetime')">Get Lifetime — ₹499</button>
+        </div>
+      </div>
+
+      <!-- Email for receipt -->
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:16px 18px;margin-bottom:24px">
+        <label style="font-size:12px;font-weight:600;color:var(--text-mid);display:block;margin-bottom:6px">Email for receipt &amp; account recovery</label>
+        <input type="email" id="pricing-email" placeholder="you@example.com"
+          style="width:100%;max-width:360px;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:5px;font-size:13px">
+        <div style="font-size:11px;color:var(--text-dim);margin-top:6px">We only use this to email your receipt. No spam.</div>
+      </div>
+
+      <div style="font-size:11px;color:var(--text-dim);line-height:1.8">
+        <strong>Secure payments by Razorpay.</strong> Accepts UPI, credit/debit cards, net banking, wallets.<br>
+        Access is valid for the duration of your plan. Cancel anytime from Razorpay portal.<br>
+        Questions? Email <a href="mailto:guptakapil433@gmail.com" style="color:var(--blue)">guptakapil433@gmail.com</a>
+      </div>
     </div>
   </div>
 
@@ -4699,6 +4951,40 @@ function setCmpFuelView(mode, btn) {
   }
 }
 
+// ─────────────────────────────────────────────────────────────────
+// MOBILE RESPONSIVE HELPERS
+// ─────────────────────────────────────────────────────────────────
+
+/** Toggle collapsible filter bar on mobile (≤640px) */
+function toggleFilterBar() {
+  const bar = document.getElementById('global-filter-bar');
+  const btn = document.getElementById('filter-toggle-btn');
+  if (!bar) return;
+  const isOpen = bar.classList.toggle('filter-bar--open');
+  if (btn) {
+    btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    btn.textContent = isOpen ? '✕ Filters' : '⚙ Filters';
+  }
+}
+
+/** Auto-open filter bar on desktop; close on resize to mobile */
+function handleFilterBarResize() {
+  const bar = document.getElementById('global-filter-bar');
+  const btn = document.getElementById('filter-toggle-btn');
+  if (!bar) return;
+  if (window.innerWidth > 640) {
+    bar.classList.add('filter-bar--open');
+    if (btn) btn.setAttribute('aria-expanded', 'true');
+  } else {
+    // Keep user's last choice, but default to closed
+    if (!bar.classList.contains('filter-bar--open')) {
+      if (btn) btn.textContent = '⚙ Filters';
+    }
+  }
+}
+
+window.addEventListener('resize', handleFilterBarResize, {passive: true});
+
 // Wire cmp year type change
 document.addEventListener('click', (e) => {
   if (!e.target.closest('.ms-wrapper')) {
@@ -4708,6 +4994,8 @@ document.addEventListener('click', (e) => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Run filter bar responsive init
+  handleFilterBarResize();
   const cmpYt = document.getElementById('cmp-yeartype');
   if (cmpYt) cmpYt.addEventListener('change', () => {
     populateCmpYearMultiselect();
@@ -7746,6 +8034,174 @@ function buildEventImpactSummary(ev) {
     </div>
   </div>
 </div>
+
+<!-- =====================================================================
+     RAZORPAY FREEMIUM INTEGRATION
+     ===================================================================== -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+// ── Token store (localStorage) ─────────────────────────────────────────────
+const VAHAN_TOKEN_KEY = 'vahan_pro_token';
+
+function getProToken() { try { return localStorage.getItem(VAHAN_TOKEN_KEY); } catch(e) { return null; } }
+function setProToken(t) { try { localStorage.setItem(VAHAN_TOKEN_KEY, t); } catch(e) {} }
+function clearProToken() { try { localStorage.removeItem(VAHAN_TOKEN_KEY); } catch(e) {} }
+
+// ── Current tier (populated on load) ──────────────────────────────────────
+let VAHAN_TIER = { tier: 'free', states: ['All India'], max_years: 2, can_export: false, can_api: false };
+
+async function loadUserTier() {
+  const token = getProToken();
+  try {
+    const res = await fetch('/api/payments/me', {
+      headers: token ? { 'Authorization': 'Bearer ' + token } : {}
+    });
+    if (res.ok) {
+      const data = await res.json();
+      VAHAN_TIER = data.tier;
+      applyTierToUI(data);
+    }
+  } catch(e) { /* offline / API unavailable — stay on free tier */ }
+}
+
+function applyTierToUI(data) {
+  const isPro = data.tier && data.tier.tier === 'pro';
+
+  // Show "Pro" badge in header if subscribed
+  const badge = document.getElementById('pricing-pro-banner');
+  if (badge && isPro) {
+    badge.style.display = 'flex';
+    const detail = document.getElementById('pricing-pro-detail');
+    if (detail) detail.textContent = `${data.plan} plan · expires ${data.token_expires ? data.token_expires.slice(0,10) : '—'}`;
+  }
+
+  // Gate locked nav tabs
+  const lockedTabs = ['compare', 'forecast'];   // these are PRO tabs
+  lockedTabs.forEach(tab => {
+    const el = document.getElementById('tab-' + tab);
+    if (!el) return;
+    if (!isPro) {
+      el.addEventListener('click', function(e) {
+        if (!getProToken()) {
+          e.stopImmediatePropagation();
+          showUpgradePrompt(tab);
+        }
+      }, true);  // capture phase so it fires first
+    }
+  });
+
+  // Tint locked tabs for free users
+  if (!isPro) {
+    lockedTabs.forEach(tab => {
+      const el = document.getElementById('tab-' + tab);
+      if (el) el.style.opacity = '0.5';
+    });
+  }
+
+  // Geo filter: restrict to All India for free tier
+  if (!isPro) {
+    const geoTrigger = document.getElementById('ms-geo-trigger');
+    if (geoTrigger) {
+      geoTrigger.setAttribute('title', 'Upgrade to Pro to access state-level data');
+    }
+  }
+}
+
+function showUpgradePrompt(feature) {
+  const names = { compare: 'State drill-down', forecast: 'Forecast' };
+  const msg = `${names[feature] || feature} is a Pro feature.\n\nUpgrade to access all 37 states, full history, and more.`;
+  if (confirm(msg + '\n\nGo to Pricing page?')) {
+    document.getElementById('tab-pricing')?.click();
+  }
+}
+
+// ── Razorpay checkout ──────────────────────────────────────────────────────
+async function openRazorpay(plan) {
+  const email = (document.getElementById('pricing-email')?.value || '').trim();
+
+  // 1. Create order
+  let orderData;
+  try {
+    const res = await fetch('/api/payments/create-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plan, email }),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      alert('Could not create order: ' + (err.detail || res.status));
+      return;
+    }
+    orderData = await res.json();
+  } catch(e) {
+    alert('Network error: ' + e.message);
+    return;
+  }
+
+  // 2. Open Razorpay checkout
+  const options = {
+    key: orderData.key_id,
+    amount: orderData.amount,
+    currency: orderData.currency,
+    name: 'Vahan Intelligence',
+    description: plan === 'lifetime' ? 'Pro Lifetime — ₹499 one-time' : 'Pro Annual — ₹100/year',
+    order_id: orderData.order_id,
+    prefill: { email },
+    theme: { color: '#2563eb' },
+    handler: async function(response) {
+      // 3. Verify payment on backend
+      try {
+        const vRes = await fetch('/api/payments/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+            plan,
+            email,
+          }),
+        });
+        const vData = await vRes.json();
+        if (vRes.ok && vData.success) {
+          setProToken(vData.token);
+          VAHAN_TIER = vData.tier;
+          alert('🎉 Payment successful! You now have Pro access. Refreshing…');
+          window.location.reload();
+        } else {
+          alert('Payment verification failed: ' + (vData.detail || 'Contact support'));
+        }
+      } catch(e) {
+        alert('Verification error: ' + e.message);
+      }
+    },
+    modal: {
+      ondismiss: function() {
+        console.log('Razorpay checkout closed');
+      }
+    }
+  };
+
+  const rzp = new Razorpay(options);
+  rzp.open();
+}
+
+// ── Init on page load ─────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  loadUserTier();
+
+  // Responsive pricing grid
+  function resizePricingGrid() {
+    const grid = document.getElementById('pricing-grid');
+    if (grid) {
+      grid.style.gridTemplateColumns = window.innerWidth < 640 ? '1fr' :
+                                       window.innerWidth < 900 ? '1fr 1fr' : '1fr 1fr 1fr';
+    }
+  }
+  resizePricingGrid();
+  window.addEventListener('resize', resizePricingGrid, {passive: true});
+});
+</script>
 
 </body>
 </html>

@@ -42,6 +42,7 @@ from api.data_policy import (
     append_exclude_state_codes_sql,
 )
 from api.master_bundle import build_vahan_master_bundle
+from api.payments import router as payments_router, tier_from_request
 from config.scraping_config import (
     BASE_FILTERS,
     FUEL_GROUP_CHECKBOX_IDS,
@@ -104,6 +105,45 @@ STATIC_MASTER_JSON = PROJECT_ROOT / "docs" / "data" / "vahan_master.json"
 # Invalidates when row count or latest loaded_at changes (reload / upsert).
 _vahan_bundle_cache_fp: tuple[int, str] | None = None
 _vahan_bundle_cache_body: bytes | None = None
+
+# ── Fast static-JSON cache ──────────────────────────────────────────────────
+# After scripts/pipeline.py runs, docs/data/vahan_master.json is pre-built.
+# We serve it directly (no DB query) if its mtime is newer than the DB's latest
+# loaded_at. This makes dashboard cold-start near-instant.
+import os as _os
+_static_json_mtime: float = 0.0
+_static_json_body: bytes | None = None
+
+
+def _static_json_is_fresh() -> bool:
+    """True if docs/data/vahan_master.json exists and is newer than the DB."""
+    if not STATIC_MASTER_JSON.is_file():
+        return False
+    try:
+        json_mtime = STATIC_MASTER_JSON.stat().st_mtime
+        # If DB doesn't exist, static JSON is always valid
+        if not SQLITE_LOCAL.exists():
+            return True
+        db_mtime = SQLITE_LOCAL.stat().st_mtime
+        return json_mtime >= db_mtime
+    except OSError:
+        return False
+
+
+def _read_static_json_cached() -> bytes | None:
+    """Read static JSON into memory, cache until file changes."""
+    global _static_json_mtime, _static_json_body
+    if not STATIC_MASTER_JSON.is_file():
+        return None
+    try:
+        mtime = STATIC_MASTER_JSON.stat().st_mtime
+        if mtime == _static_json_mtime and _static_json_body is not None:
+            return _static_json_body
+        _static_json_body = STATIC_MASTER_JSON.read_bytes()
+        _static_json_mtime = mtime
+        return _static_json_body
+    except OSError:
+        return None
 
 # Expose background scrape errors to UI
 last_scrape_error: str | None = None
@@ -204,6 +244,9 @@ app.add_middleware(GZipMiddleware, minimum_size=1_000)
 app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(RateLimitMiddleware)
 app.add_middleware(ApexToWwwRedirectMiddleware)
+
+# ── Payments / Freemium ───────────────────────────────────────────────────────
+app.include_router(payments_router, prefix="/api/payments")
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 DASHBOARD_DIR = STATIC_DIR / "dashboard"
@@ -639,9 +682,26 @@ def vahan_master_compat():
     Legacy vahan_master.json-shaped bundle for the dashboard (regions, makers, fuels, encoded data rows).
     Merges static analytics overlay from api/static/dashboard/legacy_overlay.json for Intelligence pages.
 
-    Responses are cached in-process until ``vahan_registrations`` row count or ``MAX(loaded_at)``
-    changes, and gzip-compressed when large (see GZipMiddleware).
+    Serving priority (fastest first):
+      1. docs/data/vahan_master.json  — pre-built by scripts/pipeline.py, served instantly from disk cache
+      2. In-process memory cache (fingerprinted against DB row count + loaded_at)
+      3. Build fresh from DB (slowest; result is cached in-process and written to static JSON)
+
+    Responses are gzip-compressed when large (see GZipMiddleware).
     """
+    # ── Priority 1: pre-built static JSON (instant, no DB hit) ───────────────
+    if _static_json_is_fresh():
+        body = _read_static_json_cached()
+        if body:
+            return Response(
+                content=body,
+                media_type="application/json; charset=utf-8",
+                headers={
+                    "X-Vahan-Data-Source": "static-prebuilt",
+                    "Cache-Control": "public, max-age=300",
+                },
+            )
+
     global _vahan_bundle_cache_fp, _vahan_bundle_cache_body
     conn, dialect = _connect_data()
     if conn:
@@ -665,6 +725,17 @@ def vahan_master_compat():
             if fp is not None:
                 _vahan_bundle_cache_fp = fp
                 _vahan_bundle_cache_body = body
+            # Auto-persist to static JSON so next cold-start is instant
+            try:
+                STATIC_MASTER_JSON.parent.mkdir(parents=True, exist_ok=True)
+                _tmp = STATIC_MASTER_JSON.with_suffix(".tmp.json")
+                _tmp.write_bytes(body)
+                _tmp.replace(STATIC_MASTER_JSON)
+                global _static_json_mtime, _static_json_body
+                _static_json_mtime = STATIC_MASTER_JSON.stat().st_mtime
+                _static_json_body = body
+            except Exception:
+                pass  # Non-critical: static export failed but response still succeeds
             return Response(
                 content=body,
                 media_type="application/json; charset=utf-8",
