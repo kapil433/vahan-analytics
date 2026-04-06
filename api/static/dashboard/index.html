@@ -560,6 +560,13 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
 .sticky-toolbar .nav{border-bottom:none;margin:0}
 .sticky-toolbar .filter-bar{border-bottom:none}
 
+/* filter-bar-inner: flex row at desktop, collapsible at ≤640px */
+.filter-bar-inner{
+  display:flex;flex-wrap:nowrap;align-items:center;gap:12px;flex:1;min-width:0;overflow-x:auto;
+  scrollbar-width:none;
+}
+.filter-bar-inner::-webkit-scrollbar{display:none}
+
 .global-data-stamp{
   margin-left:auto;font-size:10px;color:var(--text-dim);
   font-family:var(--mono);white-space:nowrap;padding:4px 0;
@@ -636,8 +643,9 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
   .nav::-webkit-scrollbar{display:none}
   .nav-tab{padding:8px 12px;font-size:12px}
 
-  /* Filter bar: toggle collapse */
+  /* Filter bar: allow wrapping on tablet */
   .filter-bar{padding:8px 14px;gap:8px}
+  .filter-bar-inner{flex-wrap:wrap;overflow-x:visible;gap:8px}
   .filter-label{font-size:10px}
   .filter-select{font-size:11px;padding:4px 24px 4px 8px;min-width:90px}
 
@@ -690,7 +698,7 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
   /* Filter bar: collapsible (JS toggles .filter-bar--open) */
   .filter-toggle{display:flex;align-items:center;gap:6px;margin-bottom:0}
   .filter-bar-inner{
-    display:none;flex-wrap:wrap;gap:8px;width:100%;
+    display:none;flex-wrap:wrap;gap:8px;width:100%;overflow-x:visible;
     padding-top:8px;border-top:1px solid var(--border);margin-top:4px;
   }
   .filter-bar--open .filter-bar-inner{display:flex}
