@@ -154,8 +154,18 @@ def _parse_count(val) -> int:
 
 
 def _get_state_code(state_name: str) -> str:
-    canon = normalize_state(state_name) if callable(normalize_state) else state_name
-    return STATE_MAP.get(canon, STATE_MAP.get(state_name, "XX"))
+    result = normalize_state(state_name)
+    if result:
+        return result[0]           # ('AN', 'Andaman and Nicobar Islands') → 'AN'
+    return "XX"
+
+
+def _get_canonical_state_name(state_name: str) -> str:
+    """Always return the canonical display name from STATE_MAP, never the raw scraped variant."""
+    result = normalize_state(state_name)
+    if result:
+        return result[1]           # → 'Andaman and Nicobar Islands'
+    return state_name
 
 
 def _is_fuel_header(val) -> bool:
@@ -225,7 +235,7 @@ def clean_type_a(rf: RawFile, verbose: bool = False) -> pd.DataFrame:
                 for m_idx, mv in enumerate(month_vals[:3], start=1):
                     rows_out.append({
                         "state_code": _get_state_code(rf.state_name),
-                        "state_name": rf.state_name,
+                        "state_name": _get_canonical_state_name(rf.state_name),
                         "year": rf.year,
                         "fy": month_to_fy(rf.year, m_idx),
                         "fuel_type": current_fuel,
@@ -238,7 +248,7 @@ def clean_type_a(rf: RawFile, verbose: bool = False) -> pd.DataFrame:
         for m_idx, mv in enumerate(month_vals, start=1):
             rows_out.append({
                 "state_code": _get_state_code(rf.state_name),
-                "state_name": rf.state_name,
+                "state_name": _get_canonical_state_name(rf.state_name),
                 "year": rf.year,
                 "fy": month_to_fy(rf.year, m_idx),
                 "fuel_type": current_fuel,
@@ -299,7 +309,8 @@ def clean_type_b(rf: RawFile, verbose: bool = False) -> pd.DataFrame:
         maker_col_idx = 1  # second col is usually maker
 
     rows_out: list[dict] = []
-    state_code = _get_state_code(rf.state_name)
+    state_code       = _get_state_code(rf.state_name)
+    canonical_state  = _get_canonical_state_name(rf.state_name)
 
     for _, row in df_raw.iterrows():
         vals = [str(v).strip() if pd.notna(v) else "" for v in row.values]
@@ -325,7 +336,7 @@ def clean_type_b(rf: RawFile, verbose: bool = False) -> pd.DataFrame:
             count = _parse_count(vals[col_idx]) if col_idx < len(vals) else 0
             rows_out.append({
                 "state_code": state_code,
-                "state_name": rf.state_name,
+                "state_name": canonical_state,
                 "year": rf.year,
                 "fy": month_to_fy(rf.year, month_num),
                 "fuel_type": fuel,
