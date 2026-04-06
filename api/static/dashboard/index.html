@@ -760,6 +760,147 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
   .filter-label,.chart-btn,.nav-tab,.kpi-label{font-size:max(10px,0.7rem)}
 }
 
+/* ═══════════════════════════════════════════════════════════════════════
+   MOBILE-FIRST DEEP FIXES  —  added for full mobile overhaul
+   Covers: modals, pricing, charts, state gating, nav, filter bar UX
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── Pricing page: CSS grid fallback (JS also handles, belt+suspenders) ── */
+#pricing-grid{grid-template-columns:repeat(3,1fr)}
+@media(max-width:899px){#pricing-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:639px){#pricing-grid{grid-template-columns:1fr}}
+
+/* ── Pro banner in header ── */
+#header-pro-badge{
+  display:none;background:linear-gradient(90deg,#065f46,#047857);
+  color:#d1fae5;font-size:10px;font-weight:700;padding:3px 9px;
+  border-radius:20px;border:1px solid #10b981;white-space:nowrap;
+  letter-spacing:.05em;
+}
+
+/* ── Free-tier geo lock UX ── */
+.geo-locked .ms-trigger::after{
+  content:" 🔒";font-size:10px;opacity:.7;
+}
+.upgrade-nudge{
+  background:linear-gradient(135deg,#1e3a5f,#1d4ed8);
+  border:1px solid #3b82f6;border-radius:8px;
+  padding:10px 14px;margin-bottom:12px;
+  display:flex;align-items:center;gap:10px;
+  font-size:12px;color:#bfdbfe;
+  cursor:pointer;transition:opacity .2s;
+}
+.upgrade-nudge:hover{opacity:.9}
+.upgrade-nudge strong{color:#fff}
+
+/* ── OEM modal KPI strip responsive ── */
+@media(max-width:900px){
+  #oem-modal-kpis{grid-template-columns:repeat(4,1fr)!important}
+  #fuel-modal-kpis{grid-template-columns:repeat(3,1fr)!important}
+}
+@media(max-width:600px){
+  #oem-modal-kpis{grid-template-columns:repeat(2,1fr)!important}
+  #fuel-modal-kpis{grid-template-columns:repeat(2,1fr)!important}
+}
+
+/* ── OEM + fuel modal chart rows stack on mobile ── */
+@media(max-width:768px){
+  /* Modal outer: full-screen sheet, no side margin */
+  #oem-modal,#fuel-modal{padding:0!important}
+  #oem-modal > div,#fuel-modal > div{
+    margin:0!important;border-radius:0!important;
+    min-height:100dvh;
+  }
+  /* Modal header padding */
+  #oem-modal > div > div:first-child,
+  #fuel-modal > div > div:first-child{padding:12px 14px!important}
+  /* Modal body padding */
+  #oem-modal-body{padding:12px!important}
+  #fuel-modal > div > div:last-child{padding:12px!important}
+  /* All 2-col chart rows inside modals → single col */
+  #oem-modal-body > div[style*="grid"],
+  #fuel-modal > div > div[style*="grid"]{
+    grid-template-columns:1fr!important;
+    gap:10px!important;
+  }
+  /* Taller canvas cap in modals */
+  #oem-modal canvas,#fuel-modal canvas{max-height:200px!important}
+  /* OEM model timeline: more compact */
+  #oem-modal-model-timeline{max-height:220px!important}
+  #oem-modal-fuel-timeline{max-height:160px!important}
+  #fuel-modal-oem-timeline{max-height:200px!important}
+  /* Filter strip inside modal: wrap */
+  #oem-dd-filters,#fuel-dd-filters{gap:6px!important}
+}
+
+/* ── Event deep dive modal responsive ── */
+@media(max-width:768px){
+  #event-modal > div{
+    margin:0!important;border-radius:0!important;min-height:100dvh!important;
+    max-width:100%!important;
+  }
+  #event-modal > div > div:first-child{padding:12px 14px!important}
+}
+
+/* ── Chart cards inside modals on very small screens ── */
+@media(max-width:480px){
+  #oem-modal canvas,#fuel-modal canvas{max-height:160px!important}
+  #oem-modal > div > div:first-child .nav-tab,
+  #fuel-modal > div > div:first-child .nav-tab{font-size:10px;padding:6px 8px}
+}
+
+/* ── Static pages (about/info/blog/privacy) max-width capped ── */
+.static-page{max-width:min(720px,100%)}
+.blog-list{max-width:min(760px,100%)}
+
+/* ── Pricing email input full-width on mobile ── */
+@media(max-width:640px){
+  #pricing-email{width:100%!important;max-width:100%!important}
+  .static-page{padding:0}
+}
+
+/* ── Geomap sidebar: show below map on mobile (already stacks) ── */
+@media(max-width:900px){
+  .geomap-side{max-height:320px!important;padding:12px!important}
+  #geomap-svg-wrap{min-height:280px!important}
+}
+
+/* ── Heatmap horizontal scroll handle ── */
+.heatmap-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%}
+
+/* ── Nav Pro tab always visible ── */
+.nav-tab-pro{
+  background:linear-gradient(90deg,rgba(245,158,11,.12),transparent);
+  color:#f59e0b!important;font-weight:600!important;
+  border-left:1px solid rgba(245,158,11,.3);
+  padding-left:14px!important;
+}
+@media(max-width:640px){
+  /* Pro tab: keep visible even when scrolled */
+  .nav-tab-pro{position:sticky;right:0;background:var(--surface);
+    border-left:1px solid var(--border);z-index:5}
+}
+
+/* ── KPI card min-height consistent on mobile ── */
+@media(max-width:640px){
+  .kpi-card{min-height:64px;padding:10px 10px}
+  .kpi-value{font-size:17px}
+  .kpi-sub{font-size:10px}
+}
+
+/* ── Comparison page filter bar ── */
+@media(max-width:640px){
+  .cmp-filter-bar{padding:10px 12px}
+  .cmp-filter-row{gap:6px;row-gap:6px}
+  .cmp-filter-sep{display:none}
+}
+
+/* ── Compare + forecast: full-width chart sections ── */
+@media(max-width:768px){
+  #page-compare .chart-grid,
+  #page-compare .chart-grid-3{grid-template-columns:1fr!important}
+}
+
 </style>
 </head>
 <body>
@@ -774,7 +915,9 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
     </div>
   </div>
   <div class="header-right">
+    <span id="header-pro-badge" title="Pro access active">⚡ PRO</span>
     <span class="data-badge" id="dataBadge"><span class="load-pulse"><span class="load-dot" aria-hidden="true"></span><span id="dataBadgeText">Fetching registration records…</span></span></span>
+    <button onclick="document.getElementById('tab-pricing')?.click()" style="font-size:11px;font-family:var(--mono);font-weight:600;background:linear-gradient(135deg,#f59e0b,#d97706);color:#000;border:none;padding:4px 10px;border-radius:5px;cursor:pointer;white-space:nowrap;letter-spacing:.04em" title="Upgrade to Pro">⚡ Pro</button>
   </div>
 </div>
 
@@ -8064,55 +8207,165 @@ async function loadUserTier() {
   } catch(e) { /* offline / API unavailable — stay on free tier */ }
 }
 
+// Free states that never require a Pro token
+const ALWAYS_FREE_STATES = new Set([
+  'All India',
+  'All Vahan4 Running States (36/36)',
+  'Andhra Pradesh',
+  'Chhattisgarh',
+  'Odisha',
+]);
+
 function applyTierToUI(data) {
   const isPro = data.tier && data.tier.tier === 'pro';
 
-  // Show "Pro" badge in header if subscribed
+  // ── Header Pro badge ────────────────────────────────────────────────────
   const badge = document.getElementById('pricing-pro-banner');
-  if (badge && isPro) {
-    badge.style.display = 'flex';
-    const detail = document.getElementById('pricing-pro-detail');
-    if (detail) detail.textContent = `${data.plan} plan · expires ${data.token_expires ? data.token_expires.slice(0,10) : '—'}`;
+  if (badge) {
+    badge.style.display = isPro ? 'flex' : 'none';
+    if (isPro) {
+      const detail = document.getElementById('pricing-pro-detail');
+      const exp = data.token_expires ? data.token_expires.slice(0,10) : '—';
+      if (detail) detail.textContent = `${data.plan || 'Pro'} · expires ${exp}`;
+    }
   }
+  // Header Pro pill (small badge next to logo)
+  const hbadge = document.getElementById('header-pro-badge');
+  if (hbadge) hbadge.style.display = isPro ? 'inline-flex' : 'none';
 
-  // Gate locked nav tabs
-  const lockedTabs = ['compare', 'forecast'];   // these are PRO tabs
+  // ── Gate locked nav tabs (compare / forecast) ───────────────────────────
+  const lockedTabs = ['compare', 'forecast'];
   lockedTabs.forEach(tab => {
     const el = document.getElementById('tab-' + tab);
     if (!el) return;
     if (!isPro) {
-      el.addEventListener('click', function(e) {
-        if (!getProToken()) {
-          e.stopImmediatePropagation();
-          showUpgradePrompt(tab);
-        }
-      }, true);  // capture phase so it fires first
+      el.setAttribute('aria-label', el.textContent.trim() + ' — Pro only');
+      // Add lock icon if not already there
+      if (!el.querySelector('.tab-lock')) {
+        const lock = document.createElement('span');
+        lock.className = 'tab-lock';
+        lock.textContent = ' 🔒';
+        lock.style.cssText = 'font-size:9px;vertical-align:middle;opacity:.6';
+        el.appendChild(lock);
+      }
+      el.style.opacity = '0.6';
+      el._vahanProGate = true;
+    } else {
+      el.style.opacity = '';
+      el.querySelectorAll('.tab-lock').forEach(l => l.remove());
+      el._vahanProGate = false;
     }
   });
 
-  // Tint locked tabs for free users
-  if (!isPro) {
-    lockedTabs.forEach(tab => {
-      const el = document.getElementById('tab-' + tab);
-      if (el) el.style.opacity = '0.5';
-    });
+  // Single delegated handler on nav (avoids duplicate listeners on re-render)
+  const nav = document.querySelector('.nav');
+  if (nav && !nav._vahanGateAttached) {
+    nav._vahanGateAttached = true;
+    nav.addEventListener('click', function(e) {
+      const tab = e.target.closest('.nav-tab');
+      if (!tab || !tab._vahanProGate) return;
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      showUpgradePrompt(tab.dataset.page || 'this feature');
+    }, true);
   }
 
-  // Geo filter: restrict to All India for free tier
-  if (!isPro) {
-    const geoTrigger = document.getElementById('ms-geo-trigger');
-    if (geoTrigger) {
-      geoTrigger.setAttribute('title', 'Upgrade to Pro to access state-level data');
+  // ── Geo multi-select: lock non-free states for free tier ────────────────
+  const geoWrapper = document.getElementById('ms-geo-wrapper');
+  if (geoWrapper) {
+    if (!isPro) {
+      geoWrapper.classList.add('geo-locked');
+      // Intercept ms-item clicks and reject locked states
+      if (!geoWrapper._vahanGeoGate) {
+        geoWrapper._vahanGeoGate = true;
+        geoWrapper.addEventListener('click', function(e) {
+          const item = e.target.closest('.ms-item');
+          if (!item) return;
+          const stateName = item.dataset.value || item.textContent.replace(/✓/g,'').trim();
+          if (!ALWAYS_FREE_STATES.has(stateName)) {
+            e.stopImmediatePropagation();
+            showUpgradePrompt('state data for ' + stateName);
+          }
+        }, true);
+      }
+      // Visually mark locked items
+      geoWrapper.querySelectorAll('.ms-item').forEach(item => {
+        const name = item.dataset.value || item.textContent.replace(/[✓✗]/g,'').trim();
+        if (!ALWAYS_FREE_STATES.has(name) && !item.querySelector('.ms-lock')) {
+          const lock = document.createElement('span');
+          lock.className = 'ms-lock';
+          lock.textContent = ' 🔒';
+          lock.style.cssText = 'font-size:9px;opacity:.5;margin-left:auto';
+          item.appendChild(lock);
+        }
+      });
+    } else {
+      geoWrapper.classList.remove('geo-locked');
+      geoWrapper.querySelectorAll('.ms-lock').forEach(l => l.remove());
     }
+  }
+
+  // ── Inject upgrade nudge on overview page for free users ───────────────
+  const nudgeId = 'vahan-upgrade-nudge';
+  if (!isPro && !document.getElementById(nudgeId)) {
+    const nudge = document.createElement('div');
+    nudge.id = nudgeId;
+    nudge.className = 'upgrade-nudge';
+    nudge.innerHTML = `<span style="font-size:18px">⚡</span>
+      <div><strong>Upgrade to Pro — ₹100/year</strong> &nbsp;·&nbsp;
+      Unlock all 37 states, Compare & Forecast tabs, full 2012–present history</div>
+      <span style="margin-left:auto;background:rgba(255,255,255,.15);padding:4px 10px;border-radius:5px;font-size:11px;white-space:nowrap">View plans →</span>`;
+    nudge.onclick = () => document.getElementById('tab-pricing')?.click();
+    // Insert at top of each main page (lazy — on first page show)
+    const observer = new MutationObserver(() => {
+      const activePage = document.querySelector('.page.active');
+      if (activePage && activePage.id !== 'page-pricing') {
+        const existing = activePage.querySelector('#' + nudgeId);
+        if (!existing) activePage.prepend(nudge.cloneNode(true));
+      }
+    });
+    observer.observe(document.querySelector('.main') || document.body, { childList: true, subtree: false });
+    // Also on current active page immediately
+    setTimeout(() => {
+      const ap = document.querySelector('.page.active');
+      if (ap && ap.id !== 'page-pricing' && !ap.querySelector('#' + nudgeId)) {
+        ap.prepend(nudge.cloneNode(true));
+      }
+      document.querySelectorAll('#' + nudgeId).forEach(el => {
+        el.onclick = () => document.getElementById('tab-pricing')?.click();
+      });
+    }, 800);
+  } else if (isPro) {
+    document.querySelectorAll('#' + nudgeId).forEach(el => el.remove());
   }
 }
 
 function showUpgradePrompt(feature) {
-  const names = { compare: 'State drill-down', forecast: 'Forecast' };
-  const msg = `${names[feature] || feature} is a Pro feature.\n\nUpgrade to access all 37 states, full history, and more.`;
-  if (confirm(msg + '\n\nGo to Pricing page?')) {
-    document.getElementById('tab-pricing')?.click();
-  }
+  // Use a styled in-page toast instead of blocking confirm()
+  const existing = document.getElementById('vahan-upgrade-toast');
+  if (existing) existing.remove();
+  const toast = document.createElement('div');
+  toast.id = 'vahan-upgrade-toast';
+  toast.style.cssText = `
+    position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+    background:#1e3a5f;border:1px solid #3b82f6;border-radius:10px;
+    padding:14px 20px;z-index:9999;box-shadow:0 8px 32px rgba(0,0,0,.5);
+    font-size:13px;color:#bfdbfe;max-width:calc(100vw - 32px);width:380px;
+    display:flex;align-items:center;gap:12px;
+  `;
+  toast.innerHTML = `
+    <span style="font-size:22px">🔒</span>
+    <div style="flex:1">
+      <div style="font-weight:700;color:#fff;margin-bottom:3px">${typeof feature === 'string' && feature.length < 40 ? feature : 'This feature'} requires Pro</div>
+      <div style="font-size:11px;opacity:.8">₹100/year or ₹499 lifetime — All India, AP, CG, Odisha always free</div>
+    </div>
+    <button onclick="document.getElementById('tab-pricing')?.click();this.closest('#vahan-upgrade-toast')?.remove()"
+      style="background:#2563eb;color:#fff;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;white-space:nowrap">
+      See Plans
+    </button>
+  `;
+  document.body.appendChild(toast);
+  setTimeout(() => toast?.remove(), 5000);
 }
 
 // ── Razorpay checkout ──────────────────────────────────────────────────────
