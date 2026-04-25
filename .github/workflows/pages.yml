@@ -36,6 +36,9 @@ jobs:
           if [ -f docs/data/vahan_master.json ]; then
             cp docs/data/vahan_master.json _site/data/vahan_master.json
           fi
+          if [ -f docs/data/india_states.geojson ]; then
+            cp docs/data/india_states.geojson _site/data/india_states.geojson
+          fi
           cp api/static/robots.txt _site/robots.txt
           cp api/static/sitemap.xml _site/sitemap.xml
           if [ -f api/static/google5332b27a4f971584.html ]; then

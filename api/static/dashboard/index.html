@@ -4229,7 +4229,11 @@ function populateGeographyDropdownsFromNames(names) {
 // GEO MAP PAGE — India Choropleth
 // ═══════════════════════════════════════════════════════════════
 
-const INDIA_GEO_URL = 'https://gist.githubusercontent.com/jbrobst/56c13bbbf9d97d187fea01ca62ea5112/raw/e388c4cae20aa53cb5090210a42ebb9b765c0a36/india_states.geojson';
+// Self-hosted GeoJSON (was gist.githubusercontent.com → blocked by tightened CSP).
+// File: docs/data/india_states.geojson, mounted by FastAPI + copied into _site/data/
+// by the Pages workflow. Falls back to gist origin if local 404s on a fresh deploy.
+const INDIA_GEO_URL = '/data/india_states.geojson';
+const INDIA_GEO_URL_FALLBACK = 'https://gist.githubusercontent.com/jbrobst/56c13bbbf9d97d187fea01ca62ea5112/raw/e388c4cae20aa53cb5090210a42ebb9b765c0a36/india_states.geojson';
 
 /** Bumps when geomap is rebuilt so stale async GeoJSON fetches do not paint over a newer view. */
 let _geoMapRenderGen = 0;
@@ -4314,11 +4318,17 @@ const STATE_CODES = {
 
 async function _loadIndiaGeo() {
   if (_geoJSON) return _geoJSON;
+  // 1) Try local self-hosted file first.
   try {
     const resp = await fetch(INDIA_GEO_URL);
     if (resp.ok) { _geoJSON = await resp.json(); return _geoJSON; }
-  } catch(e) { console.warn('GeoJSON fetch failed:', e); }
-  // Fallback: generate approximate hexagonal state shapes
+  } catch(e) { console.warn('Local GeoJSON fetch failed:', e); }
+  // 2) Try the public gist (will fail under tightened CSP; still here as soft fallback).
+  try {
+    const resp2 = await fetch(INDIA_GEO_URL_FALLBACK);
+    if (resp2.ok) { _geoJSON = await resp2.json(); return _geoJSON; }
+  } catch(e) { console.warn('Gist GeoJSON fallback failed:', e); }
+  // 3) Last resort: synthesise approximate hexagonal state shapes.
   return _buildFallbackGeo();
 }
 
