@@ -1823,7 +1823,7 @@ body{padding-bottom:var(--safe-bottom)}
       </div>
       <div class="chart-card">
         <div class="chart-header">
-          <div><div class="chart-title">ALL INDIA — VOLUME TREND</div>
+          <div><div class="chart-title" id="cmp-vol-title-b">ALL INDIA — VOLUME TREND</div>
           <div class="chart-subtitle">Annual registrations</div></div>
         </div>
         <div class="chart-wrap"><canvas id="chart-cmp-ai-vol" role="img" aria-label="All India annual registration volume"></canvas></div>
@@ -1839,7 +1839,7 @@ body{padding-bottom:var(--safe-bottom)}
         <div class="chart-wrap"><canvas id="chart-cmp-state-fuel" role="img" aria-label="State fuel mix trend"></canvas></div>
       </div>
       <div class="chart-card">
-        <div class="chart-header"><div><div class="chart-title">ALL INDIA — FUEL MIX TREND</div><div class="chart-subtitle">% share by fuel</div></div></div>
+        <div class="chart-header"><div><div class="chart-title" id="cmp-fuel-title-b">ALL INDIA — FUEL MIX TREND</div><div class="chart-subtitle">% share by fuel</div></div></div>
         <div class="chart-wrap"><canvas id="chart-cmp-ai-fuel" role="img" aria-label="All India fuel mix trend"></canvas></div>
       </div>
     </div>
@@ -1851,7 +1851,7 @@ body{padding-bottom:var(--safe-bottom)}
         <div class="chart-wrap"><canvas id="chart-cmp-state-oem" role="img" aria-label="Top OEMs for selected state"></canvas></div>
       </div>
       <div class="chart-card">
-        <div class="chart-header"><div><div class="chart-title">ALL INDIA — TOP OEMs</div><div class="chart-subtitle">Selected period</div></div></div>
+        <div class="chart-header"><div><div class="chart-title" id="cmp-oem-title-b">ALL INDIA — TOP OEMs</div><div class="chart-subtitle">Selected period</div></div></div>
         <div class="chart-wrap"><canvas id="chart-cmp-ai-oem" role="img" aria-label="Top OEMs for All India"></canvas></div>
       </div>
     </div>
@@ -1864,7 +1864,7 @@ body{padding-bottom:var(--safe-bottom)}
         <div id="cmp-oem-table-state"></div>
       </div>
       <div class="chart-card">
-        <div class="chart-header"><div><div class="chart-title">OEM ANALYSIS TABLE — ALL INDIA</div>
+        <div class="chart-header"><div><div class="chart-title" id="cmp-oem-tbl-title-b">OEM ANALYSIS TABLE — ALL INDIA</div>
         <div class="chart-subtitle">Volume · MS% · MS Change vs prior period</div></div></div>
         <div id="cmp-oem-table-ai"></div>
       </div>
@@ -1877,7 +1877,7 @@ body{padding-bottom:var(--safe-bottom)}
         <div id="cmp-fuel-table-state"></div>
       </div>
       <div class="chart-card">
-        <div class="chart-header"><div><div class="chart-title">FUEL ANALYSIS TABLE — ALL INDIA</div>
+        <div class="chart-header"><div><div class="chart-title" id="cmp-fuel-tbl-title-b">FUEL ANALYSIS TABLE — ALL INDIA</div>
         <div class="chart-subtitle">Volume · Pen% · Pen% Change vs prior period</div></div></div>
         <div id="cmp-fuel-table-ai"></div>
       </div>
@@ -2470,7 +2470,7 @@ function primaryGeoLabel(geo) {
 // Multi-select state store
 const MS_STATE = { geo: new Set(['all']), oem: new Set(['all']), fuel: new Set(['all']), year: new Set(['all']), month: new Set(['all']) };
 /** Compare page — geography (states only, ≥1) + period / month / OEM / fuel */
-const CMP_MS_STATE = { geo: new Set(), year: new Set(['all']), oem: new Set(['all']), fuel: new Set(['all']), month: new Set(['all']) };
+const CMP_MS_STATE = { geo: new Set(['All India']), year: new Set(['all']), oem: new Set(['all']), fuel: new Set(['all']), month: new Set(['all']) };
 
 // ── Modal-scoped filter state ────────────────────────────────
 const OEM_DD = {
@@ -2878,14 +2878,11 @@ function toggleCmpMSItem(key, value) {
   const s = CMP_MS_STATE[key];
   if (key === 'geo' && value != null) value = String(value).trim();
   if (key === 'geo') {
-    if (s.has(value)) {
-      if (s.size <= 1) return;
-      s.delete(value);
-    } else {
-      s.add(value);
-    }
-    const _gn = window._INDIA_GEOGRAPHY_NAMES || [];
-    if (s.size === 0 && _gn[0]) s.add(_gn[0]);
+    // SINGLE-SELECT semantics for State B picker (v8.2): clicking a state
+    // REPLACES the current selection instead of toggling. The cmp-ms-geo
+    // picker is now used as a single-state picker for State B only.
+    s.clear();
+    s.add(value);
     updateCmpMSTrigger('geo');
     document.querySelectorAll('#cmp-ms-geo-items .ms-item').forEach(item => {
       const di = item.getAttribute('data-cmp-geo-i');
@@ -2895,6 +2892,9 @@ function toggleCmpMSItem(key, value) {
       const ch = item.querySelector('.ms-check');
       if (ch) ch.textContent = sel ? '✓' : '';
     });
+    // Close the dropdown immediately on single-select pick (better UX).
+    document.getElementById('cmp-ms-geo-dropdown')?.classList.remove('open');
+    document.getElementById('cmp-ms-geo-trigger')?.classList.remove('open');
     if (currentPage === 'compare' && DATA) buildComparePage();
     return;
   }
@@ -5453,25 +5453,25 @@ function buildComparePage() {
   const aPrior = getPriorPeriodRaw(aFilters);
   const bPrior = getPriorPeriodRaw(bFilters);
 
-  // Update titles for both panels (left = A, right = B).
+  // Update titles for both panels (left = A, right = B). Set by ID directly
+  // every rebuild — no regex/sniffing, so titles update reliably whenever
+  // either picker changes.
   const setTitle = (id, geo, suffix) => {
     const el = document.getElementById(id);
     if (el) el.textContent = `${geo.toUpperCase()} — ${suffix}`;
   };
+  // Left (State A)
   setTitle('cmp-vol-title-state',  geoA, 'VOLUME TREND');
   setTitle('cmp-fuel-title-state', geoA, 'FUEL MIX TREND');
   setTitle('cmp-oem-title-state',  geoA, 'TOP OEMs');
   setTitle('cmp-oem-tbl-title',    geoA, 'OEM ANALYSIS TABLE');
   setTitle('cmp-fuel-tbl-title',   geoA, 'FUEL ANALYSIS TABLE');
-  // Right-panel titles (currently hardcoded "ALL INDIA — ..." in HTML).
-  // Update them too so they reflect State B dynamically.
-  document.querySelectorAll('#page-compare .chart-title').forEach(el => {
-    const t = el.textContent || '';
-    if (/^ALL INDIA\s*—/i.test(t)) {
-      const suffix = t.replace(/^ALL INDIA\s*—\s*/i, '').trim();
-      el.textContent = `${geoB.toUpperCase()} — ${suffix}`;
-    }
-  });
+  // Right (State B) — same pattern, dedicated IDs.
+  setTitle('cmp-vol-title-b',     geoB, 'VOLUME TREND');
+  setTitle('cmp-fuel-title-b',    geoB, 'FUEL MIX TREND');
+  setTitle('cmp-oem-title-b',     geoB, 'TOP OEMs');
+  setTitle('cmp-oem-tbl-title-b', geoB, 'OEM ANALYSIS TABLE');
+  setTitle('cmp-fuel-tbl-title-b',geoB, 'FUEL ANALYSIS TABLE');
 
   buildCmpKPIStrip(geoA, geoB, aRows, bRows, aPrior, bPrior);
   buildCmpVolCharts(geoA, geoB, yt, aFilters, bFilters);
