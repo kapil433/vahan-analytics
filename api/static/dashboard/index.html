@@ -26,7 +26,7 @@
 <meta name="twitter:image" content="https://www.vahanintelligence.in/og-image.png"/>
 <meta property="og:image:type" content="image/png"/>
 <!-- GitHub Pages: no custom response headers — CSP + referrer via meta only (partial vs full header CSP). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https: http:; base-uri 'self'; form-action 'self' mailto:; frame-ancestors 'none';"/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://www.vahanintelligence.in https://kapil433.github.io; base-uri 'self'; form-action 'self' mailto:; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests;"/>
 <meta name="referrer" content="strict-origin-when-cross-origin"/>
 <script type="application/ld+json">
 {
@@ -67,11 +67,19 @@
   ]
 }
 </script>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<!-- ── Performance: resource hints + warm sockets ─────────────────────────── -->
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin/>
+<link rel="dns-prefetch" href="https://cdnjs.cloudflare.com"/>
+<!-- Start fetching the heavy data bundle in parallel with HTML parse + script load. -->
+<link rel="preload" href="/data/vahan_master_compat" as="fetch" crossorigin="anonymous" fetchpriority="high"/>
+
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
-<!-- xlsx CDN removed: Excel/CSV export feature was retired in the v2 UI overhaul. -->
+<!-- defer: parse with HTML, execute after DOM ready (much faster perceived load) -->
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<!-- xlsx CDN removed: Excel/CSV export retired in v2 UI overhaul. -->
 <style>
 :root {
   /* ── Bold dark dashboard palette (Vercel/Notion-inspired) ── */
