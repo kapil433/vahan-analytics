@@ -1787,54 +1787,16 @@ body{padding-bottom:var(--safe-bottom)}
         <span class="mft-arrow" aria-hidden="true">▾</span>
       </button>
       <div class="cmp-filter-row" id="cmp-filter-row-inner">
-        <div class="filter-group" style="flex:1 1 100%"><span class="filter-label">COMPARE STATES (PICK 2)</span>
+        <div class="filter-group" style="flex:1 1 100%"><span class="filter-label">STATE B (right panel)</span>
           <div class="ms-wrapper" id="cmp-ms-geo-wrapper">
-            <div class="ms-trigger" id="cmp-ms-geo-trigger" onclick="toggleCmpMS('geo')" style="min-width:200px">—</div>
+            <div class="ms-trigger" id="cmp-ms-geo-trigger" onclick="toggleCmpMS('geo')" style="min-width:200px">All India</div>
             <div class="ms-dropdown" id="cmp-ms-geo-dropdown">
               <div id="cmp-ms-geo-items"></div>
             </div>
           </div>
-          <div style="font-size:11px;color:var(--text-dim);margin-top:4px;font-family:var(--mono)">First selection = State A (left), second = State B (right). Pick a state + "All India" for the classic view.</div>
-        </div>
-        <div class="filter-sep"></div>
-        <div class="filter-group"><span class="filter-label">YEAR TYPE</span>
-          <select class="filter-select" id="cmp-yeartype">
-            <option value="fy">Financial Year</option>
-            <option value="cy">Calendar Year</option>
-          </select>
-        </div>
-        <div class="filter-group"><span class="filter-label">YEAR</span>
-          <div class="ms-wrapper" id="cmp-ms-year-wrapper">
-            <div class="ms-trigger" id="cmp-ms-year-trigger" onclick="toggleCmpMS('year')" style="min-width:90px">All Years</div>
-            <div class="ms-dropdown" id="cmp-ms-year-dropdown">
-              <div id="cmp-ms-year-items"></div>
-            </div>
-          </div>
-        </div>
-        <div class="filter-group"><span class="filter-label">MONTH</span>
-          <div class="ms-wrapper" id="cmp-ms-month-wrapper">
-            <div class="ms-trigger" id="cmp-ms-month-trigger" onclick="toggleCmpMS('month')" style="min-width:90px">All Months</div>
-            <div class="ms-dropdown" id="cmp-ms-month-dropdown">
-              <div id="cmp-ms-month-items"></div>
-            </div>
-          </div>
-        </div>
-        <div class="filter-sep"></div>
-        <div class="filter-group"><span class="filter-label">OEM</span>
-          <div class="ms-wrapper" id="cmp-ms-oem-wrapper">
-            <div class="ms-trigger" id="cmp-ms-oem-trigger" onclick="toggleCmpMS('oem')">All OEMs</div>
-            <div class="ms-dropdown" id="cmp-ms-oem-dropdown">
-              <div class="ms-search"><input type="text" placeholder="Search OEM…" oninput="filterCmpMSItems('oem',this.value)"></div>
-              <div id="cmp-ms-oem-items"></div>
-            </div>
-          </div>
-        </div>
-        <div class="filter-group"><span class="filter-label">FUEL</span>
-          <div class="ms-wrapper" id="cmp-ms-fuel-wrapper">
-            <div class="ms-trigger" id="cmp-ms-fuel-trigger" onclick="toggleCmpMS('fuel')">All Fuels</div>
-            <div class="ms-dropdown" id="cmp-ms-fuel-dropdown">
-              <div id="cmp-ms-fuel-items"></div>
-            </div>
+          <div style="font-size:11px;color:var(--text-dim);margin-top:4px;font-family:var(--mono);line-height:1.5">
+            <strong style="color:var(--text-mid)">Left panel (State A)</strong> uses the Geography you picked in the top global filter.<br>
+            <strong style="color:var(--text-mid)">Year, month, fuel, OEM</strong> apply to both panels — change them in the top filter.
           </div>
         </div>
         <div class="filter-sep"></div>
@@ -1846,6 +1808,8 @@ body{padding-bottom:var(--safe-bottom)}
           </select>
         </div>
         <button type="button" class="btn btn-primary" onclick="buildComparePage()">⟳ Refresh</button>
+        <!-- Hidden hooks the legacy cmp helpers still reference; safe stubs so no errors. -->
+        <select id="cmp-yeartype" hidden><option value="fy">Financial Year</option><option value="cy">Calendar Year</option></select>
       </div>
     </div>
 
@@ -4451,11 +4415,11 @@ function switchPage(page) {
   const hideAll = ['blog','info','about','forecast'].includes(page);
   if (filterBar) filterBar.style.display = hideAll ? 'none' : '';
 
-  // On Compare, rename the global filter to "All India Filter" so its purpose
-  // is unambiguous next to the Compare page's own State filter bar.
+  // On Compare, the top global filter drives State A + shared time/fuel/OEM
+  // context. The cmp filter bar drives only State B. Relabel for clarity.
   document.body.classList.toggle('on-compare', page === 'compare');
   const ftLabel = document.querySelector('#filter-toggle-btn .ft-label');
-  if (ftLabel) ftLabel.textContent = (page === 'compare') ? 'All India Filter' : 'Filters';
+  if (ftLabel) ftLabel.textContent = (page === 'compare') ? 'Filters & State A' : 'Filters';
 
   if (!hideAll) {
     // OEM filter: always show
@@ -5410,27 +5374,42 @@ function cmpPassesSliceFilters(r, slice) {
 }
 
 function getCompareFilters() {
-  const yt = document.getElementById('cmp-yeartype')?.value || 'fy';
-  let geo = getCmpMSValue('geo');
-  if (!Array.isArray(geo)) geo = geo ? [geo] : [];
+  // v8 architecture:
+  //   - State A (left panel)  ← Geography picked in the top global filter
+  //   - State B (right panel) ← cmp-ms-geo picker on the Compare page
+  //   - All other dimensions (year, month, OEM, fuel) ← top global filter
+  // The cmp page no longer carries duplicate year/month/OEM/fuel controls.
   const names = window._INDIA_GEOGRAPHY_NAMES || [];
-  // Default: first state + All India if user hasn't picked anything
-  if (!geo.length && names[0]) geo = [names[0]];
-  // A vs B: first selected = State A; second (or All India fallback) = State B
-  const geoA = geo[0];
-  const geoB = (geo.length >= 2)
-    ? geo[1]
-    : (geoA === 'All India' ? (names.find(n => n !== 'All India') || names[0]) : 'All India');
-  const geoNorm = geo.length === 1 ? geo[0] : geo;
-  const geoLabel = geo.length === 1 ? geo[0] : `${geo.length} states`;
+  const global = (typeof getFilters === 'function') ? getFilters() : {};
+
+  // Mirror global yeartype into the hidden cmp-yeartype stub so legacy callers
+  // (populateCmpYear/MonthDropdown, etc.) that read it directly stay consistent.
+  const _hiddenCmpYt = document.getElementById('cmp-yeartype');
+  if (_hiddenCmpYt && global.yeartype && _hiddenCmpYt.value !== global.yeartype) {
+    _hiddenCmpYt.value = global.yeartype;
+  }
+
+  // State A from global filter Geography (first non-empty entry).
+  let gGeo = global.geo;
+  if (!Array.isArray(gGeo)) gGeo = gGeo ? [gGeo] : [];
+  let geoA = gGeo[0] || names[0] || 'All India';
+
+  // State B from cmp-ms-geo picker. Falls back sensibly.
+  let bSel = getCmpMSValue('geo');
+  if (!Array.isArray(bSel)) bSel = bSel ? [bSel] : [];
+  let geoB = bSel[0];
+  if (!geoB) geoB = (geoA === 'All India') ? (names.find(n => n !== 'All India') || names[0]) : 'All India';
+  // If user picked the same state on both sides, default B to All India for usefulness.
+  if (geoB === geoA) geoB = (geoA === 'All India') ? (names.find(n => n !== 'All India') || names[0]) : 'All India';
+
   return {
-    yeartype: yt,
-    year: getCmpMSValue('year'),
-    month: getCmpMSValue('month'),
-    oem: getCmpMSValue('oem'),
-    fuel: getCmpMSValue('fuel'),
-    geo: geoNorm,
-    geoLabel,
+    yeartype: global.yeartype || 'fy',
+    year:     global.year     || 'all',
+    month:    global.month    || 'all',
+    oem:      global.oem      || 'all',
+    fuel:     global.fuel     || 'all',
+    geo:      geoA,
+    geoLabel: geoA,
     geoA, geoB,
   };
 }
