@@ -44,7 +44,8 @@ from api.data_policy import (
     append_exclude_state_codes_sql,
 )
 from api.master_bundle import build_vahan_master_bundle
-from api.payments import router as payments_router, tier_from_request
+# Payments / Pro tier removed in v2 redesign — Vahan Intelligence is now free for everyone.
+# (api/payments.py has been retained as a no-op stub for backwards compatibility.)
 from config.scraping_config import (
     BASE_FILTERS,
     FUEL_GROUP_CHECKBOX_IDS,
@@ -282,8 +283,9 @@ app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(RateLimitMiddleware)
 app.add_middleware(ApexToWwwRedirectMiddleware)
 
-# ── Payments / Freemium ───────────────────────────────────────────────────────
-app.include_router(payments_router, prefix="/api/payments")
+# ── Payments / Freemium removed (free for everyone) ───────────────────────────
+# The /api/payments routes are intentionally not mounted. Old clients that hit
+# them will get a normal 404, which the v2 dashboard tolerates (no-op).
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 DASHBOARD_DIR = STATIC_DIR / "dashboard"

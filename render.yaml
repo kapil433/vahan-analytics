@@ -1,5 +1,5 @@
 # Render Blueprint — https://dashboard.render.com/ → New → Blueprint
-# Or: Web Service → connect repo → Build: pip install -r requirements.txt
+# Or: Web Service → connect repo → Build: pip install -r requirements-render.txt
 #     Start: uvicorn api.main:app --host 0.0.0.0 --port $PORT
 services:
   - type: web
@@ -11,17 +11,14 @@ services:
     startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /healthz/warm
     envVars:
-      # ── Required for Razorpay payments ─────────────────────────────────────
-      - key: RAZORPAY_KEY_ID
-        sync: false       # paste your rzp_live_xxx or rzp_test_xxx key here in Render dashboard
-      - key: RAZORPAY_KEY_SECRET
-        sync: false       # paste your Razorpay secret here (never commit to git)
-      # ── Required for JWT token signing ──────────────────────────────────────
-      - key: JWT_SECRET
-        generateValue: true   # Render auto-generates a secure random string
       # ── Optional: PostgreSQL (leave unset to use bundled SQLite) ─────────────
       # - key: DATABASE_URL
       #   sync: false         # set to your Render PostgreSQL Internal URL
       # ── Optional: CORS allow-list ────────────────────────────────────────────
-      # - key: CORS_ALLOW_ORIGINS
-      #   value: https://www.vahanintelligence.in
+      - key: CORS_ALLOW_ORIGINS
+        value: https://www.vahanintelligence.in,https://vahanintelligence.in,https://kapil433.github.io
+      # ── HSTS is on by default; set to 1 only on a non-https pre-prod env ────
+      # - key: DISABLE_HSTS
+      #   value: "1"
+
+# (Razorpay / JWT env vars removed — Vahan Intelligence is free for everyone in v2.)

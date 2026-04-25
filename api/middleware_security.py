@@ -14,17 +14,24 @@ from starlette.responses import JSONResponse, RedirectResponse, Response
 
 
 def _csp_value() -> str:
-    """Allow inline scripts/styles (dashboard is a single HTML file with inline JS/CSS)."""
+    """
+    Allow inline scripts/styles (the dashboard is a single HTML with inline JS/CSS).
+    Tightened in v2 launch: removed unused unpkg + jsdelivr origins, removed http:
+    from connect-src, restricted connect-src to known own/mirror origins, added
+    object-src 'none' and upgrade-insecure-requests.
+    """
     return (
         "default-src 'self'; "
-        "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://unpkg.com https://cdn.jsdelivr.net; "
+        "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; "
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
         "font-src 'self' https://fonts.gstatic.com data:; "
         "img-src 'self' data: blob: https:; "
-        "connect-src 'self' https: http:; "
+        "connect-src 'self' https://www.vahanintelligence.in https://kapil433.github.io; "
         "frame-ancestors 'none'; "
         "base-uri 'self'; "
-        "form-action 'self' mailto:;"
+        "form-action 'self' mailto:; "
+        "object-src 'none'; "
+        "upgrade-insecure-requests;"
     )
 
 
@@ -60,11 +67,17 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             "Permissions-Policy",
             "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()",
         )
+        # Cross-origin isolation hardening (cheap, no UX impact for a static dashboard).
+        response.headers.setdefault("Cross-Origin-Opener-Policy", "same-origin")
+        response.headers.setdefault("Cross-Origin-Resource-Policy", "same-origin")
+        response.headers.setdefault("X-DNS-Prefetch-Control", "off")
         response.headers.setdefault("Content-Security-Policy", _csp_value())
-        if os.getenv("ENABLE_HSTS", "").strip().lower() in ("1", "true", "yes"):
+        # HSTS is now ON by default (set DISABLE_HSTS=1 to opt out — useful only for
+        # pre-prod envs running on plain http). 1 year + subdomains + preload-eligible.
+        if os.getenv("DISABLE_HSTS", "").strip().lower() not in ("1", "true", "yes"):
             response.headers.setdefault(
                 "Strict-Transport-Security",
-                "max-age=31536000; includeSubDomains",
+                "max-age=31536000; includeSubDomains; preload",
             )
         for h in ("server", "Server", "x-powered-by", "X-Powered-By"):
             if h in response.headers:

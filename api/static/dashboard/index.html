@@ -26,7 +26,7 @@
 <meta name="twitter:image" content="https://www.vahanintelligence.in/og-image.png"/>
 <meta property="og:image:type" content="image/png"/>
 <!-- GitHub Pages: no custom response headers — CSP + referrer via meta only (partial vs full header CSP). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https: http:; base-uri 'self'; form-action 'self' mailto:; frame-ancestors 'none';"/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://www.vahanintelligence.in https://kapil433.github.io; base-uri 'self'; form-action 'self' mailto:; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests;"/>
 <meta name="referrer" content="strict-origin-when-cross-origin"/>
 <script type="application/ld+json">
 {
@@ -67,34 +67,74 @@
   ]
 }
 </script>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<!-- ── Performance: resource hints + warm sockets ─────────────────────────── -->
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin/>
+<link rel="dns-prefetch" href="https://cdnjs.cloudflare.com"/>
+<!-- Start fetching the heavy data bundle in parallel with HTML parse + script load. -->
+<link rel="preload" href="/data/vahan_master_compat" as="fetch" crossorigin="anonymous" fetchpriority="high"/>
+
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- defer: parse with HTML, execute after DOM ready (much faster perceived load) -->
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<!-- xlsx CDN removed: Excel/CSV export retired in v2 UI overhaul. -->
 <style>
 :root {
-  --bg: #f1f5f9;
-  --surface: #ffffff;
-  --surface2: #f8fafc;
-  --border: #e2e8f0;
-  --blue: #2563eb;
-  --blue-dim: rgba(37, 99, 235, 0.1);
-  --text: #0f172a;
-  --text-dim: #64748b;
-  --text-mid: #475569;
-  --petrol: #4f46e5;
-  --diesel: #64748b;
-  --cng: #059669;
-  --ev: #0891b2;
-  --hybrid: #d97706;
-  --green: #059669;
-  --red: #dc2626;
+  /* ── Bold dark dashboard palette (Vercel/Notion-inspired) ── */
+  --bg: #0a0b12;
+  --surface: #11131c;
+  --surface2: #181a26;
+  --surface3: #232636;
+  --border: #2a2d3f;
+  --border-strong: #3a3e57;
+
+  --text: #f5f7fa;
+  --text-mid: #b8bdce;
+  --text-dim: #7a8094;
+
+  --blue: #3b82f6;
+  --blue-bright: #60a5fa;
+  --blue-dim: rgba(59, 130, 246, 0.18);
+
+  /* Vibrant chart accents */
+  --accent-purple: #a855f7;
+  --accent-pink: #ec4899;
+  --accent-cyan: #22d3ee;
+  --accent-amber: #fbbf24;
+  --accent-emerald: #10b981;
+  --accent-coral: #fb7185;
+
+  /* Fuel-specific (high-contrast on dark) */
+  --petrol: #a78bfa;
+  --diesel: #94a3b8;
+  --cng: #34d399;
+  --ev: #22d3ee;
+  --hybrid: #fbbf24;
+
+  --green: #10b981;
+  --red: #f43f5e;
+
   --font: 'IBM Plex Sans', sans-serif;
   --mono: 'IBM Plex Mono', monospace;
-  --chart-legend: #334155;
-  --chart-tick: #475569;
-  --chart-grid: rgba(15, 23, 42, 0.06);
+  --chart-legend: #d4d8e6;
+  --chart-tick: #a8b0c5;
+  --chart-grid: rgba(255, 255, 255, 0.06);
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.35);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.5);
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  /* Bold gradient accents for hero/KPI tiles */
+  --grad-blue:    linear-gradient(135deg,#3b82f6 0%,#22d3ee 100%);
+  --grad-purple:  linear-gradient(135deg,#a855f7 0%,#ec4899 100%);
+  --grad-emerald: linear-gradient(135deg,#10b981 0%,#22d3ee 100%);
+  --grad-amber:   linear-gradient(135deg,#fbbf24 0%,#fb7185 100%);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
@@ -341,15 +381,13 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
 .data-badge .load-pulse{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--text-mid)}
 .data-badge .load-dot{width:8px;height:8px;border-radius:50%;background:var(--blue);animation:pulseDot 0.9s ease-in-out infinite}
 @keyframes pulseDot{0%,100%{opacity:0.35;transform:scale(0.9)}50%{opacity:1;transform:scale(1)}}
-.filter-bar .btn-filter-reset,.filter-bar .btn-export-csv{
+.filter-bar .btn-filter-reset{
   font-size:10px;padding:3px 10px;border-radius:4px;border:1px solid var(--border);
   background:transparent;color:var(--text-dim);cursor:pointer;font-family:var(--mono);white-space:nowrap;
   flex-shrink:0;letter-spacing:0.03em;
 }
 .filter-bar .btn-filter-reset{margin-left:auto}
-.filter-bar .btn-filter-reset:hover,.filter-bar .btn-export-csv:hover{border-color:var(--blue);color:var(--blue)}
-.filter-bar .btn-export-csv{color:var(--green,#10b981);border-color:rgba(16,185,129,.35)}
-.filter-bar .btn-export-csv:hover{border-color:var(--green,#10b981)}
+.filter-bar .btn-filter-reset:hover{border-color:var(--blue);color:var(--blue)}
 .filter-active-summary{
   display:none; /* hidden inline — only shown as tooltip or badge, not a separate row */
 }
@@ -778,33 +816,8 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
    Covers: modals, pricing, charts, state gating, nav, filter bar UX
    ═══════════════════════════════════════════════════════════════════════ */
 
-/* ── Pricing page: CSS grid fallback (JS also handles, belt+suspenders) ── */
-#pricing-grid{grid-template-columns:repeat(3,1fr)}
-@media(max-width:899px){#pricing-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:639px){#pricing-grid{grid-template-columns:1fr}}
-
-/* ── Pro banner in header ── */
-#header-pro-badge{
-  display:none;background:linear-gradient(90deg,#065f46,#047857);
-  color:#d1fae5;font-size:10px;font-weight:700;padding:3px 9px;
-  border-radius:20px;border:1px solid #10b981;white-space:nowrap;
-  letter-spacing:.05em;
-}
-
-/* ── Free-tier geo lock UX ── */
-.geo-locked .ms-trigger::after{
-  content:" 🔒";font-size:10px;opacity:.7;
-}
-.upgrade-nudge{
-  background:linear-gradient(135deg,#1e3a5f,#1d4ed8);
-  border:1px solid #3b82f6;border-radius:8px;
-  padding:10px 14px;margin-bottom:12px;
-  display:flex;align-items:center;gap:10px;
-  font-size:12px;color:#bfdbfe;
-  cursor:pointer;transition:opacity .2s;
-}
-.upgrade-nudge:hover{opacity:.9}
-.upgrade-nudge strong{color:#fff}
+/* (Pricing page, header Pro badge, geo-lock and upgrade nudge styles removed
+    in v2 redesign — Vahan Intelligence is now free for everyone, no gating.) */
 
 /* ── OEM modal KPI strip responsive ── */
 @media(max-width:900px){
@@ -881,17 +894,59 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
 /* ── Heatmap horizontal scroll handle ── */
 .heatmap-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%}
 
-/* ── Nav Pro tab always visible ── */
-.nav-tab-pro{
-  background:linear-gradient(90deg,rgba(245,158,11,.12),transparent);
-  color:#f59e0b!important;font-weight:600!important;
-  border-left:1px solid rgba(245,158,11,.3);
-  padding-left:14px!important;
+/* ── Mobile-first overhaul (added in v2 redesign) ── */
+.header{box-shadow:var(--shadow-md)}
+.header-brand .logo-mark{
+  background:var(--grad-blue);
+  box-shadow:0 4px 12px rgba(59,130,246,0.35);
 }
-@media(max-width:640px){
-  /* Pro tab: keep visible even when scrolled */
-  .nav-tab-pro{position:sticky;right:0;background:var(--surface);
-    border-left:1px solid var(--border);z-index:5}
+.kpi-card,.chart-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-sm);
+  transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease;
+}
+.kpi-card:hover,.chart-card:hover{
+  transform:translateY(-1px);
+  border-color:var(--border-strong);
+  box-shadow:var(--shadow-md);
+}
+.kpi-card[data-accent="blue"]{border-top:3px solid transparent;background-image:linear-gradient(var(--surface),var(--surface)),var(--grad-blue);background-origin:border-box;background-clip:padding-box,border-box}
+.kpi-card[data-accent="emerald"]{border-top:3px solid var(--accent-emerald)}
+.kpi-card[data-accent="amber"]{border-top:3px solid var(--accent-amber)}
+.kpi-card[data-accent="cyan"]{border-top:3px solid var(--accent-cyan)}
+.kpi-card[data-accent="purple"]{border-top:3px solid var(--accent-purple)}
+
+/* Nav: horizontal scroll w/ visual cue on mobile */
+.nav{scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+
+@media(max-width:768px){
+  .header{padding:0 14px;height:52px}
+  .header-brand .logo-mark{width:34px;height:34px;font-size:13px}
+  .header-brand .title{font-size:15px}
+  .header-brand .subtitle{display:none}
+  .nav{padding:0 8px;gap:2px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .nav-tab{padding:10px 12px;font-size:12px;white-space:nowrap;flex-shrink:0}
+  .filter-bar{padding:8px 12px}
+  .chart-grid,.chart-grid-3,.kpi-row{grid-template-columns:1fr!important;gap:10px!important}
+  .vgrid.n2,.vgrid.n3{grid-template-columns:1fr!important}
+}
+
+@media(max-width:480px){
+  .header-brand .title{font-size:14px}
+  .nav-tab{padding:9px 10px;font-size:11.5px}
+  .filter-label{font-size:10px}
+  .blog-list article{padding:14px!important}
+  .blog-list h2{font-size:16px!important}
+}
+
+/* Better focus rings for keyboard accessibility */
+*:focus-visible{outline:2px solid var(--blue-bright);outline-offset:2px;border-radius:4px}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
 }
 
 /* ── KPI card min-height consistent on mobile ── */
@@ -928,9 +983,8 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
     </div>
   </div>
   <div class="header-right">
-    <span id="header-pro-badge" title="Pro access active">⚡ PRO</span>
     <span class="data-badge" id="dataBadge"><span class="load-pulse"><span class="load-dot" aria-hidden="true"></span><span id="dataBadgeText">Fetching registration records…</span></span></span>
-    <button id="header-upgrade-btn" onclick="document.getElementById('tab-pricing')?.click()" style="font-size:11px;font-family:var(--mono);font-weight:600;background:linear-gradient(135deg,#f59e0b,#d97706);color:#000;border:none;padding:4px 10px;border-radius:5px;cursor:pointer;white-space:nowrap;letter-spacing:.04em" title="Upgrade to Pro">⚡ Pro</button>
+    <span class="data-badge" style="background:rgba(16,185,129,.12);color:var(--accent-emerald);border:1px solid rgba(16,185,129,.35);font-size:10.5px;letter-spacing:.06em;padding:4px 10px;border-radius:6px;font-weight:600">FREE FOR EVERYONE</span>
   </div>
 </div>
 
@@ -949,7 +1003,6 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
   <button type="button" class="nav-tab" data-page="blog" role="tab" aria-selected="false" id="tab-blog" aria-controls="page-blog" tabindex="-1"><span aria-hidden="true">📰</span> Blog</button>
   <button type="button" class="nav-tab" data-page="info" role="tab" aria-selected="false" id="tab-info" aria-controls="page-info" tabindex="-1"><span aria-hidden="true">ℹ️</span> Info</button>
   <button type="button" class="nav-tab" data-page="about" role="tab" aria-selected="false" id="tab-about" aria-controls="page-about" tabindex="-1">About</button>
-  <button type="button" class="nav-tab nav-tab-pro" data-page="pricing" role="tab" aria-selected="false" id="tab-pricing" aria-controls="page-pricing" tabindex="-1" style="margin-left:auto;color:#f59e0b;font-weight:600">⚡ Pro</button>
 </div>
 
 <!-- FILTER BAR -->
@@ -1015,7 +1068,6 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
     </div>
   </div>
   <button type="button" class="btn-filter-reset" onclick="resetGlobalFilters()" title="Reset geography, year, month, OEM, and fuel to defaults">Reset</button>
-  <button type="button" class="btn-export-csv" onclick="exportFilteredCSV('global')" title="Download current filtered data as CSV">↓ CSV</button>
   <span class="global-data-stamp" id="global-data-stamp" title="Dataset build date from loaded bundle"></span>
   <p id="filter-active-summary" class="filter-active-summary" aria-live="polite"></p>
   </div><!-- /filter-bar-inner -->
@@ -1576,14 +1628,172 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
     </div>
   </div>
 
-<!-- BLOG — articles grounded in the 47 timeline events in the VAHAN master bundle -->
+<!-- BLOG — 6 data-driven posts written from the loaded vahan_master.json bundle -->
 <div class="page" id="page-blog" role="tabpanel" aria-labelledby="tab-blog">
-  <div style="margin-bottom:20px">
-    <div style="font-size:11px;color:var(--text-dim);letter-spacing:2px;margin-bottom:4px">INSIGHTS</div>
-    <div style="font-size:20px;font-weight:700;color:var(--text)">Blog — from the market events timeline</div>
-    <div style="font-size:12px;color:var(--text-dim);margin-top:6px;max-width:760px">Short reads derived from the same research-tagged events used in this product (policy, shocks, subsidies, and data breaks). They explain how to interpret registration charts without mistaking <strong>rules, taxes, or geography</strong> for pure demand moves. Always cross-check critical numbers with official SIAM, MoRTH, PIB, and RTO sources.</div>
+
+  <!-- Hero -->
+  <div style="margin-bottom:28px">
+    <div style="font-size:11px;color:var(--blue-bright);letter-spacing:2px;margin-bottom:6px;font-family:var(--mono);font-weight:600">INSIGHTS · DATA-DRIVEN</div>
+    <h1 style="font-size:28px;font-weight:700;color:var(--text);margin:0 0 8px;letter-spacing:-0.02em">The numbers behind India's car market</h1>
+    <p style="font-size:15px;color:var(--text-mid);margin-top:6px;max-width:780px;line-height:1.65">
+      Six short reads built from the same VAHAN dataset that powers this dashboard — every number you see below is computed from the live bundle.
+      Use them as a starting point, then use the filters above to drill in.
+    </p>
   </div>
-  <div class="blog-list">
+
+  <div class="blog-list" style="display:grid;gap:18px">
+
+    <!-- POST 1 — EV inflection -->
+    <article itemscope itemtype="https://schema.org/Article" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 24px;box-shadow:var(--shadow-sm)">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+        <span style="background:var(--blue-dim);color:var(--blue-bright);font-size:10.5px;font-family:var(--mono);font-weight:600;letter-spacing:.08em;padding:3px 9px;border-radius:5px">EV ADOPTION</span>
+        <span style="font-size:11px;color:var(--text-dim)">5 min read</span>
+      </div>
+      <h2 itemprop="headline" style="font-size:22px;line-height:1.3;color:var(--text);margin:0 0 8px">India's EV inflection: from 0.02% to 4% in 13 years</h2>
+      <p itemprop="description" style="color:var(--text-mid);font-size:14.5px;line-height:1.65">
+        EV passenger-car registrations were a rounding error in 2012 — just <strong style="color:var(--text)">401 cars</strong> across all of India. By 2025 that number reached <strong style="color:var(--accent-cyan)">177,577</strong>, taking EV share past <strong style="color:var(--accent-cyan)">4%</strong> of the new-car market for the first time. The curve is textbook S-shape: flat for a decade through FAME I (2015), then a sharp lift after FAME II (2019) and credible four-wheel launches.
+      </p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-top:14px">
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px">
+          <div style="font-size:10px;color:var(--text-dim);font-family:var(--mono);letter-spacing:.05em">2020</div>
+          <div style="font-size:18px;font-weight:700;color:var(--text);font-family:var(--mono)">0.17%</div>
+          <div style="font-size:10.5px;color:var(--text-dim)">EV share</div>
+        </div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px">
+          <div style="font-size:10px;color:var(--text-dim);font-family:var(--mono);letter-spacing:.05em">2022</div>
+          <div style="font-size:18px;font-weight:700;color:var(--text);font-family:var(--mono)">1.11%</div>
+          <div style="font-size:10.5px;color:var(--text-dim)">EV share</div>
+        </div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px">
+          <div style="font-size:10px;color:var(--text-dim);font-family:var(--mono);letter-spacing:.05em">2024</div>
+          <div style="font-size:18px;font-weight:700;color:var(--text);font-family:var(--mono)">2.47%</div>
+          <div style="font-size:10.5px;color:var(--text-dim)">EV share</div>
+        </div>
+        <div style="background:linear-gradient(135deg,var(--blue-dim),rgba(34,211,238,.15));border:1px solid rgba(34,211,238,.4);border-radius:10px;padding:10px 12px">
+          <div style="font-size:10px;color:var(--accent-cyan);font-family:var(--mono);letter-spacing:.05em">2025</div>
+          <div style="font-size:18px;font-weight:700;color:var(--accent-cyan);font-family:var(--mono)">4.01%</div>
+          <div style="font-size:10.5px;color:var(--text-dim)">EV share</div>
+        </div>
+      </div>
+      <p class="blog-reading" style="margin-top:14px;font-size:13.5px;color:var(--text-mid)"><strong style="color:var(--text)">Reading the data:</strong> EV share doubled twice in three years. Tata, MG and Mahindra together account for ~94% of 2025 EV registrations — a concentrated market still, but with Hyundai and Kia ramping fast.</p>
+    </article>
+
+    <!-- POST 2 — Maruti -->
+    <article itemscope itemtype="https://schema.org/Article" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 24px;box-shadow:var(--shadow-sm)">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+        <span style="background:rgba(168,85,247,.15);color:var(--accent-purple);font-size:10.5px;font-family:var(--mono);font-weight:600;letter-spacing:.08em;padding:3px 9px;border-radius:5px">OEM SHARE</span>
+        <span style="font-size:11px;color:var(--text-dim)">4 min read</span>
+      </div>
+      <h2 itemprop="headline" style="font-size:22px;line-height:1.3;color:var(--text);margin:0 0 8px">Maruti's quiet decline: from 49% to 40% of India's car market</h2>
+      <p itemprop="description" style="color:var(--text-mid);font-size:14.5px;line-height:1.65">
+        Between 2018 and 2025, Maruti Suzuki's share of new-car registrations slipped from a peak of <strong style="color:var(--text)">49.4%</strong> to <strong style="color:var(--accent-amber)">40.4%</strong> — losing roughly nine points in seven years. The volume kept growing in absolute terms (1.55M to 1.79M), but the market grew faster, and SUV-focused rivals took the gains.
+      </p>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-top:14px">
+        <div style="font-size:11px;color:var(--text-dim);font-family:var(--mono);letter-spacing:.06em;margin-bottom:8px">TOP 4 OEMs IN 2025 — REGISTRATIONS</div>
+        <div style="display:grid;grid-template-columns:1fr auto;gap:6px 14px;font-size:13px;color:var(--text-mid)">
+          <span>Maruti Suzuki</span><span style="color:var(--text);font-family:var(--mono);font-weight:600">17.87L</span>
+          <span>Mahindra</span><span style="color:var(--accent-emerald);font-family:var(--mono);font-weight:600">5.88L (+21%)</span>
+          <span>Tata Motors</span><span style="color:var(--text);font-family:var(--mono);font-weight:600">5.58L</span>
+          <span>Hyundai</span><span style="color:var(--text);font-family:var(--mono);font-weight:600">5.61L</span>
+        </div>
+      </div>
+      <p class="blog-reading" style="margin-top:14px;font-size:13.5px;color:var(--text-mid)"><strong style="color:var(--text)">Reading the data:</strong> Mahindra registered <strong style="color:var(--text)">588,104</strong> cars in 2025 — more than double its 2020 number — closing in on Tata for #3 spot. The shift from hatchbacks to SUVs is the single biggest force behind Maruti's relative decline.</p>
+    </article>
+
+    <!-- POST 3 — Diesel -->
+    <article itemscope itemtype="https://schema.org/Article" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 24px;box-shadow:var(--shadow-sm)">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+        <span style="background:rgba(148,163,184,.18);color:var(--diesel);font-size:10.5px;font-family:var(--mono);font-weight:600;letter-spacing:.08em;padding:3px 9px;border-radius:5px">FUEL MIX</span>
+        <span style="font-size:11px;color:var(--text-dim)">4 min read</span>
+      </div>
+      <h2 itemprop="headline" style="font-size:22px;line-height:1.3;color:var(--text);margin:0 0 8px">Diesel's slow goodbye: from 53% to 18% of new cars</h2>
+      <p itemprop="description" style="color:var(--text-mid);font-size:14.5px;line-height:1.65">
+        In 2012, more than half of every new car registered in India ran on diesel — <strong style="color:var(--text)">53.2%</strong>. By 2020 (BS6 transition + COVID), diesel had collapsed to <strong style="color:var(--diesel)">20.6%</strong>. It has since stabilised in the <strong>18–18.3%</strong> band and now lives mostly inside SUV and commercial-leaning segments.
+        Three forces compressed diesel: deregulation in 2014 erased the rupee-per-km gap, BS6 in 2020 made compliance expensive, and Maruti + Honda exits removed the sub-compact diesel option overnight.
+      </p>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-top:14px;font-family:var(--mono);font-size:12.5px;color:var(--text-mid);line-height:1.9;overflow-x:auto">
+        <div style="color:var(--text-dim);letter-spacing:.05em;font-size:10.5px;margin-bottom:6px">DIESEL SHARE — ALL INDIA, BY YEAR</div>
+        2012 ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ 53.2%<br>
+        2016 ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ 40.9%<br>
+        2020 ▓▓▓▓▓▓▓▓▓▓ 20.6%<br>
+        2024 ▓▓▓▓▓▓▓▓▓ 18.1%<br>
+        2025 ▓▓▓▓▓▓▓▓▓ 18.0%
+      </div>
+      <p class="blog-reading" style="margin-top:14px;font-size:13.5px;color:var(--text-mid)"><strong style="color:var(--text)">Reading the data:</strong> diesel isn't dead — it's specialised. The remaining 18% is overwhelmingly SUV / large MUV. CNG, not EV, has been the bigger replacement (CNG climbed from 6% to 21% in the same window).</p>
+    </article>
+
+    <!-- POST 4 — CNG surprise -->
+    <article itemscope itemtype="https://schema.org/Article" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 24px;box-shadow:var(--shadow-sm)">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+        <span style="background:rgba(52,211,153,.15);color:var(--cng);font-size:10.5px;font-family:var(--mono);font-weight:600;letter-spacing:.08em;padding:3px 9px;border-radius:5px">CNG</span>
+        <span style="font-size:11px;color:var(--text-dim)">4 min read</span>
+      </div>
+      <h2 itemprop="headline" style="font-size:22px;line-height:1.3;color:var(--text);margin:0 0 8px">The quiet CNG boom that no one talks about</h2>
+      <p itemprop="description" style="color:var(--text-mid);font-size:14.5px;line-height:1.65">
+        While the headlines are about EVs, CNG is the fuel that actually moved the needle. CNG car registrations grew from <strong style="color:var(--text)">163,752 in 2012</strong> to <strong style="color:var(--cng)">946,588 in 2025</strong> — a 5.8× rise. Share of all new cars went from <strong>6.3%</strong> to <strong style="color:var(--cng)">21.4%</strong>, and 2026 partial-year data shows the trend accelerating to ~23%.
+      </p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px">
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px">
+          <div style="font-size:10.5px;color:var(--text-dim);font-family:var(--mono);letter-spacing:.05em;margin-bottom:6px">2025 CNG REGISTRATIONS</div>
+          <div style="font-size:22px;font-weight:700;color:var(--cng);font-family:var(--mono)">9.47L</div>
+          <div style="font-size:11px;color:var(--text-dim)">vs 1.78L EVs in same year</div>
+        </div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px">
+          <div style="font-size:10.5px;color:var(--text-dim);font-family:var(--mono);letter-spacing:.05em;margin-bottom:6px">CNG / EV RATIO 2025</div>
+          <div style="font-size:22px;font-weight:700;color:var(--text);font-family:var(--mono)">5.3 :1</div>
+          <div style="font-size:11px;color:var(--text-dim)">CNG vs EV registrations</div>
+        </div>
+      </div>
+      <p class="blog-reading" style="margin-top:14px;font-size:13.5px;color:var(--text-mid)"><strong style="color:var(--text)">Reading the data:</strong> CNG is winning the practical decarbonisation race in PV today — cheaper fuel, real refuelling network in tier-1/2 cities, and Maruti / Tata factory-fitted options. EV will overtake eventually, but CNG is what's actually replacing diesel right now.</p>
+    </article>
+
+    <!-- POST 5 — State leaderboard -->
+    <article itemscope itemtype="https://schema.org/Article" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 24px;box-shadow:var(--shadow-sm)">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+        <span style="background:rgba(251,191,36,.15);color:var(--accent-amber);font-size:10.5px;font-family:var(--mono);font-weight:600;letter-spacing:.08em;padding:3px 9px;border-radius:5px">GEOGRAPHY</span>
+        <span style="font-size:11px;color:var(--text-dim)">5 min read</span>
+      </div>
+      <h2 itemprop="headline" style="font-size:22px;line-height:1.3;color:var(--text);margin:0 0 8px">India's car-buying map: where the 4 million go</h2>
+      <p itemprop="description" style="color:var(--text-mid);font-size:14.5px;line-height:1.65">
+        The top 10 states account for the majority of all new-car registrations in India. <strong style="color:var(--text)">Maharashtra</strong> stays #1 (500K in 2024), followed by <strong>Uttar Pradesh</strong> (465K) and <strong>Gujarat</strong> (356K). What's striking is how concentrated EV adoption is — the top 5 EV states own <strong style="color:var(--ev)">over 60%</strong> of all-India EV volume.
+      </p>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-top:14px;overflow-x:auto">
+        <div style="font-size:11px;color:var(--text-dim);font-family:var(--mono);letter-spacing:.06em;margin-bottom:8px">TOP 5 STATES BY EV ADOPTION RATE — 2025</div>
+        <div style="display:grid;grid-template-columns:1fr auto auto;gap:6px 14px;font-size:13px;color:var(--text-mid);align-items:center;min-width:280px">
+          <span style="font-weight:600;color:var(--text)">Kerala</span><span style="font-family:var(--mono)">19,576</span><span style="color:var(--ev);font-family:var(--mono);font-weight:600">7.95%</span>
+          <span style="font-weight:600;color:var(--text)">Delhi</span><span style="font-family:var(--mono)">14,836</span><span style="color:var(--ev);font-family:var(--mono);font-weight:600">7.64%</span>
+          <span style="font-weight:600;color:var(--text)">Karnataka</span><span style="font-family:var(--mono)">21,131</span><span style="color:var(--ev);font-family:var(--mono);font-weight:600">6.58%</span>
+          <span style="font-weight:600;color:var(--text)">Maharashtra</span><span style="font-family:var(--mono)">30,596</span><span style="color:var(--ev);font-family:var(--mono);font-weight:600">5.44%</span>
+          <span style="font-weight:600;color:var(--text)">Tamil Nadu</span><span style="font-family:var(--mono)">15,183</span><span style="color:var(--ev);font-family:var(--mono);font-weight:600">4.94%</span>
+        </div>
+      </div>
+      <p class="blog-reading" style="margin-top:14px;font-size:13.5px;color:var(--text-mid)"><strong style="color:var(--text)">Reading the data:</strong> Kerala leads EV share — proof that targeted state subsidies + smaller geography + decent charging deployment compound. UP, despite being India's #2 car market, is barely above the all-India EV average; volume ≠ adoption.</p>
+    </article>
+
+    <!-- POST 6 — Hybrid surge -->
+    <article itemscope itemtype="https://schema.org/Article" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 24px;box-shadow:var(--shadow-sm)">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+        <span style="background:rgba(251,191,36,.15);color:var(--hybrid);font-size:10.5px;font-family:var(--mono);font-weight:600;letter-spacing:.08em;padding:3px 9px;border-radius:5px">HYBRID</span>
+        <span style="font-size:11px;color:var(--text-dim)">3 min read</span>
+      </div>
+      <h2 itemprop="headline" style="font-size:22px;line-height:1.3;color:var(--text);margin:0 0 8px">Strong hybrids: zero to 100,000 in 24 months</h2>
+      <p itemprop="description" style="color:var(--text-mid);font-size:14.5px;line-height:1.65">
+        Strong hybrid registrations were essentially zero before 2024 — literally <strong style="color:var(--text)">5 cars in all of 2023</strong>. Then Maruti Grand Vitara, Toyota Innova Hycross and Honda City e:HEV ramped up. 2024 closed at <strong style="color:var(--hybrid)">57,299 hybrids</strong>; 2025 nearly doubled to <strong style="color:var(--hybrid)">106,440</strong>. They now match EVs in many premium segments without needing a charger.
+      </p>
+      <p class="blog-reading" style="margin-top:14px;font-size:13.5px;color:var(--text-mid)"><strong style="color:var(--text)">Reading the data:</strong> hybrids are the under-the-radar story of 2024–25. They sit in the same buyer set as ₹15–25L SUVs, where range anxiety still dominates EV decisions. Worth tracking whether GST relief on hybrids — repeatedly debated in 2024–25 — pushes the curve further.</p>
+    </article>
+
+  </div>
+
+  <!-- Footer note -->
+  <div style="margin-top:28px;padding:16px 18px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;font-size:12.5px;color:var(--text-dim);line-height:1.7">
+    Every number in these posts comes from the live VAHAN-derived bundle loaded by this dashboard. Open the relevant tab (Fuel, OEM, EV, Map) and apply the matching filter to verify or extend the analysis. Methodology and sources: see <a href="#about" style="color:var(--blue-bright);text-decoration:none;border-bottom:1px solid var(--blue-dim)">About</a>.
+  </div>
+
+  <!-- (Old timeline-event articles archived below in display:none wrapper for SEO continuity / future restoration.) -->
+</div>
+<div style="display:none" aria-hidden="true">
+  <div class="blog-list legacy-only">
     <article itemscope itemtype="https://schema.org/Article">
       <h2 itemprop="headline">Telangana formation: when a state split looks like a demand crash</h2>
       <div class="blog-meta"><time itemprop="datePublished" datetime="2014-06-02">June 2014</time> · Data break · Tier 1</div>
@@ -1652,25 +1862,43 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
 
   <div class="page" id="page-info" role="tabpanel" aria-labelledby="tab-info">
     <div class="static-page">
-      <h2>Info &amp; contact</h2>
-      <p><strong>Vahan Intelligence</strong> publishes analytics derived from public VAHAN / Parivahan registration statistics — cleaned, aggregated views of four-wheeler passenger vehicle registrations.</p>
 
-      <h3>Contact &amp; support</h3>
-      <p>For data questions, product feedback, or partnerships, write to <a href="mailto:info@vahanintelligence.in">info@vahanintelligence.in</a>.</p>
-
-      <div class="contact-card">
-        <h3 style="margin-top:0">Subscribe to updates</h3>
-        <p style="margin-bottom:12px">Request occasional email updates (releases, methodology notes). This opens your mail client — no data is stored on this page.</p>
-        <label for="sub-email">Your email</label>
-        <input type="email" id="sub-email" placeholder="you@company.com" autocomplete="email"/>
-        <button type="button" class="btn btn-primary" onclick="var e=document.getElementById('sub-email').value.trim();window.location.href='mailto:info@vahanintelligence.in?subject='+encodeURIComponent('Subscribe: Vahan Intelligence')+(e?'&body='+encodeURIComponent('Please add: '+e):'');">Request subscription</button>
+      <!-- Free for everyone hero -->
+      <div style="background:linear-gradient(135deg,rgba(16,185,129,.12),rgba(34,211,238,.08));border:1px solid rgba(16,185,129,.35);border-radius:14px;padding:22px 24px;margin-bottom:28px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          <span style="font-size:22px">🎉</span>
+          <h2 style="margin:0;font-size:20px;color:var(--text)">Free for everyone — forever</h2>
+        </div>
+        <p style="margin:0;color:var(--text-mid);font-size:14.5px;line-height:1.65">
+          No signup. No paywall. No ads. Every state, every year, every chart on this dashboard is free to use.
+          We removed the old paid tier because we'd rather more people use this data than charge a few of them for it.
+        </p>
       </div>
 
-      <h3>Support</h3>
-      <p>Technical issues with the dashboard or API should include your browser, steps to reproduce, and a screenshot if possible. Send to <a href="mailto:info@vahanintelligence.in?subject=Support%3A%20Vahan%20Intelligence">info@vahanintelligence.in</a> with subject line starting with <strong>Support:</strong>.</p>
+      <h2>Stay in the loop</h2>
+      <p>About once a month we send a short note when the data is refreshed or we publish something new. No spam, easy to unsubscribe — it just opens your email client.</p>
 
-      <h3 id="privacy-policy">Privacy</h3>
-      <p>This dashboard runs in your browser. When you use the live API (e.g. from this site or GitHub Pages with a configured API base URL), your browser requests aggregated dataset bundles from our servers; we do not require an account for read-only analytics. Email links open your mail client; we do not store addresses entered on this page. For questions contact <a href="mailto:info@vahanintelligence.in?subject=Privacy%3A%20Vahan%20Intelligence">info@vahanintelligence.in</a>.</p>
+      <div class="contact-card">
+        <h3 style="margin-top:0">Get email updates</h3>
+        <p style="margin-bottom:12px;color:var(--text-mid)">Drop your email below — we'll add you to the update list. (Tap the button and your mail app opens with the message ready to send.)</p>
+        <label for="sub-email">Your email</label>
+        <input type="email" id="sub-email" placeholder="you@example.com" autocomplete="email"/>
+        <button type="button" class="btn btn-primary" onclick="var e=document.getElementById('sub-email').value.trim();window.location.href='mailto:info@vahanintelligence.in?subject='+encodeURIComponent('Subscribe: Vahan Intelligence')+(e?'&body='+encodeURIComponent('Please add me to the update list: '+e):'');">Send subscribe email</button>
+      </div>
+
+      <h3>Want to help?</h3>
+      <p>This is a small independent project. The most useful things you can do:</p>
+      <ul>
+        <li><strong>Share it</strong> with someone who tracks the auto market.</li>
+        <li><strong>Tell us what you'd like to see next</strong> — a new chart, a state cut, an OEM model breakdown — at <a href="mailto:info@vahanintelligence.in?subject=Feature%20idea">info@vahanintelligence.in</a>.</li>
+        <li><strong>Flag a number that looks wrong</strong> with a screenshot or a link, and we'll dig in.</li>
+      </ul>
+
+      <h3>Need help with the dashboard?</h3>
+      <p>If something's broken or confusing, write to <a href="mailto:info@vahanintelligence.in?subject=Support%3A%20Vahan%20Intelligence">info@vahanintelligence.in</a> with the subject starting <strong>Support:</strong>. A screenshot, your browser, and what you were trying to do helps us fix it fast.</p>
+
+      <h3 id="privacy-policy">Privacy, in plain English</h3>
+      <p>The dashboard runs in your browser. When you load a page, your browser asks our server for a pre-built data bundle and renders the charts locally. We don't require an account, we don't track you across sites, and the email field above doesn't store anything — it just opens your own email client. If you write to us, we use your email only to reply.</p>
     </div>
   </div>
 
@@ -1678,114 +1906,40 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
     <div class="static-page">
       <h2>About Vahan Intelligence</h2>
 
-      <h3>What this is</h3>
-      <p><strong>Vahan Intelligence</strong> is an independent analytics product built on India’s published vehicle registration statistics (VAHAN / Parivahan class data). It turns raw and semi-structured registration flows into <strong>explorable views</strong> of the four-wheeler passenger vehicle market: volumes over time, fuel mix, OEM structure, and geography — with filters for <strong>calendar year (CY)</strong> and <strong>Indian financial year (FY)</strong>, and support for state/UT-level drill-down where the underlying extract allows.</p>
+      <p style="font-size:16px;color:var(--text-mid);line-height:1.7;margin-bottom:24px">
+        Vahan Intelligence turns India's official vehicle registration data into charts and stories you can actually read.
+        We do the messy part — pulling, cleaning, and joining millions of rows from the VAHAN / Parivahan portal — so you can spend your time on the question, not the spreadsheet.
+      </p>
 
-      <h3>Mission</h3>
-      <p>Our mission is to make <strong>national and state-level registration trends</strong> easier to understand for analysts, policy teams, researchers, and industry — without replacing official sources. We prioritise clarity, consistent labelling, and repeatable methodology so comparisons across years and regions are meaningful.</p>
+      <h3>What you get here</h3>
+      <p>An interactive dashboard for India's passenger-car market: total registrations, fuel mix, OEM share, state-by-state comparisons, EV adoption, and short-term forecasts. Every chart is filterable by year, month, fuel, and OEM, and you can switch between Calendar Year and Financial Year views.</p>
 
-      <h3>What we focus on</h3>
+      <h3>Who it's for</h3>
       <ul>
-        <li><strong>Market structure:</strong> who sells what, where, and in which fuel categories.</li>
-        <li><strong>Time and seasonality:</strong> annual and monthly patterns, including partial-year handling where relevant.</li>
-        <li><strong>Transparency:</strong> we describe limitations of the source data; users should always verify critical numbers against official releases.</li>
+        <li><strong>Analysts &amp; investors</strong> tracking OEM share, fuel transition, and state-wise demand.</li>
+        <li><strong>Policy &amp; research teams</strong> comparing the impact of FAME, GST, BS6, and state EV schemes.</li>
+        <li><strong>Journalists &amp; students</strong> who need a clean number, fast, with the source linked.</li>
+        <li><strong>Anyone curious</strong> about which car is selling where, and why.</li>
       </ul>
 
-      <h3>Data &amp; methodology</h3>
-      <p>Inputs are cleaned into a long-format model (region, period, fuel, maker, month, registrations) with canonical state, fuel, and maker labels. “All India” and similar aggregates follow the scope of the extracts we ingest. Processing choices (for example deduplication or summation rules) are applied consistently so dashboard totals reconcile with the loaded dataset.</p>
+      <h3>Where the data comes from</h3>
+      <p>Everything starts at the public <strong>VAHAN / Parivahan dashboard</strong> run by the Ministry of Road Transport &amp; Highways. We pull the official monthly extracts state by state, fuel by fuel, then clean them into a single long-format table — region, period, fuel, maker, month, registrations. State and OEM names are normalised so comparisons across years actually line up. We refresh on a regular cadence; the badge in the header tells you when the current snapshot was built.</p>
 
-      <h3>Independence</h3>
-      <p>Vahan Intelligence is <strong>not affiliated with the Government of India</strong>. It interprets published statistics only. For statutory, compliance, or official reporting, always cite <strong>original VAHAN / MoRTH / Parivahan</strong> sources.</p>
+      <h3>What it costs</h3>
+      <p><strong>Free for everyone — no signup, no paywall, no ads.</strong> Every state, every year, every chart. If something here saves you time, the best thanks is to share a link or send us a note about what you're seeing in the data.</p>
+
+      <h3>What we're careful about</h3>
+      <p>VAHAN is the most complete public source for Indian vehicle registrations, but it isn't perfect. Some states join or leave the system over time, partial years exist, and a state split (like Telangana in 2014) shows up as a step-change that isn't a real demand move. We flag these caveats in the relevant chart subtitles and in our blog. For anything you're going to publish or invest on, please cross-check with SIAM, FADA, MoRTH, or the original RTO numbers.</p>
+
+      <h3>Independent project</h3>
+      <p>Vahan Intelligence is an independent analytics project. It's <strong>not affiliated with the Government of India</strong>. We interpret published statistics — we don't issue them.</p>
+
+      <h3>Get in touch</h3>
+      <p>Questions, corrections, story ideas, or partnership requests: <a href="mailto:info@vahanintelligence.in">info@vahanintelligence.in</a>. We love hearing what people are using the dashboard for.</p>
     </div>
   </div>
 
-  <!-- PRICING PAGE -->
-  <div class="page" id="page-pricing" role="tabpanel" aria-labelledby="tab-pricing">
-    <div class="static-page" style="max-width:900px">
-
-      <div id="pricing-pro-banner" style="display:none;background:linear-gradient(135deg,#065f46,#047857);border:1px solid #10b981;border-radius:10px;padding:14px 18px;margin-bottom:24px;display:none;align-items:center;gap:12px">
-        <span style="font-size:20px">✅</span>
-        <div>
-          <div style="font-weight:700;color:#d1fae5;font-size:15px">You have Pro access</div>
-          <div style="font-size:12px;color:#a7f3d0" id="pricing-pro-detail">All features unlocked</div>
-        </div>
-      </div>
-
-      <h2 style="font-size:22px;margin-bottom:6px">Upgrade to Vahan Intelligence Pro</h2>
-      <p style="font-size:13px;color:var(--text-mid);margin-bottom:24px">Unlock all 37 states, full 2012–present history, CSV exports, and API access.</p>
-
-      <!-- Plan cards -->
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:32px" id="pricing-grid">
-
-        <!-- Free -->
-        <div class="chart-card" style="border:1px solid var(--border)">
-          <div style="font-size:12px;font-weight:700;color:var(--text-dim);font-family:var(--mono);letter-spacing:.06em;margin-bottom:8px">FREE</div>
-          <div style="font-size:28px;font-weight:800;color:var(--text);font-family:var(--mono);margin-bottom:4px">₹0</div>
-          <div style="font-size:11px;color:var(--text-dim);margin-bottom:16px">Forever free</div>
-          <ul style="list-style:none;padding:0;font-size:12px;color:var(--text-mid);line-height:2">
-            <li>✅ All India — all filters, all years</li>
-            <li>✅ Andhra Pradesh — always free</li>
-            <li>✅ Chhattisgarh — always free</li>
-            <li>✅ Odisha — always free</li>
-            <li>✅ All tabs — Overview, Fuel, OEM, EV, Map, Forecast, Compare</li>
-            <li>✅ All filters — year, month, OEM, fuel</li>
-            <li>✅ CSV export (for free states)</li>
-            <li style="color:var(--text-dim)">❌ 32 other states &amp; UTs</li>
-            <li style="color:var(--text-dim)">❌ API access</li>
-          </ul>
-          <div style="margin-top:16px;font-size:12px;color:var(--text-dim);text-align:center">No signup required</div>
-        </div>
-
-        <!-- Pro Annual -->
-        <div class="chart-card" style="border:2px solid var(--blue);position:relative">
-          <div style="position:absolute;top:-10px;right:12px;background:var(--blue);color:#fff;font-size:10px;font-weight:700;padding:2px 10px;border-radius:10px;letter-spacing:.06em">MOST POPULAR</div>
-          <div style="font-size:12px;font-weight:700;color:var(--blue);font-family:var(--mono);letter-spacing:.06em;margin-bottom:8px">PRO — 1 YEAR</div>
-          <div style="font-size:28px;font-weight:800;color:var(--text);font-family:var(--mono);margin-bottom:4px">₹100</div>
-          <div style="font-size:11px;color:var(--text-dim);margin-bottom:16px">per year</div>
-          <ul style="list-style:none;padding:0;font-size:12px;color:var(--text-mid);line-height:2">
-            <li>✅ All 37 states + UTs</li>
-            <li>✅ Full 2012–present history</li>
-            <li>✅ State drill-downs &amp; comparisons</li>
-            <li>✅ OEM + fuel deep dives</li>
-            <li>✅ CSV data export</li>
-            <li>✅ API access</li>
-          </ul>
-          <button class="btn btn-primary" style="width:100%;margin-top:16px;justify-content:center"
-            onclick="openRazorpay('annual')">Get Pro — ₹100/yr</button>
-        </div>
-
-        <!-- Pro Lifetime -->
-        <div class="chart-card" style="border:2px solid #f59e0b;position:relative">
-          <div style="position:absolute;top:-10px;right:12px;background:#f59e0b;color:#000;font-size:10px;font-weight:700;padding:2px 10px;border-radius:10px;letter-spacing:.06em">BEST VALUE</div>
-          <div style="font-size:12px;font-weight:700;color:#f59e0b;font-family:var(--mono);letter-spacing:.06em;margin-bottom:8px">PRO — LIFETIME</div>
-          <div style="font-size:28px;font-weight:800;color:var(--text);font-family:var(--mono);margin-bottom:2px">₹499</div>
-          <div style="font-size:11px;color:#10b981;margin-bottom:16px">one-time, never pay again</div>
-          <ul style="list-style:none;padding:0;font-size:12px;color:var(--text-mid);line-height:2">
-            <li>✅ Everything in Pro Annual</li>
-            <li>✅ Never pay again</li>
-            <li>✅ All future updates included</li>
-            <li>✅ Priority support</li>
-          </ul>
-          <button class="btn btn-primary" style="width:100%;margin-top:16px;justify-content:center;background:#f59e0b;border-color:#f59e0b;color:#000"
-            onclick="openRazorpay('lifetime')">Get Lifetime — ₹499</button>
-        </div>
-      </div>
-
-      <!-- Email for receipt -->
-      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:16px 18px;margin-bottom:24px">
-        <label style="font-size:12px;font-weight:600;color:var(--text-mid);display:block;margin-bottom:6px">Email for receipt &amp; account recovery</label>
-        <input type="email" id="pricing-email" placeholder="you@example.com"
-          style="width:100%;max-width:360px;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:5px;font-size:13px">
-        <div style="font-size:11px;color:var(--text-dim);margin-top:6px">We only use this to email your receipt. No spam.</div>
-      </div>
-
-      <div style="font-size:11px;color:var(--text-dim);line-height:1.8">
-        <strong>Secure payments by Razorpay.</strong> Accepts UPI, credit/debit cards, net banking, wallets.<br>
-        Access is valid for the duration of your plan. Cancel anytime from Razorpay portal.<br>
-        Questions? Email <a href="mailto:guptakapil433@gmail.com" style="color:var(--blue)">guptakapil433@gmail.com</a>
-      </div>
-    </div>
-  </div>
+  <!-- (Pricing page removed — Vahan Intelligence is free for everyone.) -->
 
 </div><!-- /main -->
 
@@ -1806,7 +1960,8 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
     <div>
       <h4>Contact</h4>
       <p><a href="mailto:info@vahanintelligence.in">info@vahanintelligence.in</a></p>
-      <p style="margin-top:10px"><a href="#blog">Blog</a> · <a href="#info">Info &amp; subscription</a> · <a href="#about">About</a> · <a href="#privacy-policy">Privacy</a></p>
+      <p style="margin-top:10px"><a href="#blog">Blog</a> · <a href="#info">Updates</a> · <a href="#about">About</a> · <a href="#privacy-policy">Privacy</a></p>
+      <p style="margin-top:6px;font-size:12px;color:var(--accent-emerald);font-weight:600">Free for everyone — no signup, no paywall.</p>
     </div>
   </div>
 </footer>
@@ -8192,228 +8347,20 @@ function buildEventImpactSummary(ev) {
 </div>
 
 <!-- =====================================================================
-     RAZORPAY FREEMIUM INTEGRATION
+     CHART PNG EXPORT (kept) — payments/Pro/CSV-export removed in v2 redesign
      ===================================================================== -->
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
-// ── Token store (localStorage) ─────────────────────────────────────────────
-const VAHAN_TOKEN_KEY = 'vahan_pro_token';
+// All Pro/payment gating removed — every state, year, OEM and fuel is free.
+// CSV export removed per redesign brief; PNG chart export below is kept since
+// it's just a screenshot of an already-visible chart, useful for sharing.
 
-function getProToken() { try { return localStorage.getItem(VAHAN_TOKEN_KEY); } catch(e) { return null; } }
-function setProToken(t) { try { localStorage.setItem(VAHAN_TOKEN_KEY, t); } catch(e) {} }
-function clearProToken() { try { localStorage.removeItem(VAHAN_TOKEN_KEY); } catch(e) {} }
+// Stub kept so older callers that expect window.VAHAN_TIER_LIVE don't NPE.
+window.VAHAN_TIER_LIVE = { tier: 'free' };
+let VAHAN_TIER = window.VAHAN_TIER_LIVE;
 
-// ── Current tier (populated on load) ──────────────────────────────────────
-let VAHAN_TIER = { tier: 'free', states: ['All India'], max_years: 2, can_export: false, can_api: false };
+// (Pro/payment loaders removed — no /api/payments call needed.)
 
-async function loadUserTier() {
-  const token = getProToken();
-  try {
-    const res = await fetch('/api/payments/me', {
-      headers: token ? { 'Authorization': 'Bearer ' + token } : {}
-    });
-    if (res.ok) {
-      const data = await res.json();
-      VAHAN_TIER = data.tier;
-      window.VAHAN_TIER_LIVE = data.tier;
-      applyTierToUI(data);
-    }
-  } catch(e) { /* offline / API unavailable — stay on free tier */ }
-}
-
-// Free states that never require a Pro token
-const ALWAYS_FREE_STATES = new Set([
-  'All India',
-  'All Vahan4 Running States (36/36)',
-  'Andhra Pradesh',
-  'Chhattisgarh',
-  'Odisha',
-]);
-
-function applyTierToUI(data) {
-  const isPro = data.tier && data.tier.tier === 'pro';
-
-  // ── Header Pro badge ────────────────────────────────────────────────────
-  const badge = document.getElementById('pricing-pro-banner');
-  if (badge) {
-    badge.style.display = isPro ? 'flex' : 'none';
-    if (isPro) {
-      const detail = document.getElementById('pricing-pro-detail');
-      const exp = data.token_expires ? data.token_expires.slice(0,10) : '—';
-      if (detail) detail.textContent = `${data.plan || 'Pro'} · expires ${exp}`;
-    }
-  }
-  // Header Pro pill: show when pro, hide upgrade button
-  const hbadge = document.getElementById('header-pro-badge');
-  if (hbadge) hbadge.style.display = isPro ? 'inline-flex' : 'none';
-  const upgradeBtn = document.getElementById('header-upgrade-btn');
-  if (upgradeBtn) upgradeBtn.style.display = isPro ? 'none' : '';
-
-  // ── All nav tabs are accessible for free users (only geo is gated) ────────
-  // Remove any stale lock icons from previous sessions
-  document.querySelectorAll('.tab-lock').forEach(l => l.remove());
-  document.querySelectorAll('.nav-tab').forEach(el => {
-    el.style.opacity = '';
-    el._vahanProGate = false;
-  });
-
-  // ── Geo multi-select: lock non-free states in BOTH filter bars ───────────
-  function applyGeoLock(wrapperId) {
-    const geoWrapper = document.getElementById(wrapperId);
-    if (!geoWrapper) return;
-    if (!isPro) {
-      geoWrapper.classList.add('geo-locked');
-      if (!geoWrapper._vahanGeoGate) {
-        geoWrapper._vahanGeoGate = true;
-        geoWrapper.addEventListener('click', function(e) {
-          const item = e.target.closest('.ms-item');
-          if (!item) return;
-          const stateName = item.dataset.value || item.textContent.replace(/[✓✗🔒]/g,'').trim();
-          if (!ALWAYS_FREE_STATES.has(stateName)) {
-            e.stopImmediatePropagation();
-            showUpgradePrompt('state data for ' + stateName);
-          }
-        }, true);
-      }
-      // Visually mark locked items
-      geoWrapper.querySelectorAll('.ms-item').forEach(item => {
-        const name = item.dataset.value || item.textContent.replace(/[✓✗🔒]/g,'').trim();
-        if (!ALWAYS_FREE_STATES.has(name) && !item.querySelector('.ms-lock')) {
-          const lock = document.createElement('span');
-          lock.className = 'ms-lock';
-          lock.textContent = ' 🔒';
-          lock.style.cssText = 'font-size:9px;opacity:.5;margin-left:auto;flex-shrink:0';
-          item.appendChild(lock);
-        }
-      });
-    } else {
-      geoWrapper.classList.remove('geo-locked');
-      geoWrapper.querySelectorAll('.ms-lock').forEach(l => l.remove());
-    }
-  }
-  applyGeoLock('ms-geo-wrapper');       // global filter bar
-  applyGeoLock('cmp-ms-geo-wrapper');   // State drill-down page
-
-  // ── Inject upgrade nudge on overview page for free users ───────────────
-  const nudgeId = 'vahan-upgrade-nudge';
-  if (!isPro && !document.getElementById(nudgeId)) {
-    const nudge = document.createElement('div');
-    nudge.id = nudgeId;
-    nudge.className = 'upgrade-nudge';
-    nudge.innerHTML = `<span style="font-size:18px">⚡</span>
-      <div><strong>Upgrade to Pro — ₹100/year</strong> &nbsp;·&nbsp;
-      Unlock all 36 states &amp; UTs — all filters &amp; tabs already free for All India, AP, CG, Odisha</div>
-      <span style="margin-left:auto;background:rgba(255,255,255,.15);padding:4px 10px;border-radius:5px;font-size:11px;white-space:nowrap">View plans →</span>`;
-    nudge.onclick = () => document.getElementById('tab-pricing')?.click();
-    // Insert at top of each main page (lazy — on first page show)
-    const observer = new MutationObserver(() => {
-      const activePage = document.querySelector('.page.active');
-      if (activePage && activePage.id !== 'page-pricing') {
-        const existing = activePage.querySelector('#' + nudgeId);
-        if (!existing) activePage.prepend(nudge.cloneNode(true));
-      }
-    });
-    observer.observe(document.querySelector('.main') || document.body, { childList: true, subtree: false });
-    // Also on current active page immediately
-    setTimeout(() => {
-      const ap = document.querySelector('.page.active');
-      if (ap && ap.id !== 'page-pricing' && !ap.querySelector('#' + nudgeId)) {
-        ap.prepend(nudge.cloneNode(true));
-      }
-      document.querySelectorAll('#' + nudgeId).forEach(el => {
-        el.onclick = () => document.getElementById('tab-pricing')?.click();
-      });
-    }, 800);
-  } else if (isPro) {
-    document.querySelectorAll('#' + nudgeId).forEach(el => el.remove());
-  }
-}
-
-function showUpgradePrompt(feature) {
-  // Use a styled in-page toast instead of blocking confirm()
-  const existing = document.getElementById('vahan-upgrade-toast');
-  if (existing) existing.remove();
-  const toast = document.createElement('div');
-  toast.id = 'vahan-upgrade-toast';
-  toast.style.cssText = `
-    position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
-    background:#1e3a5f;border:1px solid #3b82f6;border-radius:10px;
-    padding:14px 20px;z-index:9999;box-shadow:0 8px 32px rgba(0,0,0,.5);
-    font-size:13px;color:#bfdbfe;max-width:calc(100vw - 32px);width:380px;
-    display:flex;align-items:center;gap:12px;
-  `;
-  toast.innerHTML = `
-    <span style="font-size:22px">🔒</span>
-    <div style="flex:1">
-      <div style="font-weight:700;color:#fff;margin-bottom:3px">${typeof feature === 'string' && feature.length < 40 ? feature : 'This feature'} requires Pro</div>
-      <div style="font-size:11px;opacity:.8">₹100/year or ₹499 lifetime — All India, AP, CG, Odisha always free</div>
-    </div>
-    <button onclick="document.getElementById('tab-pricing')?.click();this.closest('#vahan-upgrade-toast')?.remove()"
-      style="background:#2563eb;color:#fff;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;white-space:nowrap">
-      See Plans
-    </button>
-  `;
-  document.body.appendChild(toast);
-  setTimeout(() => toast?.remove(), 5000);
-}
-
-// ── Export helpers ─────────────────────────────────────────────────────────
-
-/** Geo-safety check: free users may only export always-free states */
-function _exportGeoAllowed(geoList) {
-  const tier = window.VAHAN_TIER_LIVE || { tier: 'free' };
-  if (tier.tier === 'pro') return true;
-  const blocked = geoList.filter(g => !ALWAYS_FREE_STATES.has(g));
-  if (blocked.length) {
-    showUpgradePrompt('Export for ' + blocked.slice(0,2).join(', '));
-    return false;
-  }
-  return true;
-}
-
-/**
- * Export the currently filtered dataset as a CSV download.
- * Works on all pages — pulls from DATA.raw filtered by current global filters.
- */
-function exportFilteredCSV(sourceLabel) {
-  if (!DATA || !DATA.raw) { alert('Data not loaded yet — please wait.'); return; }
-  const f = getFilters();
-  const geoList = Array.isArray(f.geo) ? f.geo : [f.geo || 'All India'];
-  if (!_exportGeoAllowed(geoList)) return;
-
-  const rows = filterRows(f);
-  if (!rows.length) { alert('No data matches current filters.'); return; }
-
-  const MONTHS = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const yt = f.yeartype === 'fy' ? 'Financial Year' : 'Calendar Year';
-  const header = 'Region,Year Type,Year,Month,OEM,Fuel,Registrations';
-  const lines = rows
-    .filter(r => r.registrations > 0)
-    .map(r => {
-      const yr = f.yeartype === 'fy' ? (r.fy || '') : String(r.cal_year || '');
-      const mo = MONTHS[r.month] || r.month || '';
-      return [r.region, yt, yr, mo, r.maker, r.fuel, r.registrations]
-        .map(v => '"' + String(v).replace(/"/g,'""') + '"').join(',');
-    });
-
-  const geo = geoList.join('+').replace(/\s+/g,'_').slice(0,40);
-  const now = new Date().toISOString().slice(0,10);
-  const filename = `vahan_${geo}_${now}.csv`;
-  const blob = new Blob([header + '\n' + lines.join('\n')], {type:'text/csv;charset=utf-8;'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = filename;
-  document.body.appendChild(a); a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  showExportToast(lines.length + ' rows → ' + filename);
-}
-
-/**
- * Export a Chart.js canvas as a PNG image.
- * @param {string} canvasId  - id of the <canvas> element
- * @param {string} label     - name to use in filename
- */
+// ── Chart PNG export (kept; no payment gating, no data export) ────────────
 function exportChartPNG(canvasId, label) {
   const canvas = document.getElementById(canvasId);
   if (!canvas) return;
@@ -8428,98 +8375,11 @@ function exportChartPNG(canvasId, label) {
 
 function showExportToast(msg) {
   const t = document.createElement('div');
-  t.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#064e3b;border:1px solid #10b981;color:#a7f3d0;border-radius:8px;padding:10px 16px;font-size:12px;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.4);max-width:340px;font-family:var(--mono)';
-  t.innerHTML = '✅ ' + msg;
+  t.style.cssText = 'position:fixed;bottom:20px;right:20px;background:rgba(16,185,129,.18);border:1px solid var(--accent-emerald);color:var(--accent-emerald);border-radius:8px;padding:10px 16px;font-size:12px;z-index:9999;box-shadow:var(--shadow-md);max-width:340px;font-family:var(--mono)';
+  t.innerHTML = '✓ ' + msg;
   document.body.appendChild(t);
   setTimeout(() => t.remove(), 3500);
 }
-
-// ── Razorpay checkout ──────────────────────────────────────────────────────
-async function openRazorpay(plan) {
-  const email = (document.getElementById('pricing-email')?.value || '').trim();
-
-  // 1. Create order
-  let orderData;
-  try {
-    const res = await fetch('/api/payments/create-order', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plan, email }),
-    });
-    if (!res.ok) {
-      const err = await res.json();
-      alert('Could not create order: ' + (err.detail || res.status));
-      return;
-    }
-    orderData = await res.json();
-  } catch(e) {
-    alert('Network error: ' + e.message);
-    return;
-  }
-
-  // 2. Open Razorpay checkout
-  const options = {
-    key: orderData.key_id,
-    amount: orderData.amount,
-    currency: orderData.currency,
-    name: 'Vahan Intelligence',
-    description: plan === 'lifetime' ? 'Pro Lifetime — ₹499 one-time' : 'Pro Annual — ₹100/year',
-    order_id: orderData.order_id,
-    prefill: { email },
-    theme: { color: '#2563eb' },
-    handler: async function(response) {
-      // 3. Verify payment on backend
-      try {
-        const vRes = await fetch('/api/payments/verify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            razorpay_order_id: response.razorpay_order_id,
-            razorpay_payment_id: response.razorpay_payment_id,
-            razorpay_signature: response.razorpay_signature,
-            plan,
-            email,
-          }),
-        });
-        const vData = await vRes.json();
-        if (vRes.ok && vData.success) {
-          setProToken(vData.token);
-          VAHAN_TIER = vData.tier;
-          alert('🎉 Payment successful! You now have Pro access. Refreshing…');
-          window.location.reload();
-        } else {
-          alert('Payment verification failed: ' + (vData.detail || 'Contact support'));
-        }
-      } catch(e) {
-        alert('Verification error: ' + e.message);
-      }
-    },
-    modal: {
-      ondismiss: function() {
-        console.log('Razorpay checkout closed');
-      }
-    }
-  };
-
-  const rzp = new Razorpay(options);
-  rzp.open();
-}
-
-// ── Init on page load ─────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  loadUserTier();
-
-  // Responsive pricing grid
-  function resizePricingGrid() {
-    const grid = document.getElementById('pricing-grid');
-    if (grid) {
-      grid.style.gridTemplateColumns = window.innerWidth < 640 ? '1fr' :
-                                       window.innerWidth < 900 ? '1fr 1fr' : '1fr 1fr 1fr';
-    }
-  }
-  resizePricingGrid();
-  window.addEventListener('resize', resizePricingGrid, {passive: true});
-});
 
 // ── Inject ↓ PNG export buttons into every chart-card after data loads ──────
 const CHART_EXPORT_MAP = {
@@ -8563,31 +8423,15 @@ function injectChartExportButtons() {
   });
 }
 
-// Also add CSV export to compare page filter bar (injected once on first compare visit)
-function injectCompareExport() {
-  const bar = document.querySelector('#page-compare .cmp-filter-row');
-  if (!bar || bar.querySelector('.btn-export-csv')) return;
-  const btn = document.createElement('button');
-  btn.type = 'button';
-  btn.className = 'btn-filter-reset btn-export-csv';
-  btn.style.cssText = 'margin-left:auto;font-size:10px;padding:3px 10px;border-radius:4px;border:1px solid rgba(16,185,129,.35);background:transparent;color:var(--green,#10b981);cursor:pointer;font-family:var(--mono);white-space:nowrap;letter-spacing:.03em';
-  btn.textContent = '↓ CSV';
-  btn.title = 'Download compare page filtered data as CSV';
-  btn.addEventListener('click', () => exportFilteredCSV('compare'));
-  bar.appendChild(btn);
-}
+// (CSV/Excel export removed in v2 redesign — only PNG chart screenshots remain.)
 
-// Hook into page navigation to inject buttons when pages become visible
+// Hook into page navigation to inject PNG buttons when pages become visible
 (function() {
   const origShowPage = window.showPage;
   window.showPage = function(page) {
     if (origShowPage) origShowPage(page);
-    setTimeout(() => {
-      injectChartExportButtons();
-      if (page === 'compare') injectCompareExport();
-    }, 300);
+    setTimeout(() => { injectChartExportButtons(); }, 300);
   };
-  // Also inject after initial data load
   const origBuildOverview = window.buildOverview;
   if (origBuildOverview) {
     window.buildOverview = function() {
@@ -8595,10 +8439,8 @@ function injectCompareExport() {
       setTimeout(injectChartExportButtons, 400);
     };
   }
-  // Fallback: inject after a delay on load
   window.addEventListener('load', () => setTimeout(() => {
     injectChartExportButtons();
-    injectCompareExport();
   }, 1500));
 })();
 </script>

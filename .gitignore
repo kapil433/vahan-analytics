@@ -4,18 +4,37 @@ __pycache__/
 .Python
 .venv/
 venv/
+
+# Secrets / credentials — never commit
 .env
 .env.*
 .env.local
 *.pem
 *.key
+*.crt
+*.p12
+*.pfx
 config.local.json
 secrets/
+.aws/
+.gcp/
+service-account*.json
+credentials.json
+.netrc
+
+# Logs / caches
 *.log
 .pytest_cache/
 .mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# IDE / editor
 .idea/
 .vscode/
+*.swp
+*.swo
 
 # Large / generated data (raw scrapes stay local; ship curated SQLite for offline API)
 output/
@@ -26,6 +45,18 @@ output/
 # OS
 Thumbs.db
 .DS_Store
+.AppleDouble
+.LSOverride
 
-# Local temp / nested clones
+# Local temp / nested clones / scratch
 .legacy-dash-tmp/
+.scratch/
+tmp/
+*.bak
+*.orig
+
+# Build artefacts
+dist/
+build/
+*.egg-info/
+node_modules/
