@@ -82,67 +82,68 @@
 <!-- xlsx CDN removed: Excel/CSV export retired in v2 UI overhaul. -->
 <style>
 :root {
-  /* ── Bold dark dashboard palette (Vercel/Notion-inspired) ── */
-  --bg: #0a0b12;
-  --surface: #11131c;
-  --surface2: #181a26;
-  --surface3: #232636;
-  --border: #2a2d3f;
-  --border-strong: #3a3e57;
+  /* ── Polished white dashboard palette (Linear/Stripe-inspired) ── */
+  --bg: #f6f8fb;
+  --surface: #ffffff;
+  --surface2: #f1f4f9;
+  --surface3: #e6ebf2;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
 
-  --text: #f5f7fa;
-  --text-mid: #b8bdce;
-  --text-dim: #7a8094;
+  --text: #0f172a;
+  --text-mid: #475569;
+  --text-dim: #64748b;
 
-  --blue: #3b82f6;
-  --blue-bright: #60a5fa;
-  --blue-dim: rgba(59, 130, 246, 0.18);
+  --blue: #2563eb;
+  --blue-bright: #3b82f6;
+  --blue-dim: rgba(37, 99, 235, 0.10);
 
-  /* Vibrant chart accents */
-  --accent-purple: #a855f7;
-  --accent-pink: #ec4899;
-  --accent-cyan: #22d3ee;
-  --accent-amber: #fbbf24;
-  --accent-emerald: #10b981;
-  --accent-coral: #fb7185;
+  /* Vibrant chart accents (work on white) */
+  --accent-purple: #7c3aed;
+  --accent-pink: #db2777;
+  --accent-cyan: #0891b2;
+  --accent-amber: #d97706;
+  --accent-emerald: #059669;
+  --accent-coral: #e11d48;
 
-  /* Fuel-specific (high-contrast on dark) */
-  --petrol: #a78bfa;
-  --diesel: #94a3b8;
-  --cng: #34d399;
-  --ev: #22d3ee;
-  --hybrid: #fbbf24;
+  /* Fuel-specific (high-contrast on white) */
+  --petrol: #4f46e5;
+  --diesel: #64748b;
+  --cng: #059669;
+  --ev: #0891b2;
+  --hybrid: #d97706;
 
-  --green: #10b981;
-  --red: #f43f5e;
+  --green: #059669;
+  --red: #dc2626;
 
   --font: 'IBM Plex Sans', sans-serif;
   --mono: 'IBM Plex Mono', monospace;
-  --chart-legend: #d4d8e6;
-  --chart-tick: #a8b0c5;
-  --chart-grid: rgba(255, 255, 255, 0.06);
+  --chart-legend: #334155;
+  --chart-tick: #475569;
+  --chart-grid: rgba(15, 23, 42, 0.06);
 
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.35);
-  --shadow-lg: 0 12px 40px rgba(0,0,0,0.5);
+  --shadow-sm: 0 1px 2px rgba(15,23,42,0.05), 0 1px 3px rgba(15,23,42,0.04);
+  --shadow-md: 0 4px 12px rgba(15,23,42,0.06), 0 2px 4px rgba(15,23,42,0.04);
+  --shadow-lg: 0 12px 32px rgba(15,23,42,0.10), 0 4px 8px rgba(15,23,42,0.04);
 
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
 
-  /* Bold gradient accents for hero/KPI tiles */
-  --grad-blue:    linear-gradient(135deg,#3b82f6 0%,#22d3ee 100%);
-  --grad-purple:  linear-gradient(135deg,#a855f7 0%,#ec4899 100%);
-  --grad-emerald: linear-gradient(135deg,#10b981 0%,#22d3ee 100%);
-  --grad-amber:   linear-gradient(135deg,#fbbf24 0%,#fb7185 100%);
+  /* Subtle gradient accents for hero/KPI tiles (used as borders, not backgrounds) */
+  --grad-blue:    linear-gradient(135deg,#2563eb 0%,#0891b2 100%);
+  --grad-purple:  linear-gradient(135deg,#7c3aed 0%,#db2777 100%);
+  --grad-emerald: linear-gradient(135deg,#059669 0%,#0891b2 100%);
+  --grad-amber:   linear-gradient(135deg,#d97706 0%,#e11d48 100%);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 
 /* SCROLLBAR */
-::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar{width:8px;height:8px}
 ::-webkit-scrollbar-track{background:var(--surface2)}
-::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
+::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:#94a3b8}
 
 /* HEADER */
 .header{
@@ -817,7 +818,7 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
    ═══════════════════════════════════════════════════════════════════════ */
 
 /* (Pricing page, header Pro badge, geo-lock and upgrade nudge styles removed
-    in v2 redesign — Vahan Intelligence is now free for everyone, no gating.) */
+    in v2 redesign — Pro tier was removed.) */
 
 /* ── OEM modal KPI strip responsive ── */
 @media(max-width:900px){
@@ -984,7 +985,6 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
   </div>
   <div class="header-right">
     <span class="data-badge" id="dataBadge"><span class="load-pulse"><span class="load-dot" aria-hidden="true"></span><span id="dataBadgeText">Fetching registration records…</span></span></span>
-    <span class="data-badge" style="background:rgba(16,185,129,.12);color:var(--accent-emerald);border:1px solid rgba(16,185,129,.35);font-size:10.5px;letter-spacing:.06em;padding:4px 10px;border-radius:6px;font-weight:600">FREE FOR EVERYONE</span>
   </div>
 </div>
 
@@ -1863,18 +1863,6 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
   <div class="page" id="page-info" role="tabpanel" aria-labelledby="tab-info">
     <div class="static-page">
 
-      <!-- Free for everyone hero -->
-      <div style="background:linear-gradient(135deg,rgba(16,185,129,.12),rgba(34,211,238,.08));border:1px solid rgba(16,185,129,.35);border-radius:14px;padding:22px 24px;margin-bottom:28px">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-          <span style="font-size:22px">🎉</span>
-          <h2 style="margin:0;font-size:20px;color:var(--text)">Free for everyone — forever</h2>
-        </div>
-        <p style="margin:0;color:var(--text-mid);font-size:14.5px;line-height:1.65">
-          No signup. No paywall. No ads. Every state, every year, every chart on this dashboard is free to use.
-          We removed the old paid tier because we'd rather more people use this data than charge a few of them for it.
-        </p>
-      </div>
-
       <h2>Stay in the loop</h2>
       <p>About once a month we send a short note when the data is refreshed or we publish something new. No spam, easy to unsubscribe — it just opens your email client.</p>
 
@@ -1925,9 +1913,6 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
       <h3>Where the data comes from</h3>
       <p>Everything starts at the public <strong>VAHAN / Parivahan dashboard</strong> run by the Ministry of Road Transport &amp; Highways. We pull the official monthly extracts state by state, fuel by fuel, then clean them into a single long-format table — region, period, fuel, maker, month, registrations. State and OEM names are normalised so comparisons across years actually line up. We refresh on a regular cadence; the badge in the header tells you when the current snapshot was built.</p>
 
-      <h3>What it costs</h3>
-      <p><strong>Free for everyone — no signup, no paywall, no ads.</strong> Every state, every year, every chart. If something here saves you time, the best thanks is to share a link or send us a note about what you're seeing in the data.</p>
-
       <h3>What we're careful about</h3>
       <p>VAHAN is the most complete public source for Indian vehicle registrations, but it isn't perfect. Some states join or leave the system over time, partial years exist, and a state split (like Telangana in 2014) shows up as a step-change that isn't a real demand move. We flag these caveats in the relevant chart subtitles and in our blog. For anything you're going to publish or invest on, please cross-check with SIAM, FADA, MoRTH, or the original RTO numbers.</p>
 
@@ -1939,7 +1924,7 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
     </div>
   </div>
 
-  <!-- (Pricing page removed — Vahan Intelligence is free for everyone.) -->
+  <!-- (Pricing page removed in v2.) -->
 
 </div><!-- /main -->
 
@@ -1961,7 +1946,6 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
       <h4>Contact</h4>
       <p><a href="mailto:info@vahanintelligence.in">info@vahanintelligence.in</a></p>
       <p style="margin-top:10px"><a href="#blog">Blog</a> · <a href="#info">Updates</a> · <a href="#about">About</a> · <a href="#privacy-policy">Privacy</a></p>
-      <p style="margin-top:6px;font-size:12px;color:var(--accent-emerald);font-weight:600">Free for everyone — no signup, no paywall.</p>
     </div>
   </div>
 </footer>
@@ -4411,6 +4395,7 @@ function _geoRenderStates(stateData, metric) {
   if (metric === 'yoy') {
     const absMax = Math.max(Math.abs(d3.min(vals)||0), Math.abs(maxVal));
     colorScale = d3.scaleDiverging().domain([-absMax, 0, absMax]).interpolator(d3.interpolateRdYlGn);
+    // (Map color scale tuned for white background — see _geoRender.)
   } else {
     // Stronger contrast than interpolateBlues: readable lows + deep navy highs on light UI chrome
     colorScale = d3.scaleSequential()
@@ -4433,8 +4418,8 @@ function _geoRenderStates(stateData, metric) {
   paths.enter()
     .append('path')
     .attr('d', _geoPath)
-    .attr('stroke', '#334155')
-    .attr('stroke-width', 0.9)
+    .attr('stroke', '#94a3b8')
+    .attr('stroke-width', 0.7)
     .attr('cursor', 'pointer')
     .on('mouseenter', function(ev, d) {
       d3.select(this).attr('stroke','#f59e0b').attr('stroke-width',2.2).raise();
@@ -4442,7 +4427,7 @@ function _geoRenderStates(stateData, metric) {
     })
     .on('mousemove', function(ev) { _geoMoveTip(ev); })
     .on('mouseleave', function() {
-      d3.select(this).attr('stroke','#334155').attr('stroke-width',0.9);
+      d3.select(this).attr('stroke','#94a3b8').attr('stroke-width',0.7);
       document.getElementById('gm-tooltip').classList.remove('visible');
     })
     .merge(paths)
