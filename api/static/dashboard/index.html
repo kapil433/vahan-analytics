@@ -1261,19 +1261,34 @@ body{padding-bottom:var(--safe-bottom)}
 
 /* (v5 .mfilter-trigger override removed — v6 reverted to the native filter-toggle.) */
 
-/* Compare page filter bar — same vertical-stack pattern as global filter bar */
+/* Compare page State filter bar — collapsible toggle pattern (mirrors global) */
+.cmp-filter-toggle{
+  display:flex!important;align-items:center;gap:6px;
+  background:var(--surface)!important;border:1px solid var(--border)!important;
+  color:var(--text)!important;
+  width:100%;min-height:44px;padding:10px 14px;
+  border-radius:10px;font-size:14px;font-weight:600;
+  box-shadow:var(--shadow-sm);cursor:pointer;
+  margin-bottom:8px;
+}
+.cmp-filter-toggle:hover{border-color:var(--blue)!important;color:var(--blue)!important}
+.cmp-filter-toggle .mft-arrow{margin-left:auto;color:var(--text-dim);font-size:13px;transition:transform .15s}
+.cmp-filter-bar.filter-bar--open .cmp-filter-toggle .mft-arrow{transform:rotate(180deg)}
+
+/* Mobile: hide cmp-filter-row by default, show when expanded */
 @media(max-width:768px){
   #page-compare .cmp-filter-bar{
     padding:0!important;border:none!important;background:transparent!important;
     margin-bottom:14px;
   }
   #page-compare .cmp-filter-row{
-    display:flex!important;flex-direction:column!important;
-    align-items:stretch!important;gap:14px!important;
-    padding:14px!important;width:100%;
+    display:none!important;
+    flex-direction:column;align-items:stretch;gap:14px;
+    padding:14px;width:100%;
     background:var(--surface);border:1px solid var(--border);
     border-radius:10px;box-shadow:var(--shadow-sm);
   }
+  #page-compare .cmp-filter-bar.filter-bar--open .cmp-filter-row{display:flex!important}
   #page-compare .cmp-filter-row .filter-group{
     display:flex!important;flex-direction:column!important;
     align-items:stretch!important;gap:6px!important;width:100%;
@@ -1294,6 +1309,12 @@ body{padding-bottom:var(--safe-bottom)}
     width:100%!important;min-height:44px;font-size:14px;
     margin-top:4px;justify-content:center;
   }
+}
+
+/* Desktop: hide the cmp toggle button (filters are always visible inline) */
+@media(min-width:769px){
+  .cmp-filter-toggle{display:none!important}
+  #page-compare .cmp-filter-row{display:flex!important}
 }
 
 /* Forecast page: keep the action toolbar from spilling, give the projection
@@ -1352,32 +1373,9 @@ body{padding-bottom:var(--safe-bottom)}
 /* Make mfilter-count visible (was using hidden attribute alone) */
 .mft-count[hidden]{display:none}
 
-/* ── Compare page: label both filter bars so it's obvious which is which ── */
-body.on-compare #global-filter-bar::before{
-  content:"All India view";
-  display:block;width:100%;
-  font-size:11px;font-weight:700;letter-spacing:.08em;
-  color:var(--accent-cyan);text-transform:uppercase;font-family:var(--mono);
-  margin:0 0 6px 0;padding:0;
-}
-body.on-compare #page-compare .cmp-filter-bar::before{
-  content:"State drill-down filters";
-  display:block;width:100%;
-  font-size:11px;font-weight:700;letter-spacing:.08em;
-  color:var(--blue);text-transform:uppercase;font-family:var(--mono);
-  margin:0 0 6px 0;padding:0;
-}
-@media(max-width:768px){
-  body.on-compare #global-filter-bar::before,
-  body.on-compare #page-compare .cmp-filter-bar::before{
-    padding:0 4px;
-  }
-}
-/* Slim divider between the two filter regions on Compare */
-body.on-compare #global-filter-bar{
-  border-bottom:1px solid var(--border);
-  margin-bottom:6px;padding-bottom:8px;
-}
+/* (Compare-page filter labels removed in v6.3 — the toggle button text on
+    each filter bar is enough to distinguish them: "⚙ Filters" for global
+    All India context, "⚙ State filters" for the State drill-down filters.) */
 
 </style>
 </head>
@@ -1782,7 +1780,11 @@ body.on-compare #global-filter-bar{
   <!-- STATE vs ALL INDIA PAGE -->
   <div class="page" id="page-compare" role="tabpanel" aria-labelledby="tab-compare">
     <div class="cmp-filter-bar">
-      <div class="cmp-filter-row">
+      <button type="button" class="filter-toggle cmp-filter-toggle" id="cmp-filter-toggle-btn" onclick="toggleCmpFilterBar()" aria-expanded="false" aria-controls="cmp-filter-row-inner">
+        <span aria-hidden="true">⚙</span> State filters
+        <span class="mft-arrow" aria-hidden="true">▾</span>
+      </button>
+      <div class="cmp-filter-row" id="cmp-filter-row-inner">
         <div class="filter-group"><span class="filter-label">GEOGRAPHY</span>
           <div class="ms-wrapper" id="cmp-ms-geo-wrapper">
             <div class="ms-trigger" id="cmp-ms-geo-trigger" onclick="toggleCmpMS('geo')" style="min-width:120px">—</div>
@@ -5686,6 +5688,15 @@ function toggleFilterBar() {
     btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
     btn.textContent = isOpen ? '✕ Filters' : '⚙ Filters';
   }
+}
+
+/** Same toggle for the Compare-page State filter bar. */
+function toggleCmpFilterBar() {
+  const bar = document.querySelector('#page-compare .cmp-filter-bar');
+  const btn = document.getElementById('cmp-filter-toggle-btn');
+  if (!bar) return;
+  const isOpen = bar.classList.toggle('filter-bar--open');
+  if (btn) btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
 }
 
 /** Auto-open filter bar on desktop; close on resize to mobile */
