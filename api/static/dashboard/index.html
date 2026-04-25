@@ -1021,7 +1021,8 @@ body{padding-bottom:var(--safe-bottom)}
   .chart-card{padding:14px!important}
   .chart-wrap canvas{max-height:280px!important}
   .chart-actions{flex-wrap:wrap;gap:4px}
-  .chart-actions .chart-export-btn{display:none}  /* PNG download not useful on phone */
+  /* Chart PNG download: stays enabled on mobile so users can screenshot/share */
+  .chart-actions .chart-export-btn{display:inline-flex!important;font-size:11px;padding:5px 9px}
   .chart-title{font-size:13px!important}
   .chart-subtitle{font-size:11px!important}
 }
@@ -1415,7 +1416,8 @@ body{padding-bottom:var(--safe-bottom)}
 <!-- FILTER BAR (single source of truth — uses native toggleFilterBar() on mobile) -->
 <div class="filter-bar" id="global-filter-bar">
   <button type="button" class="filter-toggle" id="filter-toggle-btn" onclick="toggleFilterBar()" aria-expanded="false" aria-controls="filter-bar-inner">
-    <span aria-hidden="true">⚙</span> Filters
+    <span class="ft-icon" aria-hidden="true">⚙</span>
+    <span class="ft-label">Filters</span>
     <span class="mft-count" id="mfilter-count" hidden>0</span>
     <span class="mft-arrow" aria-hidden="true">▾</span>
   </button>
@@ -4448,8 +4450,11 @@ function switchPage(page) {
   const hideAll = ['blog','info','about','forecast'].includes(page);
   if (filterBar) filterBar.style.display = hideAll ? 'none' : '';
 
-  // On Compare, label the two filter bars so users know which is which.
+  // On Compare, rename the global filter to "All India Filter" so its purpose
+  // is unambiguous next to the Compare page's own State filter bar.
   document.body.classList.toggle('on-compare', page === 'compare');
+  const ftLabel = document.querySelector('#filter-toggle-btn .ft-label');
+  if (ftLabel) ftLabel.textContent = (page === 'compare') ? 'All India Filter' : 'Filters';
 
   if (!hideAll) {
     // OEM filter: always show
@@ -5686,7 +5691,9 @@ function toggleFilterBar() {
   const isOpen = bar.classList.toggle('filter-bar--open');
   if (btn) {
     btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-    btn.textContent = isOpen ? '✕ Filters' : '⚙ Filters';
+    // Only swap the icon span — preserves .ft-label, .mft-count, .mft-arrow
+    const icon = btn.querySelector('.ft-icon');
+    if (icon) icon.textContent = isOpen ? '✕' : '⚙';
   }
 }
 
