@@ -1352,6 +1352,33 @@ body{padding-bottom:var(--safe-bottom)}
 /* Make mfilter-count visible (was using hidden attribute alone) */
 .mft-count[hidden]{display:none}
 
+/* ── Compare page: label both filter bars so it's obvious which is which ── */
+body.on-compare #global-filter-bar::before{
+  content:"All India view";
+  display:block;width:100%;
+  font-size:11px;font-weight:700;letter-spacing:.08em;
+  color:var(--accent-cyan);text-transform:uppercase;font-family:var(--mono);
+  margin:0 0 6px 0;padding:0;
+}
+body.on-compare #page-compare .cmp-filter-bar::before{
+  content:"State drill-down filters";
+  display:block;width:100%;
+  font-size:11px;font-weight:700;letter-spacing:.08em;
+  color:var(--blue);text-transform:uppercase;font-family:var(--mono);
+  margin:0 0 6px 0;padding:0;
+}
+@media(max-width:768px){
+  body.on-compare #global-filter-bar::before,
+  body.on-compare #page-compare .cmp-filter-bar::before{
+    padding:0 4px;
+  }
+}
+/* Slim divider between the two filter regions on Compare */
+body.on-compare #global-filter-bar{
+  border-bottom:1px solid var(--border);
+  margin-bottom:6px;padding-bottom:8px;
+}
+
 </style>
 </head>
 <body>
@@ -4413,11 +4440,14 @@ function switchPage(page) {
   const fuelG  = document.getElementById('ms-fuel-wrapper')?.closest('.filter-group');
   const monthG = document.getElementById('month-group');
 
-  // Static / tool pages, Forecast, and Compare: hide global filters.
-  // Forecast uses its own fc-* panel; Compare has its own cmp-filter-bar — the
-  // global one would just be a duplicate.
-  const hideAll = ['blog','info','about','forecast','compare'].includes(page);
+  // Static / tool pages + Forecast: hide global filters (Forecast uses its
+  // own fc-* panel). Compare keeps the global bar visible — it's the
+  // "All India" context (the cmp-filter-bar drives the "State" side).
+  const hideAll = ['blog','info','about','forecast'].includes(page);
   if (filterBar) filterBar.style.display = hideAll ? 'none' : '';
+
+  // On Compare, label the two filter bars so users know which is which.
+  document.body.classList.toggle('on-compare', page === 'compare');
 
   if (!hideAll) {
     // OEM filter: always show
