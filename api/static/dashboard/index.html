@@ -5,7 +5,10 @@
 (function(){var h=location.hostname;if(h==='vahanintelligence.in'){location.replace('https://www.vahanintelligence.in'+location.pathname+location.search+location.hash);}})();
 </script>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="theme-color" content="#ffffff"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
 <!-- Google Search Console: add HTML tag verification, e.g. <meta name="google-site-verification" content="…"/> (see DEPLOY.md section 6) -->
 <title>Vahan Intelligence — India PV Registration Analytics</title>
 <meta name="description" content="Explore India four-wheeler passenger vehicle registrations: fuel mix, OEM share, state drill-down, forecasts, and policy-context blog notes from VAHAN-class data."/>
@@ -970,6 +973,316 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
   #page-compare .chart-grid-3{grid-template-columns:1fr!important}
 }
 
+/* ═══════════════════════════════════════════════════════════════════════
+   v4 mobile-first overhaul
+   Tested viewports: 360, 375, 390, 414, 768, 1024, 1440
+   Goal: first-class mobile across 320–480, 481–768, 769+
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* iOS safe-area + viewport units */
+:root{
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+  --safe-top:env(safe-area-inset-top,0px);
+}
+html{-webkit-text-size-adjust:100%}
+body{padding-bottom:var(--safe-bottom)}
+
+/* Inputs: 16px font min so iOS doesn't zoom on focus */
+@media(max-width:768px){
+  input[type="email"],input[type="text"],input[type="number"],
+  input[type="search"],input[type="tel"],select,textarea{font-size:16px!important}
+}
+
+/* ── Nav: scrollable strip with fade hint + always-visible active ── */
+@media(max-width:768px){
+  .nav{
+    position:relative;
+    -webkit-mask-image:linear-gradient(to right,#000 92%,transparent 100%);
+            mask-image:linear-gradient(to right,#000 92%,transparent 100%);
+  }
+  .nav-tab{padding:11px 14px!important;font-size:13px!important;min-height:44px}
+  .nav-tab.active{background:var(--blue-dim);border-bottom:2px solid var(--blue)}
+}
+
+/* ── KPI grid: 2-up on mobile (not 1-up) ── */
+@media(max-width:640px){
+  .kpi-row,.hero-kpis,.vgrid.n4{grid-template-columns:1fr 1fr!important;gap:10px!important}
+  .vgrid.n3{grid-template-columns:1fr 1fr!important}
+  .kpi-card{min-height:90px;padding:12px 12px!important}
+  .kpi-value{font-size:clamp(18px,5.5vw,22px)!important;font-family:var(--mono)}
+  .kpi-label,.kpi-sub{font-size:11px!important;letter-spacing:.05em}
+}
+@media(max-width:380px){
+  .kpi-row{grid-template-columns:1fr!important}
+}
+
+/* ── Charts: shorter, legend bottom, no overflow ── */
+@media(max-width:768px){
+  .chart-card{padding:14px!important}
+  .chart-wrap canvas{max-height:280px!important}
+  .chart-actions{flex-wrap:wrap;gap:4px}
+  .chart-actions .chart-export-btn{display:none}  /* PNG download not useful on phone */
+  .chart-title{font-size:13px!important}
+  .chart-subtitle{font-size:11px!important}
+}
+@media(max-width:480px){
+  .chart-wrap canvas{max-height:240px!important}
+  .chart-card{padding:12px!important;border-radius:10px}
+  .chart-header{flex-wrap:wrap;gap:6px}
+}
+
+/* ── Wide tables: scroll hint + sticky first column ── */
+.table-scroll{
+  position:relative;overflow-x:auto;-webkit-overflow-scrolling:touch;
+  margin:0 -2px;border-radius:8px;
+}
+.table-scroll::-webkit-scrollbar{height:6px;display:block}
+.table-scroll::-webkit-scrollbar-track{background:transparent}
+.table-scroll::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:3px}
+.table-scroll::after{
+  content:'';position:absolute;top:0;right:0;width:28px;height:100%;
+  background:linear-gradient(to right,transparent,rgba(15,23,42,0.10));
+  pointer-events:none;border-radius:0 8px 8px 0;
+  transition:opacity .15s;
+}
+.table-scroll.scrolled-end::after{opacity:0}
+.table-scroll table{min-width:max-content;width:100%}
+@media(max-width:768px){
+  .table-scroll table{font-size:12.5px}
+  .table-scroll th,.table-scroll td{padding:8px 10px!important;white-space:nowrap}
+  .table-scroll tbody td:first-child,
+  .table-scroll thead th:first-child{
+    position:sticky;left:0;background:var(--surface);
+    box-shadow:1px 0 0 var(--border);z-index:1;
+  }
+}
+
+/* ── Bottom-sheet pattern (filters + multi-select on mobile) ── */
+.sheet-backdrop{
+  position:fixed;inset:0;background:rgba(15,23,42,.45);
+  z-index:199;opacity:0;pointer-events:none;
+  transition:opacity .2s ease-out;
+}
+.sheet-backdrop.open{opacity:1;pointer-events:auto}
+.bottom-sheet{
+  position:fixed;left:0;right:0;bottom:0;z-index:200;
+  background:var(--surface);
+  border-radius:18px 18px 0 0;
+  box-shadow:var(--shadow-lg);
+  max-height:85dvh;display:flex;flex-direction:column;
+  transform:translateY(100%);
+  transition:transform .22s ease-out;
+  padding-bottom:var(--safe-bottom);
+}
+.bottom-sheet.open{transform:translateY(0)}
+.bottom-sheet__handle{
+  width:40px;height:4px;background:var(--border-strong);
+  border-radius:2px;margin:10px auto 6px;flex-shrink:0;
+}
+.bottom-sheet__head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 18px 14px;border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.bottom-sheet__title{font-size:16px;font-weight:600;color:var(--text)}
+.bottom-sheet__close{
+  width:36px;height:36px;border-radius:50%;border:none;
+  background:var(--surface2);color:var(--text-mid);
+  font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+}
+.bottom-sheet__body{flex:1;overflow-y:auto;padding:16px 18px}
+.bottom-sheet__foot{
+  display:flex;gap:10px;padding:14px 18px;border-top:1px solid var(--border);
+  background:var(--surface);flex-shrink:0;
+  padding-bottom:calc(14px + var(--safe-bottom));
+}
+.bottom-sheet__foot button{flex:1;height:46px;border-radius:10px;font-weight:600;cursor:pointer;font-size:14px}
+.bottom-sheet__foot .btn-secondary{background:var(--surface2);border:1px solid var(--border);color:var(--text-mid)}
+.bottom-sheet__foot .btn-primary{background:var(--blue);border:1px solid var(--blue);color:#fff}
+
+/* Filter trigger button (mobile only) — replaces the inline filter bar */
+.mfilter-trigger{
+  display:none;
+  width:calc(100% - 24px);margin:8px 12px 0;
+  padding:11px 14px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;color:var(--text);
+  font-size:13.5px;font-weight:600;
+  display:none;align-items:center;gap:8px;cursor:pointer;
+  box-shadow:var(--shadow-sm);
+  min-height:44px;
+}
+.mfilter-trigger:hover{border-color:var(--blue);color:var(--blue)}
+.mfilter-trigger .mft-count{
+  margin-left:auto;background:var(--blue-dim);color:var(--blue);
+  font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;
+  font-family:var(--mono);
+}
+.mfilter-trigger .mft-arrow{color:var(--text-dim);font-size:14px}
+@media(max-width:768px){
+  .mfilter-trigger{display:flex}
+  /* Hide the existing inline filter bar on mobile — the bottom sheet replaces it */
+  .filter-bar > .filter-toggle{display:none!important}
+  .filter-bar .filter-bar-inner{display:none!important}
+  .filter-bar{padding:0!important;border:none!important;background:transparent!important;min-height:0!important}
+}
+
+/* Filter sheet contents */
+.fs-group{margin-bottom:18px}
+.fs-group:last-child{margin-bottom:0}
+.fs-label{
+  font-size:11px;font-weight:600;color:var(--text-dim);
+  letter-spacing:.06em;text-transform:uppercase;font-family:var(--mono);
+  display:block;margin-bottom:6px;
+}
+.fs-trigger{
+  width:100%;min-height:46px;padding:11px 14px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;font-size:14px;color:var(--text);
+  text-align:left;cursor:pointer;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+}
+.fs-trigger:hover{border-color:var(--blue)}
+.fs-trigger .fs-val{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fs-trigger .fs-arrow{color:var(--text-dim);font-size:12px}
+.fs-segmented{
+  display:flex;background:var(--surface2);border-radius:10px;padding:3px;gap:3px;
+  border:1px solid var(--border);
+}
+.fs-segmented button{
+  flex:1;border:none;background:transparent;
+  padding:10px 8px;border-radius:8px;font-size:13px;font-weight:600;
+  color:var(--text-mid);cursor:pointer;min-height:40px;
+}
+.fs-segmented button.active{background:var(--surface);color:var(--text);box-shadow:var(--shadow-sm)}
+
+/* Multi-select sheet items */
+.ms-sheet-search{
+  width:100%;padding:11px 12px;border:1px solid var(--border);
+  border-radius:10px;font-size:14px;background:var(--surface2);
+  margin-bottom:12px;min-height:44px;
+}
+.ms-sheet-list{display:flex;flex-direction:column;gap:2px}
+.ms-sheet-item{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 12px;min-height:48px;
+  border-radius:8px;cursor:pointer;font-size:14px;color:var(--text);
+}
+.ms-sheet-item:hover{background:var(--surface2)}
+.ms-sheet-item.selected{background:var(--blue-dim);color:var(--blue);font-weight:500}
+.ms-sheet-item input[type="checkbox"]{width:18px;height:18px;flex-shrink:0;accent-color:var(--blue)}
+
+/* ── India Map: stack panel below on mobile ── */
+@media(max-width:768px){
+  .geomap-layout{grid-template-columns:1fr!important;min-height:0!important}
+  .geomap-side{
+    border-left:none!important;border-top:1px solid var(--border);
+    max-height:none!important;padding:14px 16px!important;
+  }
+  #geomap-svg-wrap{min-height:min(56vh,360px)!important}
+  .geomap-map-panel{padding:12px 14px!important}
+  /* Carousel-style: rank list scrollable, top 5 shown */
+  .geomap-side .geomap-rank-row{padding:10px 6px}
+}
+
+/* ── Modals: full-screen with sticky close on mobile ── */
+@media(max-width:768px){
+  /* Modal outer container: full-screen sheet, no padding */
+  #oem-modal,#fuel-modal,.vmodal{padding:0!important}
+  #oem-modal > div,#fuel-modal > div,.vmodal > .modal-card,.vmodal > div{
+    margin:0!important;border-radius:0!important;
+    min-height:100dvh;max-width:100%!important;
+  }
+  /* Sticky header with always-visible close */
+  #oem-modal > div > div:first-child,
+  #fuel-modal > div > div:first-child{
+    position:sticky;top:0;background:var(--surface);
+    border-bottom:1px solid var(--border);z-index:5;
+    padding:14px 16px!important;
+  }
+  /* Modal body padding */
+  #oem-modal-body,#fuel-modal > div > div:last-child{padding:14px!important}
+  /* All multi-col grids inside modals → single col */
+  #oem-modal-body > div[style*="grid"],
+  #fuel-modal > div > div[style*="grid"]{
+    grid-template-columns:1fr!important;gap:10px!important;
+  }
+  #oem-modal-kpis,#fuel-modal-kpis{grid-template-columns:1fr 1fr!important}
+}
+
+/* ── Compare page: segmented State/All-India toggle on mobile ── */
+.cmp-segmented{
+  display:none;margin:8px 0 12px;
+  background:var(--surface2);padding:3px;border-radius:10px;border:1px solid var(--border);
+}
+.cmp-segmented button{
+  flex:1;border:none;background:transparent;
+  padding:10px 8px;border-radius:8px;font-size:13px;font-weight:600;
+  color:var(--text-mid);cursor:pointer;min-height:40px;
+}
+.cmp-segmented button.active{background:var(--surface);color:var(--text);box-shadow:var(--shadow-sm)}
+@media(max-width:768px){
+  .cmp-segmented{display:flex}
+  /* When in 'state' mode, hide All India panels and vice versa */
+  body[data-cmp-view="state"] #page-compare [data-cmp-side="ai"]{display:none!important}
+  body[data-cmp-view="ai"] #page-compare [data-cmp-side="state"]{display:none!important}
+}
+
+/* ── Blog: tighter padding + 2-up metric tiles + back-to-top ── */
+@media(max-width:480px){
+  #page-blog .blog-list article{padding:14px 16px!important;border-radius:12px!important}
+  #page-blog .blog-list h2{font-size:17px!important;line-height:1.3!important}
+  #page-blog .blog-list article p{font-size:13.5px!important}
+  /* Inline metric tiles inside posts: 2-up on phones */
+  #page-blog .blog-list article > div[style*="grid-template-columns:repeat(auto-fit"]{
+    grid-template-columns:1fr 1fr!important;gap:8px!important;
+  }
+}
+
+.back-to-top{
+  position:fixed;bottom:calc(16px + var(--safe-bottom));right:14px;
+  width:44px;height:44px;border-radius:22px;border:1px solid var(--border);
+  background:var(--surface);color:var(--text);
+  box-shadow:var(--shadow-md);cursor:pointer;
+  display:none;align-items:center;justify-content:center;font-size:18px;
+  z-index:90;transition:opacity .2s,transform .2s;
+}
+.back-to-top.visible{display:flex}
+.back-to-top:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+
+/* ── Subscribe form: full width, big inputs ── */
+@media(max-width:640px){
+  .contact-card input[type="email"]{
+    width:100%!important;min-height:48px;padding:12px 14px!important;
+    font-size:16px!important;border-radius:10px!important;
+  }
+  .contact-card .btn{
+    width:100%!important;min-height:48px;justify-content:center;
+    margin-top:10px;font-size:15px;
+  }
+}
+
+/* ── About / Subscription / Info layout polish ── */
+@media(max-width:768px){
+  .static-page{max-width:100%!important;padding:14px 16px!important}
+  .static-page h2{font-size:22px!important;line-height:1.25!important;margin-bottom:14px!important}
+  .static-page h3{font-size:16px!important;margin-top:20px!important;margin-bottom:8px!important}
+  .static-page p,.static-page li{font-size:14.5px!important;line-height:1.65!important}
+}
+
+/* ── Footer: stack columns, center brand ── */
+@media(max-width:640px){
+  .site-footer-inner{grid-template-columns:1fr!important;gap:18px!important;text-align:left}
+  .site-footer{padding:24px 16px!important}
+}
+
+/* ── Page wrappers: tighten outer padding on mobile ── */
+@media(max-width:480px){
+  .main,.page{padding:12px 12px!important}
+}
+
+/* ── Chrome / theme color for iOS status bar ── */
+/* (set via <meta name="theme-color"> below) */
+
 </style>
 </head>
 <body>
@@ -1005,9 +1318,34 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
   <button type="button" class="nav-tab" data-page="about" role="tab" aria-selected="false" id="tab-about" aria-controls="page-about" tabindex="-1">About</button>
 </div>
 
-<!-- FILTER BAR -->
+<!-- Mobile filter trigger (≤768px) — opens bottom sheet -->
+<button type="button" class="mfilter-trigger" id="mfilter-trigger" aria-haspopup="dialog" aria-controls="mfilter-sheet">
+  <span aria-hidden="true">⚙</span>
+  <span>Filters</span>
+  <span class="mft-count" id="mfilter-count" hidden>0</span>
+  <span class="mft-arrow" aria-hidden="true">▾</span>
+</button>
+
+<!-- Mobile filter bottom sheet -->
+<div class="sheet-backdrop" id="mfilter-backdrop" hidden></div>
+<div class="bottom-sheet" id="mfilter-sheet" role="dialog" aria-modal="true" aria-labelledby="mfilter-title" hidden>
+  <div class="bottom-sheet__handle" aria-hidden="true"></div>
+  <div class="bottom-sheet__head">
+    <span class="bottom-sheet__title" id="mfilter-title">Filters</span>
+    <button type="button" class="bottom-sheet__close" id="mfilter-close" aria-label="Close filters">✕</button>
+  </div>
+  <div class="bottom-sheet__body" id="mfilter-body">
+    <!-- Filled in by JS from the desktop filter bar values -->
+  </div>
+  <div class="bottom-sheet__foot">
+    <button type="button" class="btn-secondary" id="mfilter-reset">Reset</button>
+    <button type="button" class="btn-primary" id="mfilter-apply">Apply</button>
+  </div>
+</div>
+
+<!-- FILTER BAR (desktop ≥769px; hidden on mobile via CSS, replaced by sheet above) -->
 <div class="filter-bar" id="global-filter-bar">
-  <!-- Mobile toggle button (shown ≤640px via CSS) -->
+  <!-- Mobile toggle button (legacy desktop fallback) -->
   <button type="button" class="filter-toggle" id="filter-toggle-btn" onclick="toggleFilterBar()" aria-expanded="false" aria-controls="filter-bar-inner">
     ⚙ Filters
   </button>
@@ -8437,6 +8775,278 @@ function injectChartExportButtons() {
   window.addEventListener('load', () => setTimeout(() => {
     injectChartExportButtons();
   }, 1500));
+})();
+
+/* ═══════════════════════════════════════════════════════════════════════
+   v4 mobile enhancements
+   - Filter bottom sheet (replaces vertical-stack mobile filter)
+   - Auto-wrap wide tables in .table-scroll + scroll-end class toggle
+   - Active nav tab scrollIntoView on tab change
+   - Compare page segmented [State | All India] toggle
+   - Back-to-top floating button
+   - Chart.js mobile defaults (legend bottom, smaller ticks, no aspect lock)
+   ═══════════════════════════════════════════════════════════════════════ */
+(function mobileEnhancementsV4(){
+  'use strict';
+  const isMobile = () => window.matchMedia('(max-width: 768px)').matches;
+
+  // ── 1. Filter bottom sheet ───────────────────────────────────────────────
+  const trig    = document.getElementById('mfilter-trigger');
+  const sheet   = document.getElementById('mfilter-sheet');
+  const back    = document.getElementById('mfilter-backdrop');
+  const closeBt = document.getElementById('mfilter-close');
+  const resetBt = document.getElementById('mfilter-reset');
+  const applyBt = document.getElementById('mfilter-apply');
+  const sheetBody = document.getElementById('mfilter-body');
+  const countEl = document.getElementById('mfilter-count');
+  let lastFocused = null;
+
+  function refreshFilterCount(){
+    if (!countEl) return;
+    let count = 0;
+    try {
+      const f = (typeof getFilters === 'function') ? getFilters() : {};
+      const isMulti = v => Array.isArray(v) && v.length > 0;
+      const nonDefault = (v, def) => {
+        if (Array.isArray(v)) return v.length > 0 && !v.includes(def);
+        return v && v !== def;
+      };
+      if (isMulti(f.geo)   && !(f.geo.length===1 && f.geo[0]==='All India')) count++;
+      if (isMulti(f.year)  && f.year.length>0) count++;
+      if (isMulti(f.month) && f.month.length>0) count++;
+      if (isMulti(f.oem)   && f.oem.length>0) count++;
+      if (isMulti(f.fuel)  && f.fuel.length>0) count++;
+    } catch(e) {}
+    countEl.textContent = count;
+    countEl.hidden = (count === 0);
+  }
+
+  function buildSheetBody(){
+    if (!sheetBody) return;
+    // Mirror the desktop filter-bar structure inside the sheet using the SAME
+    // multi-select widgets (so we don't duplicate state). Move the inner of
+    // .filter-bar-inner into the sheet on open, restore on close.
+    const inner = document.getElementById('filter-bar-inner');
+    if (inner && !sheetBody.contains(inner)){
+      sheetBody.appendChild(inner);
+      // Add spacing between groups in sheet context
+      inner.querySelectorAll('.filter-group').forEach(g => {
+        g.style.display = 'flex';
+        g.style.flexDirection = 'column';
+        g.style.alignItems = 'stretch';
+        g.style.gap = '6px';
+        g.style.marginBottom = '14px';
+      });
+      inner.querySelectorAll('.filter-sep').forEach(s => s.style.display = 'none');
+    }
+  }
+
+  function restoreSheetBody(){
+    const inner = document.getElementById('filter-bar-inner');
+    const desktopBar = document.getElementById('global-filter-bar');
+    if (inner && desktopBar && !desktopBar.contains(inner)){
+      desktopBar.appendChild(inner);
+      inner.querySelectorAll('.filter-group').forEach(g => {
+        g.style.display = ''; g.style.flexDirection = '';
+        g.style.alignItems = ''; g.style.gap = ''; g.style.marginBottom = '';
+      });
+      inner.querySelectorAll('.filter-sep').forEach(s => s.style.display = '');
+    }
+  }
+
+  function openSheet(){
+    if (!sheet || !back) return;
+    lastFocused = document.activeElement;
+    buildSheetBody();
+    sheet.hidden = false; back.hidden = false;
+    requestAnimationFrame(() => { sheet.classList.add('open'); back.classList.add('open'); });
+    document.body.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
+    if (closeBt) closeBt.focus();
+  }
+  function closeSheet(apply){
+    if (!sheet || !back) return;
+    sheet.classList.remove('open'); back.classList.remove('open');
+    setTimeout(() => {
+      sheet.hidden = true; back.hidden = true;
+      restoreSheetBody();
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+      if (lastFocused && lastFocused.focus) lastFocused.focus();
+      refreshFilterCount();
+    }, 220);
+  }
+
+  if (trig)    trig.addEventListener('click', openSheet);
+  if (closeBt) closeBt.addEventListener('click', () => closeSheet(false));
+  if (back)    back.addEventListener('click', () => closeSheet(false));
+  if (applyBt) applyBt.addEventListener('click', () => closeSheet(true));
+  if (resetBt) resetBt.addEventListener('click', () => {
+    if (typeof resetGlobalFilters === 'function') resetGlobalFilters();
+    refreshFilterCount();
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && sheet && !sheet.hidden) closeSheet(false);
+  });
+  // Refresh count whenever filters change (debounced via setTimeout)
+  ['change','click','input'].forEach(ev => {
+    document.addEventListener(ev, () => setTimeout(refreshFilterCount, 80), true);
+  });
+  setTimeout(refreshFilterCount, 1200);
+
+  // ── 2. Auto-wrap wide tables in .table-scroll ───────────────────────────
+  function wrapTables(){
+    document.querySelectorAll('table:not(.no-wrap):not([data-wrapped])').forEach(t => {
+      // skip tiny tables
+      if (t.rows.length < 2 || (t.rows[0].cells || []).length < 3) {
+        t.dataset.wrapped = '1'; return;
+      }
+      // skip if already inside a scroll container
+      if (t.closest('.table-scroll')) { t.dataset.wrapped = '1'; return; }
+      const wrap = document.createElement('div');
+      wrap.className = 'table-scroll';
+      t.parentNode.insertBefore(wrap, t);
+      wrap.appendChild(t);
+      t.dataset.wrapped = '1';
+      // Toggle .scrolled-end class to hide fade hint when at end
+      wrap.addEventListener('scroll', () => {
+        const atEnd = wrap.scrollLeft + wrap.clientWidth >= wrap.scrollWidth - 2;
+        wrap.classList.toggle('scrolled-end', atEnd);
+      });
+    });
+  }
+  // Run on load + whenever pages switch (Mutation observer would be heavier;
+  // showPage hook below covers most cases)
+  setTimeout(wrapTables, 1500);
+  setInterval(wrapTables, 4000); // catch lazily-rendered tables
+
+  // ── 3. Active nav tab: scrollIntoView on tab change ─────────────────────
+  function scrollActiveTabIntoView(){
+    if (!isMobile()) return;
+    const active = document.querySelector('.nav .nav-tab.active');
+    if (active && active.scrollIntoView){
+      active.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+    }
+  }
+  document.querySelectorAll('.nav .nav-tab').forEach(tab => {
+    tab.addEventListener('click', () => setTimeout(scrollActiveTabIntoView, 80));
+  });
+  setTimeout(scrollActiveTabIntoView, 600);
+
+  // ── 4. Compare page: segmented [State | All India] toggle ───────────────
+  function injectCmpSegmented(){
+    const cmp = document.getElementById('page-compare');
+    if (!cmp || cmp.querySelector('.cmp-segmented')) return;
+    const seg = document.createElement('div');
+    seg.className = 'cmp-segmented';
+    seg.innerHTML =
+      '<button type="button" data-view="state" class="active">Selected state</button>' +
+      '<button type="button" data-view="ai">All India</button>';
+    cmp.insertBefore(seg, cmp.firstChild);
+    document.body.dataset.cmpView = 'state';
+    seg.addEventListener('click', e => {
+      const b = e.target.closest('button[data-view]');
+      if (!b) return;
+      seg.querySelectorAll('button').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      document.body.dataset.cmpView = b.dataset.view;
+      try { sessionStorage.setItem('vahan-cmp-view', b.dataset.view); } catch(e){}
+    });
+    // Restore last choice
+    try {
+      const saved = sessionStorage.getItem('vahan-cmp-view');
+      if (saved) {
+        document.body.dataset.cmpView = saved;
+        seg.querySelectorAll('button').forEach(x => {
+          x.classList.toggle('active', x.dataset.view === saved);
+        });
+      }
+    } catch(e){}
+  }
+  setTimeout(injectCmpSegmented, 1500);
+
+  // Tag compare-page chart cards with data-cmp-side so the segmented toggle
+  // can hide the right half. Heuristic: titles with "STATE" → state, "ALL INDIA" → ai.
+  function tagCmpCards(){
+    document.querySelectorAll('#page-compare .chart-card').forEach(card => {
+      if (card.dataset.cmpSide) return;
+      const title = (card.querySelector('.chart-title')?.textContent || '').toUpperCase();
+      if (title.includes('ALL INDIA') || title.includes('NATIONAL')) card.dataset.cmpSide = 'ai';
+      else if (title.includes('STATE') || title.includes('SELECTED')) card.dataset.cmpSide = 'state';
+    });
+  }
+  setTimeout(tagCmpCards, 2000);
+  setInterval(tagCmpCards, 5000);
+
+  // ── 5. Back-to-top floating button ──────────────────────────────────────
+  const btt = document.createElement('button');
+  btt.type = 'button';
+  btt.className = 'back-to-top';
+  btt.setAttribute('aria-label', 'Back to top');
+  btt.innerHTML = '↑';
+  btt.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+  document.body.appendChild(btt);
+  let bttVisible = false;
+  window.addEventListener('scroll', () => {
+    const should = window.scrollY > 800;
+    if (should !== bttVisible){
+      bttVisible = should;
+      btt.classList.toggle('visible', should);
+    }
+  }, {passive:true});
+
+  // ── 6. Chart.js mobile defaults (set once libs are ready) ───────────────
+  function applyChartMobileDefaults(){
+    if (typeof Chart === 'undefined') return;
+    if (Chart.__vahanMobileDefaultsApplied) return;
+    if (!isMobile()) return;
+    Chart.__vahanMobileDefaultsApplied = true;
+    const D = Chart.defaults;
+    D.maintainAspectRatio = false;
+    D.font = D.font || {};
+    D.font.size = 11;
+    if (D.plugins && D.plugins.legend){
+      D.plugins.legend.position = 'bottom';
+      D.plugins.legend.labels = D.plugins.legend.labels || {};
+      D.plugins.legend.labels.boxWidth = 10;
+      D.plugins.legend.labels.font = {size: 11};
+      D.plugins.legend.labels.padding = 8;
+    }
+    if (D.plugins && D.plugins.tooltip){
+      D.plugins.tooltip.bodyFont = {size: 12};
+      D.plugins.tooltip.padding = 10;
+      D.plugins.tooltip.caretPadding = 8;
+      D.plugins.tooltip.displayColors = false;
+    }
+    if (D.scales){
+      ['x','linear','category','time','timeseries'].forEach(k => {
+        if (D.scales[k] && D.scales[k].ticks){
+          D.scales[k].ticks.maxRotation = 0;
+          D.scales[k].ticks.autoSkip = true;
+          D.scales[k].ticks.maxTicksLimit = 6;
+        }
+      });
+    }
+  }
+  // Try a few times — Chart.js may load via defer
+  let tries = 0;
+  const tryApply = setInterval(() => {
+    applyChartMobileDefaults();
+    if (typeof Chart !== 'undefined' || ++tries > 20) clearInterval(tryApply);
+  }, 250);
+
+  // ── 7. Re-apply on page-show (showPage hook) ────────────────────────────
+  const origShowPage = window.showPage;
+  if (typeof origShowPage === 'function'){
+    window.showPage = function(p){
+      origShowPage.apply(this, arguments);
+      setTimeout(() => {
+        wrapTables();
+        scrollActiveTabIntoView();
+        if (p === 'compare') { injectCmpSegmented(); tagCmpCards(); }
+      }, 200);
+    };
+  }
 })();
 </script>
 
