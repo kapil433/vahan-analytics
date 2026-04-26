@@ -33,7 +33,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, RedirectResponse, Response
 from starlette.middleware.gzip import GZipMiddleware
 
-from api.middleware_security import ApexToWwwRedirectMiddleware, RateLimitMiddleware, SecurityHeadersMiddleware
+from api.middleware_security import ApexToWwwRedirectMiddleware, DataReferrerGuardMiddleware, RateLimitMiddleware, SecurityHeadersMiddleware
 from fastapi.openapi.docs import get_swagger_ui_html
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field, field_validator
 
@@ -281,6 +281,7 @@ app.add_middleware(
 app.add_middleware(GZipMiddleware, minimum_size=1_000)
 app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(RateLimitMiddleware)
+app.add_middleware(DataReferrerGuardMiddleware)
 app.add_middleware(ApexToWwwRedirectMiddleware)
 
 # ── Payments / Freemium removed (free for everyone) ───────────────────────────

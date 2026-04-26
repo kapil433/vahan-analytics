@@ -1,0 +1,38 @@
+# Pings the Render API every 10 minutes to prevent the free-tier instance
+# from sleeping (which causes a 20-30s cold start on first user request).
+#
+# This is a no-cost alternative to upgrading Render to a paid tier ($7/mo).
+# A simple HEAD/GET against /healthz/warm is enough to keep the worker hot.
+#
+# To disable temporarily: rename this file or comment out the schedule.
+name: Keepalive — Render API
+
+on:
+  schedule:
+    # GitHub Actions cron is best-effort; in practice it fires every ~5-10 min
+    # under light load. */10 means the workflow is dispatched every 10 minutes.
+    - cron: "*/10 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: keepalive
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Wake Render API
+        run: |
+          set -e
+          URL="${VAHAN_API_BASE:-https://vahan-intelligence-api.onrender.com}/healthz/warm"
+          echo "Pinging $URL"
+          # Two pings: first wakes a sleeping instance, second confirms warm.
+          curl -sS --max-time 30 "$URL" || echo "first ping failed (likely cold-starting)"
+          sleep 5
+          curl -fsS --max-time 30 "$URL" -o /dev/null
+          echo "OK"

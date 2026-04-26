@@ -1,16 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>
-(function(){var h=location.hostname;if(h==='vahanintelligence.in'){location.replace('https://www.vahanintelligence.in'+location.pathname+location.search+location.hash);}})();
-</script>
+<!-- The apex→www JS redirect is injected by scripts/inject_pages_api_base.py
+     during the Pages build, NOT duplicated in source. -->
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 <meta name="theme-color" content="#ffffff"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
-<!-- Google Search Console: add HTML tag verification, e.g. <meta name="google-site-verification" content="…"/> (see DEPLOY.md section 6) -->
+<!-- Google Search Console: paste the verification code value below when you've claimed
+     the property at search.google.com/search-console (it gives you a string like
+     "x-1Y2Z..."). Until then the meta tag is harmless / no-op. -->
+<meta name="google-site-verification" content=""/>
+<!-- Google Tag Manager (GTM-MZMTHW35) -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-MZMTHW35');</script>
+<!-- End Google Tag Manager -->
 <title>Vahan Intelligence — India PV Registration Analytics</title>
+<!-- Favicon: inline SVG (no external file fetch needed) + raster fallbacks for old browsers + apple-touch-icon. -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%231d4ed8'/%3E%3Cstop offset='1' stop-color='%230ea5e9'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='12' fill='url(%23g)'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='system-ui,Arial,sans-serif' font-size='28' font-weight='800' fill='white'%3EVI%3C/text%3E%3C/svg%3E"/>
+<link rel="icon" href="/favicon.ico" sizes="any"/>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
+<link rel="mask-icon" href="/favicon.svg" color="#2563eb"/>
 <meta name="description" content="Explore India four-wheeler passenger vehicle registrations: fuel mix, OEM share, state drill-down, forecasts, and policy-context blog notes from VAHAN-class data."/>
 <link rel="canonical" href="https://www.vahanintelligence.in/"/>
 <meta property="og:type" content="website"/>
@@ -18,7 +32,7 @@
 <meta property="og:title" content="Vahan Intelligence — India PV Registration Analytics"/>
 <meta property="og:description" content="Explore India four-wheeler passenger vehicle registrations: fuel mix, OEM share, state drill-down, forecasts, and policy-context blog notes from VAHAN-class data."/>
 <meta property="og:url" content="https://www.vahanintelligence.in/"/>
-<meta property="og:image" content="https://www.vahanintelligence.in/og-image.png"/>
+<meta property="og:image" content="https://www.vahanintelligence.in/og-image.jpg"/>
 <meta property="og:image:width" content="1200"/>
 <meta property="og:image:height" content="630"/>
 <meta property="og:image:alt" content="Vahan Intelligence — India passenger vehicle registration analytics"/>
@@ -26,10 +40,10 @@
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content="Vahan Intelligence — India PV Registration Analytics"/>
 <meta name="twitter:description" content="India passenger vehicle registration analytics from VAHAN-class data: fuels, OEMs, states, forecasts."/>
-<meta name="twitter:image" content="https://www.vahanintelligence.in/og-image.png"/>
-<meta property="og:image:type" content="image/png"/>
+<meta name="twitter:image" content="https://www.vahanintelligence.in/og-image.jpg"/>
+<meta property="og:image:type" content="image/jpeg"/>
 <!-- GitHub Pages: no custom response headers — CSP + referrer via meta only (partial vs full header CSP). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://subscribe-forms.beehiiv.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://www.vahanintelligence.in https://kapil433.github.io https://subscribe-forms.beehiiv.com; frame-src https://subscribe-forms.beehiiv.com; base-uri 'self'; form-action 'self' mailto:; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests;"/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://subscribe-forms.beehiiv.com https://www.googletagmanager.com https://*.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://www.vahanintelligence.in https://kapil433.github.io https://vahan-intelligence-api.onrender.com https://subscribe-forms.beehiiv.com https://www.google-analytics.com https://*.analytics.google.com https://*.google-analytics.com https://stats.g.doubleclick.net; frame-src https://subscribe-forms.beehiiv.com https://www.googletagmanager.com; base-uri 'self'; form-action 'self' mailto:; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests;"/>
 <meta name="referrer" content="strict-origin-when-cross-origin"/>
 <script type="application/ld+json">
 {
@@ -1381,6 +1395,10 @@ body{padding-bottom:var(--safe-bottom)}
 </style>
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MZMTHW35"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 
 <!-- HEADER -->
 <div class="header">
@@ -5119,6 +5137,24 @@ async function expandBundleRawRows(_raw) {
 async function init() {
   const topLoadBar = document.getElementById('top-load-bar');
   const loadShell = document.getElementById('dashboard-load-shell');
+
+  // 15-second timeout: if the data fetch is still running, the Render API is
+  // probably cold-starting. Show a friendly "Waking up the data server…
+  // [Retry]" message so the user isn't staring at an infinite spinner.
+  const slowTimer = setTimeout(() => {
+    if (!DATA && loadShell && !loadShell.classList.contains('dashboard-load-shell--done')) {
+      const msg = loadShell.querySelector('p');
+      if (msg) {
+        msg.innerHTML = '⏳ <strong>Taking longer than usual…</strong> the data server may be waking up. ' +
+          '<a href="javascript:location.reload()" style="color:var(--blue);text-decoration:underline;font-weight:600">Retry</a> ' +
+          'or wait ~20 seconds.';
+        msg.style.color = 'var(--text)';
+      }
+      const dataBadge = document.getElementById('dataBadgeText');
+      if (dataBadge) dataBadge.textContent = 'Waking server…';
+    }
+  }, 15000);
+
   try {
     topLoadBar?.classList.remove('is-hidden');
     topLoadBar?.setAttribute('aria-hidden', 'false');
@@ -5168,6 +5204,7 @@ async function init() {
       db.classList.remove('is-error');
       db.textContent = `● ${Number.isFinite(recN) ? recN.toLocaleString() : '—'} records · ${yrLo}–${yrHi}`;
     }
+    clearTimeout(slowTimer);
     topLoadBar?.classList.add('is-hidden');
     topLoadBar?.setAttribute('aria-hidden', 'true');
     loadShell?.classList.add('dashboard-load-shell--done');
@@ -5202,10 +5239,19 @@ async function init() {
     updateFilterActiveSummary();
     buildOverview();
   } catch(e) {
+    clearTimeout(slowTimer);
     topLoadBar?.classList.add('is-hidden');
     topLoadBar?.setAttribute('aria-hidden', 'true');
-    loadShell?.classList.add('dashboard-load-shell--done');
-    loadShell?.setAttribute('aria-busy', 'false');
+    // Show a friendly error UI instead of just a tiny badge change
+    if (loadShell) {
+      const msg = loadShell.querySelector('p');
+      if (msg) {
+        msg.innerHTML = '⚠️ <strong>Couldn\'t load the data.</strong> The data server may be temporarily unavailable. ' +
+          '<button onclick="location.reload()" style="margin-left:8px;padding:6px 14px;border-radius:6px;border:1px solid var(--blue);background:var(--blue);color:#fff;cursor:pointer;font-weight:600">Retry</button> ' +
+          '<br><small style="color:var(--text-dim);margin-top:8px;display:inline-block">If this persists, please email info@vahanintelligence.in.</small>';
+        msg.style.color = 'var(--text)';
+      }
+    }
     const _db = document.getElementById('dataBadge');
     if (_db) {
       _db.classList.add('is-error');

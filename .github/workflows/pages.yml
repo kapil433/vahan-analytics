@@ -41,9 +41,17 @@ jobs:
           fi
           cp api/static/robots.txt _site/robots.txt
           cp api/static/sitemap.xml _site/sitemap.xml
-          if [ -f api/static/og-image.png ]; then
-            cp api/static/og-image.png _site/og-image.png
-          fi
+          # OG image — prefer the smaller JPEG for LinkedIn crawler reliability;
+          # keep the PNG copy too in case any old shares reference it.
+          for f in og-image.jpg og-image.png; do
+            [ -f api/static/$f ] && cp api/static/$f _site/$f
+          done
+          # Favicon stack
+          for f in favicon.ico favicon.svg apple-touch-icon.png icon-512.png; do
+            [ -f api/static/$f ] && cp api/static/$f _site/$f
+          done
+          # Branded 404 page
+          [ -f api/static/404.html ] && cp api/static/404.html _site/404.html
           if [ -f api/static/google5332b27a4f971584.html ]; then
             cp api/static/google5332b27a4f971584.html _site/google5332b27a4f971584.html
           fi

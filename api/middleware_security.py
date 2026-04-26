@@ -22,12 +22,12 @@ def _csp_value() -> str:
     """
     return (
         "default-src 'self'; "
-        "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://subscribe-forms.beehiiv.com; "
+        "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://subscribe-forms.beehiiv.com https://www.googletagmanager.com https://*.googletagmanager.com; "
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
         "font-src 'self' https://fonts.gstatic.com data:; "
         "img-src 'self' data: blob: https:; "
-        "connect-src 'self' https://www.vahanintelligence.in https://kapil433.github.io https://subscribe-forms.beehiiv.com; "
-        "frame-src https://subscribe-forms.beehiiv.com; "
+        "connect-src 'self' https://www.vahanintelligence.in https://kapil433.github.io https://vahan-intelligence-api.onrender.com https://subscribe-forms.beehiiv.com https://www.google-analytics.com https://*.analytics.google.com https://*.google-analytics.com https://stats.g.doubleclick.net; "
+        "frame-src https://subscribe-forms.beehiiv.com https://www.googletagmanager.com; "
         "frame-ancestors 'none'; "
         "base-uri 'self'; "
         "form-action 'self' mailto:; "
@@ -88,8 +88,10 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
 # path prefix -> max requests per window
 _default_limits: dict[str, tuple[int, float]] = {
-    "/data/vahan_master_compat": (60, 60.0),
-    "/data/vahan_master.json": (60, 60.0),
+    # Tightened in v9 anti-scraping pass: the dashboard makes 1 bundle request
+    # per page load — anything above 5/min from a single IP is bot territory.
+    "/data/vahan_master_compat": (5, 60.0),
+    "/data/vahan_master.json":   (5, 60.0),
     "/scrape": (8, 60.0),
 }
 
@@ -103,6 +105,11 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         self._hits: dict[str, list[float]] = defaultdict(list)
 
     def _client_ip(self, request: Request) -> str:
+        # Honour Cloudflare / Render forward headers when present.
+        for h in ("cf-connecting-ip", "x-forwarded-for", "x-real-ip"):
+            v = request.headers.get(h)
+            if v:
+                return v.split(",")[0].strip()
         if request.client:
             return request.client.host
         return "unknown"
@@ -134,3 +141,57 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             )
         self._hits[key].append(now)
         return await call_next(request)
+
+
+# ── Anti-scraping: Origin / Referer check on /data/* endpoints ───────────────
+#
+# Real users hit /data/vahan_master_compat from one of:
+#   - https://www.vahanintelligence.in   (the GitHub Pages site)
+#   - https://vahan-intelligence-api.onrender.com  (the FastAPI service itself)
+#   - https://kapil433.github.io  (the optional GH Pages mirror)
+#
+# Direct curl/python `requests` calls don't send Origin or Referer matching any
+# of those. This middleware lets them through CORS preflight (already handled
+# upstream) but blocks the actual GET if both Origin AND Referer are missing or
+# foreign. Determined scrapers can spoof headers, but this raises the bar for
+# casual `curl URL > out.json` style scraping.
+class DataReferrerGuardMiddleware(BaseHTTPMiddleware):
+    ALLOWED_HOSTS = (
+        "www.vahanintelligence.in",
+        "vahanintelligence.in",
+        "vahan-intelligence-api.onrender.com",
+        "kapil433.github.io",
+        "localhost",
+        "127.0.0.1",
+    )
+    GUARDED_PREFIXES = ("/data/",)
+
+    def _is_guarded(self, path: str) -> bool:
+        return any(path.startswith(p) for p in self.GUARDED_PREFIXES)
+
+    def _host_allowed(self, value: str | None) -> bool:
+        if not value:
+            return False
+        try:
+            from urllib.parse import urlparse
+            netloc = urlparse(value).netloc.lower().split(":")[0]
+        except Exception:
+            return False
+        return any(netloc == h or netloc.endswith("." + h) for h in self.ALLOWED_HOSTS)
+
+    async def dispatch(self, request: Request, call_next):
+        if request.method == "OPTIONS" or not self._is_guarded(request.url.path):
+            return await call_next(request)
+        # Allow when env var is set (useful for CI / local testing)
+        if os.getenv("DISABLE_REFERER_GUARD", "").strip().lower() in ("1", "true", "yes"):
+            return await call_next(request)
+        origin = request.headers.get("origin")
+        referer = request.headers.get("referer")
+        if self._host_allowed(origin) or self._host_allowed(referer):
+            return await call_next(request)
+        # Block: missing or foreign origin/referer on a guarded data endpoint.
+        return JSONResponse(
+            {"detail": "Direct data fetches require a valid Origin or Referer. "
+                       "See https://www.vahanintelligence.in/#about for terms of use."},
+            status_code=403,
+        )
