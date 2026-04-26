@@ -5793,19 +5793,47 @@ const METHOD_DESC = {
 };
 
 /**
- * Forecast history should not end in the viewer's current calendar month: that month is
- * still in progress in the portal data. Drop trailing point(s) matching (today Y, today M).
+ * Forecast history should not end in:
+ *   1. The viewer's current calendar month (always in progress on the portal).
+ *   2. Any trailing month where VAHAN data is still being filled in. Detect
+ *      these by comparing each trailing month to the SAME month one year ago:
+ *      if the value is < 50% of last year's value AND we have ≥1 year of
+ *      history to compare against, treat it as incomplete and drop it.
+ *      Capped at dropping at most 4 trailing months for safety.
+ *
+ * Why same-month-last-year (and not a rolling median): seasonality. Feb is
+ * always lower than Mar; Apr is always lower than Mar (post-FY end-of-month
+ * pull-forward). Comparing Mar 2026 to Mar 2025 is the right reference.
  */
 function trimForecastSeriesDropCurrentCalendarMonth(series) {
   if (!series || !series.length) return series;
+  let end = series.length;
+
+  // 1. Drop today's month (in progress).
   const now = new Date();
   const cy = now.getFullYear();
   const cm = now.getMonth() + 1;
-  let end = series.length;
   while (end > 0) {
     const pt = series[end - 1];
     if (pt.year === cy && pt.month === cm) end--;
     else break;
+  }
+
+  // 2. Drop any further trailing months that are obviously incomplete
+  //    (< 50% of the same month a year prior). Cap at 4 drops to avoid
+  //    runaway trimming on truly low-volume series.
+  const INCOMPLETE_THRESHOLD = 0.50;
+  let dropped = 0;
+  while (end > 0 && dropped < 4) {
+    const pt = series[end - 1];
+    // Find same month, previous year.
+    const prev = series.find(p => p.year === pt.year - 1 && p.month === pt.month);
+    if (!prev || !prev.value) break;       // no prior comparable → keep current
+    if (pt.value < prev.value * INCOMPLETE_THRESHOLD) {
+      end--; dropped++;
+    } else {
+      break;                                // value looks complete enough
+    }
   }
   return series.slice(0, end);
 }
