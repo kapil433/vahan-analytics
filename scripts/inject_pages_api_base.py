@@ -33,6 +33,13 @@ def main() -> int:
     insert_at = idx + len(needle)
     out = src[:insert_at] + inject + src[insert_at:]
 
+    # Rewrite the data-bundle preload href so the browser fetches from the actual
+    # API origin on Pages (relative path /data/... 404s here — data lives on Render).
+    relative_preload = '<link rel="preload" href="/data/vahan_master_compat"'
+    absolute_preload = f'<link rel="preload" href="{api}/data/vahan_master_compat"'
+    if relative_preload in out:
+        out = out.replace(relative_preload, absolute_preload)
+
     for p in args.output:
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(out, encoding="utf-8")
