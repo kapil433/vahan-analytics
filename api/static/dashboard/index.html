@@ -4087,7 +4087,13 @@ function updateChart(id, type, labels, datasets, opts={}) {
           grid: { color: CHART_UI.grid },
           ticks: {
             color: CHART_UI.tick, font:{size:11},
-            callback: v => {
+            // When indexAxis === 'y' (horizontal bar) the y-axis is the
+            // CATEGORY axis: Chart.js passes the index — return the label
+            // string so users see "Maruti Suzuki" not "0".
+            // When indexAxis === 'x' (default vertical) the y-axis is the
+            // VALUE axis: format as number / percent.
+            callback: function(v) {
+              if (indexAxis === 'y') return this.getLabelForValue(v);
               if (opts.suffix === '%') return v + '%';
               if (typeof v === 'number') return fmt(v);
               return v;
