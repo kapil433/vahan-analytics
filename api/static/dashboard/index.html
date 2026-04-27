@@ -3602,7 +3602,11 @@ function buildYoYChart(filters) {
       const base = (v||0) >= 0 ? '16,185,129' : '244,63,94';
       return isPartial[i] ? `rgba(251,191,36,0.75)` : `rgba(${base},0.75)`;
     }),
-    borderRadius: 3
+    borderRadius: 3,
+    // Ensure tiny non-zero bars (e.g. FY 2018-19's +0.1% YoY) still render
+    // visibly. Without this, near-flat years look like missing data points.
+    // Genuinely null values (no comparable prior) still skip rendering.
+    minBarLength: 3,
   }], { suffix: '%', yZero: true });
 }
 
