@@ -3349,7 +3349,8 @@ function computeCagrSince2012(filters) {
   const geo = filters.geo == null || filters.geo === '' ? 'All India' : filters.geo;
   const yt = filters.yeartype;
   if (yt === 'cy') {
-    const years = DATA.meta.cal_years.map(Number).filter((y) => y >= 2012).sort((a, b) => a - b);
+    const partial = getPartialCYs();
+    const years = DATA.meta.cal_years.map(Number).filter((y) => y >= 2012 && !partial.has(y)).sort((a, b) => a - b);
     if (years.length < 2) return null;
     const y0 = 2012;
     const y1 = years[years.length - 1];
