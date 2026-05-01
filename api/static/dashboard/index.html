@@ -3231,14 +3231,27 @@ function getPartialCYs() {
   return new Set(Object.keys(mths).filter(y => mths[y].size < 12).map(Number));
 }
 
-/** FY labels excluded from year multiselects (incomplete / transitional). */
+/** FY labels excluded from year multiselects (transitional only — 2012-13/2013-14
+ *  predate clean OEM coverage). Partial current FY (2026-27) is now selectable so
+ *  users can see YTD progress; we annotate it as partial in the selector label. */
 function excludedFYFromYearSelectors() {
-  return new Set(['2012-13', '2013-14', '2026-27']);
+  return new Set(['2012-13', '2013-14']);
 }
 
-/** FY labels excluded from time-series volume charts (aligns with selectors + lead-in FY). */
+/** FY labels excluded from time-series volume charts (lead-in FY only). */
 function excludedFYFromVolumeCharts() {
-  return new Set(['2011-12', '2012-13', '2013-14', '2026-27']);
+  return new Set(['2011-12', '2012-13', '2013-14']);
+}
+
+/** Current partial FY — used to label it as "(partial)" in the year selector. */
+function partialCurrentFY() {
+  if (!DATA || !DATA.meta.financial_years) return null;
+  const partial = getPartialCYs();
+  // Latest FY whose start CY is partial (e.g. "2026-27" starts in 2026)
+  const latest = DATA.meta.financial_years[DATA.meta.financial_years.length - 1];
+  if (!latest) return null;
+  const startCY = parseInt(latest.split('-')[0], 10);
+  return partial.has(startCY) ? latest : null;
 }
 
 /** FY options for OEM/Fuel modal dropdowns (newest first). */
@@ -3268,16 +3281,25 @@ function populateYearDropdown() {
   const fyExcl = excludedFYFromYearSelectors();
   const filtered = years.filter(y => {
     if (yt === 'fy') return !fyExcl.has(y);
-    return !partialCYs.has(y);
+    return true; // CY: keep partial CY visible (annotated as "(partial)")
   });
 
   const el = document.getElementById('ms-year-items');
   if (!el) return;
 
+  // Annotate the in-progress FY/CY as "(partial)" so users aren't confused by
+  // a tiny stub volume vs prior full years.
+  const partialFY = partialCurrentFY();
+  const labelFor = (y) => {
+    if (yt === 'fy' && y === partialFY) return `${y} (partial)`;
+    if (yt === 'cy' && partialCYs.has(Number(y))) return `${y} (partial)`;
+    return y;
+  };
+
   el.innerHTML = `<div class="ms-item all-item selected" data-value="all" onclick="toggleMSItem('year','all')">
     <div class="ms-check">✓</div><span>All Years</span></div>` +
     filtered.map(y => `<div class="ms-item" data-value="${y}" onclick="toggleMSItem('year','${y}')">
-      <div class="ms-check"></div><span>${y}</span>
+      <div class="ms-check"></div><span>${labelFor(y)}</span>
     </div>`).join('');
 
   // Default: All Years (CAGR in KPIs uses 2012 → latest CY or FY per year type)
@@ -5580,11 +5602,17 @@ function populateCmpYearMultiselect() {
   const fySelExcl = excludedFYFromYearSelectors();
   const filtered = years.filter((y) => {
     if (yt === 'fy') return !fySelExcl.has(y);
-    return !partialCYs.has(y);
+    return true; // CY: keep partial visible (annotated)
   });
+  const partialFY = partialCurrentFY();
   const el = document.getElementById('cmp-ms-year-items');
   if (!el) return;
-  const yLabel = (y) => (yt === 'fy' ? 'FY ' + y : 'CY ' + y);
+  const yLabel = (y) => {
+    const base = (yt === 'fy' ? 'FY ' + y : 'CY ' + y);
+    if (yt === 'fy' && y === partialFY) return base + ' (partial)';
+    if (yt === 'cy' && partialCYs.has(Number(y))) return base + ' (partial)';
+    return base;
+  };
   el.innerHTML = `<div class="ms-item all-item selected" data-value="all" onclick="toggleCmpMSItem('year','all')">
     <div class="ms-check">✓</div><span>All Years</span></div>` +
     filtered.map((y) => {
