@@ -1,4 +1,27 @@
+# Vahan Intelligence — robots.txt
+# Default: allow all crawlers everywhere. Block known-bad scrapers.
+
 User-agent: *
 Allow: /
+
+# Allow data bundle download for Google Dataset Search indexing.
+Allow: /data/
+
+# Block aggressive AI-training scrapers that don't respect rate limits.
+# (Standard SEO crawlers — Googlebot, Bingbot, etc. — are unaffected.)
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: PerplexityBot
+Disallow: /
 
 Sitemap: https://www.vahanintelligence.in/sitemap.xml

@@ -65,25 +65,78 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       "@type": "Dataset",
       "@id": "https://www.vahanintelligence.in/#dataset",
       "name": "India passenger vehicle registration analytics (VAHAN-derived)",
-      "description": "Aggregated four-wheeler passenger vehicle registrations by region, period, fuel, maker, and month for analytics and research. Includes a curated timeline of market and policy events for interpretation.",
+      "description": "Monthly passenger four-wheeler registrations across all 36 Indian states/UTs from FY 2012-13 through FY 2026-27, broken down by maker (OEM), fuel type (Petrol, Diesel, CNG, EV, Strong Hybrid) and month. Sourced from the Government of India's VAHAN / Parivahan portal and cleaned for analytics.",
       "url": "https://www.vahanintelligence.in/",
       "isAccessibleForFree": true,
-      "keywords": ["VAHAN", "Parivahan", "vehicle registration", "India", "passenger vehicle", "EV", "CNG", "OEM market share", "state registrations"],
-      "spatialCoverage": {"@type": "Place", "name": "India"},
-      "temporalCoverage": "2012/..",
-      "creator": {"@type": "Organization", "name": "Vahan Intelligence"},
-      "publisher": {"@type": "Organization", "name": "Vahan Intelligence"},
+      "keywords": ["VAHAN", "Parivahan", "vehicle registration", "India", "passenger vehicle", "EV adoption India", "CNG", "OEM market share", "Maruti Suzuki", "Tata Motors", "Hyundai", "Mahindra", "state registrations", "auto industry India", "FY 2025-26"],
+      "spatialCoverage": {"@type": "Place", "name": "India", "geo": {"@type": "GeoShape", "box": "8.4 68.7 37.1 97.4"}},
+      "temporalCoverage": "2012-04-01/..",
+      "dateModified": "2026-05-01",
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "creator": {"@type": "Organization", "name": "Vahan Intelligence", "url": "https://www.vahanintelligence.in/"},
+      "publisher": {"@type": "Organization", "name": "Vahan Intelligence", "url": "https://www.vahanintelligence.in/"},
+      "variableMeasured": [
+        {"@type": "PropertyValue", "name": "Registrations", "description": "Count of new passenger four-wheeler registrations"},
+        {"@type": "PropertyValue", "name": "Fuel type", "description": "Petrol, Diesel, CNG, EV, Strong Hybrid"},
+        {"@type": "PropertyValue", "name": "Maker (OEM)", "description": "Manufacturer of the registered vehicle"},
+        {"@type": "PropertyValue", "name": "Region", "description": "Indian state or All India aggregate"},
+        {"@type": "PropertyValue", "name": "Month / FY", "description": "Calendar month and Indian financial year (Apr-Mar)"}
+      ],
       "distribution": [
         {
           "@type": "DataDownload",
           "encodingFormat": "application/json",
+          "name": "Master JSON bundle",
           "contentUrl": "https://www.vahanintelligence.in/data/vahan_master.json"
+        },
+        {
+          "@type": "DataDownload",
+          "encodingFormat": "application/json+gzip",
+          "name": "Master JSON bundle (gzip)",
+          "contentUrl": "https://www.vahanintelligence.in/data/vahan_master.json.gz"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What data does Vahan Intelligence cover?",
+          "acceptedAnswer": {"@type": "Answer", "text": "Monthly passenger four-wheeler registrations across all 36 Indian states and UTs from FY 2012-13 to the current month, broken down by maker (OEM), fuel type and state. Source: India's VAHAN / Parivahan portal."}
+        },
+        {
+          "@type": "Question",
+          "name": "How fresh is the data?",
+          "acceptedAnswer": {"@type": "Answer", "text": "The dashboard is refreshed within the first week of every month with the previous month's complete registrations. The latest in-progress month is excluded from forecasts because VAHAN portal still receives late entries for ~2 weeks."}
+        },
+        {
+          "@type": "Question",
+          "name": "Which fuel categories are tracked?",
+          "acceptedAnswer": {"@type": "Answer", "text": "Petrol, Diesel, CNG, Electric (EV), and Strong Hybrid. Plug-in hybrids are not yet broken out separately by VAHAN; they are folded into Strong Hybrid where labelled."}
+        },
+        {
+          "@type": "Question",
+          "name": "Is the data free to use?",
+          "acceptedAnswer": {"@type": "Answer", "text": "The dashboard, blog, and master JSON download are free for non-commercial use under CC BY 4.0 with attribution to Vahan Intelligence and the VAHAN portal. Custom data cuts and paid research reports are available separately."}
+        },
+        {
+          "@type": "Question",
+          "name": "Can I cite Vahan Intelligence in my research or article?",
+          "acceptedAnswer": {"@type": "Answer", "text": "Yes — please cite as: \"Vahan Intelligence, vahanintelligence.in, derived from the Government of India's VAHAN Parivahan portal\". A direct URL to the specific filtered view (e.g. #ev or #compare) is preferred."}
+        },
+        {
+          "@type": "Question",
+          "name": "How does Vahan Intelligence differ from JATO or IHS Markit?",
+          "acceptedAnswer": {"@type": "Answer", "text": "Both JATO and IHS Markit charge ₹15-25 lakh/year for similar India PV data. Vahan Intelligence offers the same depth of analytics free, with paid research reports priced an order of magnitude lower for OEM strategy teams, journalists and consultants."}
         }
       ]
     }
   ]
 }
 </script>
+<!-- BreadcrumbList JSON-LD — populated by updatePageMeta() on every route change. -->
+<script type="application/ld+json" id="breadcrumb-jsonld"></script>
 <!-- ── Performance: resource hints + warm sockets ─────────────────────────── -->
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -4536,6 +4589,112 @@ function setHeatFuel(fuel, btn) {
 // ─────────────────────────────────────────────────────────────
 // NAVIGATION
 // ─────────────────────────────────────────────────────────────
+// ───────── SEO: per-page meta titles + descriptions ─────────
+// Audience: OEM strategy/product, auto journalists, analysts.
+// Each entry feeds <title>, meta description, og:*, twitter:*, canonical.
+const PAGE_META = {
+  overview: {
+    title: 'India PV Registrations Dashboard — FY 25-26, OEMs, Fuel Mix | Vahan Intelligence',
+    desc:  'Monthly India passenger vehicle registration numbers, OEM market share, fuel mix and state cuts from VAHAN-class data. Free analytics for OEM strategy teams, analysts and auto journalists.',
+    canonical: 'https://www.vahanintelligence.in/'
+  },
+  geomap: {
+    title: 'India PV Registrations by State — Heat Map | Vahan Intelligence',
+    desc:  'Interactive choropleth of passenger-vehicle registrations across all 36 Indian states and UTs. Compare adoption rates, EV share and OEM dominance state by state.',
+    canonical: 'https://www.vahanintelligence.in/#geomap'
+  },
+  fuel: {
+    title: 'India Fuel Mix Trends — Petrol, Diesel, EV, CNG, Hybrid | Vahan Intelligence',
+    desc:  'India passenger vehicle fuel mix from 2012 through FY 2025-26: diesel decline, CNG rise, EV inflection and hybrid emergence by year, state and OEM.',
+    canonical: 'https://www.vahanintelligence.in/#fuel'
+  },
+  oem: {
+    title: 'India Auto OEM Market Share — Maruti, Hyundai, Tata, Mahindra | Vahan Intelligence',
+    desc:  'OEM-level India PV registrations and market-share trajectories for Maruti Suzuki, Hyundai, Tata, Mahindra, Toyota, Kia and more — annual + monthly cuts.',
+    canonical: 'https://www.vahanintelligence.in/#oem'
+  },
+  ev: {
+    title: 'India EV Registrations & Adoption — Tata, MG, BYD, Hyundai, BMW | Vahan Intelligence',
+    desc:  'India electric passenger vehicle adoption curve, state-wise EV share, top EV OEMs, and hybrid + CNG context drawn from VAHAN registrations.',
+    canonical: 'https://www.vahanintelligence.in/#ev'
+  },
+  compare: {
+    title: 'State Comparison — India PV Registrations Drill-Down | Vahan Intelligence',
+    desc:  'Compare any Indian state versus All India or another state on registrations, fuel mix, OEM share, and EV adoption from FY 2014-15 onward.',
+    canonical: 'https://www.vahanintelligence.in/#compare'
+  },
+  forecast: {
+    title: 'India PV Registration Forecast — FY 2026-27 Projections | Vahan Intelligence',
+    desc:  'Forecast India passenger vehicle registrations with Holt-Winters, linear regression and CAGR projection. Cut by state, fuel and OEM.',
+    canonical: 'https://www.vahanintelligence.in/#forecast'
+  },
+  blog: {
+    title: 'India Auto Market Stories & Analysis — Vahan Intelligence Blog',
+    desc:  'Data-driven stories on India’s passenger vehicle market: diesel decline, EV inflection, CNG growth, OEM share shifts and policy impact.',
+    canonical: 'https://www.vahanintelligence.in/#blog'
+  },
+  info: {
+    title: 'About the Data — Methodology, FAQs, Contact | Vahan Intelligence',
+    desc:  'How we clean VAHAN registration data, freshness windows, OEM and fuel definitions, FAQs, and contact for analyst and press enquiries.',
+    canonical: 'https://www.vahanintelligence.in/#info'
+  },
+  about: {
+    title: 'About Vahan Intelligence — India Auto Market Analytics',
+    desc:  'Vahan Intelligence is a free analytics dashboard plus paid research on India’s passenger vehicle market built for OEM strategy teams, journalists and equity research.',
+    canonical: 'https://www.vahanintelligence.in/#about'
+  }
+};
+
+function setMetaContent(selector, content) {
+  const el = document.querySelector(selector);
+  if (el) el.setAttribute('content', content);
+}
+
+// Human-readable breadcrumb labels (also drives the visible breadcrumb).
+const PAGE_BREADCRUMB_LABEL = {
+  overview: 'Overview',
+  geomap:   'India Map',
+  fuel:     'Fuel Analysis',
+  oem:      'OEM Analysis',
+  ev:       'EV & Green',
+  compare:  'State Drill-down',
+  forecast: 'Forecast',
+  blog:     'Blog',
+  info:     'Info',
+  about:    'About'
+};
+
+function updatePageMeta(page) {
+  const m = PAGE_META[page] || PAGE_META.overview;
+  document.title = m.title;
+  setMetaContent('meta[name="description"]', m.desc);
+  setMetaContent('meta[property="og:title"]', m.title);
+  setMetaContent('meta[property="og:description"]', m.desc);
+  setMetaContent('meta[property="og:url"]', m.canonical);
+  setMetaContent('meta[name="twitter:title"]', m.title);
+  setMetaContent('meta[name="twitter:description"]', m.desc);
+  const link = document.querySelector('link[rel="canonical"]');
+  if (link) link.setAttribute('href', m.canonical);
+
+  // BreadcrumbList: home → current page (skip on overview which IS home)
+  const crumbScript = document.getElementById('breadcrumb-jsonld');
+  if (crumbScript) {
+    if (page === 'overview') {
+      crumbScript.textContent = '';
+    } else {
+      const label = PAGE_BREADCRUMB_LABEL[page] || page;
+      crumbScript.textContent = JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        'itemListElement': [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.vahanintelligence.in/' },
+          { '@type': 'ListItem', position: 2, name: label, item: m.canonical }
+        ]
+      });
+    }
+  }
+}
+
 function switchPage(page) {
   currentPage = page;
   // v10.2: ALL pages preserve their hash in the URL so share links can deep-link
@@ -4548,6 +4707,10 @@ function switchPage(page) {
   } else {
     try { history.replaceState(null, '', location.pathname + search); } catch (e) { location.hash = ''; }
   }
+  // SEO: refresh document.title + meta description + canonical for the new route.
+  // Doing this on every page change means crawlers that execute JS see the right
+  // metadata for whichever URL they're on, even though we're a single SPA.
+  try { updatePageMeta(page); } catch (_) {}
   document.querySelectorAll('.nav-tab').forEach(t => {
     const on = t.dataset.page === page;
     t.classList.toggle('active', on);
@@ -4632,6 +4795,9 @@ function applyHashToPage() {
   // v10.2: route ALL valid pages from URL hash, not just blog/info/about.
   const ALL_PAGES = ['overview','geomap','fuel','oem','ev','compare','forecast','blog','info','about'];
   if (ALL_PAGES.includes(h)) switchPage(h);
+  // Empty hash = homepage = overview. Re-route + update meta so back-nav from
+  // a deep link (#blog → /) refreshes title/description, not just the panel.
+  else if (!h && currentPage !== 'overview') switchPage('overview');
 }
 window.addEventListener('hashchange', applyHashToPage);
 {
