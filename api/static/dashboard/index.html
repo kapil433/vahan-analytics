@@ -2332,15 +2332,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <p>Vahan Intelligence is a free analytics dashboard built on India's public VAHAN / Parivahan vehicle-registration data. It cleans the raw monthly exports into one place — fuel mix, OEM share, state drill-downs, EV adoption, and forecasts — so analysts, OEM strategy teams, consultants and journalists can pull the answer in seconds instead of building it from scratch.</p>
       <p>This page is for everything outside the dashboard itself: subscribe to monthly updates, get in touch, find what's where, and read the privacy notes.</p>
 
-      <!-- ── Newsletter card (Beehiiv form has its own heading + pitch — don't duplicate) ── -->
-      <div class="newsletter-card" style="margin:24px 0;background:linear-gradient(135deg,#eff6ff 0%,#f0fdf4 100%);border:1px solid #bfdbfe;border-radius:14px;padding:14px 14px;box-shadow:0 1px 2px rgba(15,23,42,.04)">
-        <div class="beehiiv-wrap" style="display:flex;justify-content:center">
-          <script async src="https://subscribe-forms.beehiiv.com/embed.js"></script>
-          <iframe src="https://subscribe-forms.beehiiv.com/b75c37c6-0c29-4960-8073-50983edd9727"
-                  class="beehiiv-embed" data-test-id="beehiiv-embed"
-                  frameborder="0" scrolling="no"
-                  style="width:100%;max-width:600px;height:540px;margin:0;border-radius:0;background-color:transparent;box-shadow:0 0 #0000"></iframe>
-        </div>
+      <!-- ── Newsletter card (uses Beehiiv's standard embed snippet — no flex
+           wrappers, no width:100% on iframe, lets embed.js handle responsive
+           sizing). Beehiiv's form has its own heading + pitch — don't duplicate. ── -->
+      <div class="newsletter-card" style="margin:24px 0;background:linear-gradient(135deg,#eff6ff 0%,#f0fdf4 100%);border:1px solid #bfdbfe;border-radius:14px;padding:16px;box-shadow:0 1px 2px rgba(15,23,42,.04);text-align:center">
+        <iframe src="https://subscribe-forms.beehiiv.com/b75c37c6-0c29-4960-8073-50983edd9727"
+                class="beehiiv-embed" data-test-id="beehiiv-embed"
+                frameborder="0" scrolling="no"
+                style="width:718px;height:540px;margin:0;border-radius:0;background-color:transparent;box-shadow:0 0 #0000;max-width:100%;display:inline-block"></iframe>
+        <script async src="https://subscribe-forms.beehiiv.com/embed.js"></script>
       </div>
 
       <h3>Get in touch</h3>
@@ -4502,11 +4502,15 @@ function setHeatFuel(fuel, btn) {
 // ─────────────────────────────────────────────────────────────
 function switchPage(page) {
   currentPage = page;
-  const hashPages = new Set(['blog', 'info', 'about']);
-  if (hashPages.has(page)) {
-    try { history.replaceState(null, '', '#' + page); } catch (e) { location.hash = page; }
+  // v10.2: ALL pages preserve their hash in the URL so share links can deep-link
+  // to any page (#fuel, #oem, #compare, …) — not just blog/info/about. Overview
+  // stays as the default (no hash) so the homepage URL stays clean.
+  const ALL_HASH_PAGES = ['geomap','fuel','oem','ev','compare','forecast','blog','info','about'];
+  const search = location.search || '';
+  if (ALL_HASH_PAGES.includes(page)) {
+    try { history.replaceState(null, '', location.pathname + search + '#' + page); } catch (e) { location.hash = page; }
   } else {
-    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { location.hash = ''; }
+    try { history.replaceState(null, '', location.pathname + search); } catch (e) { location.hash = ''; }
   }
   document.querySelectorAll('.nav-tab').forEach(t => {
     const on = t.dataset.page === page;
@@ -4589,12 +4593,15 @@ function applyHashToPage() {
     setTimeout(() => document.getElementById('privacy-policy')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0);
     return;
   }
-  if (['blog', 'info', 'about'].includes(h)) switchPage(h);
+  // v10.2: route ALL valid pages from URL hash, not just blog/info/about.
+  const ALL_PAGES = ['overview','geomap','fuel','oem','ev','compare','forecast','blog','info','about'];
+  if (ALL_PAGES.includes(h)) switchPage(h);
 }
 window.addEventListener('hashchange', applyHashToPage);
 {
   const h0 = (location.hash || '').replace(/^#/, '');
-  if (h0 === 'privacy-policy' || ['blog', 'info', 'about'].includes(h0)) setTimeout(applyHashToPage, 0);
+  const ALL_PAGES_INIT = ['overview','geomap','fuel','oem','ev','compare','forecast','blog','info','about','privacy-policy'];
+  if (ALL_PAGES_INIT.includes(h0)) setTimeout(applyHashToPage, 0);
 }
 
 // Filter change listeners
@@ -9543,6 +9550,9 @@ function injectChartExportButtons() {
       });
       try { typeof updateCmpMSTrigger === 'function' && updateCmpMSTrigger('geo'); } catch(e){}
       try { typeof updateFilterActiveSummary === 'function' && updateFilterActiveSummary(); } catch(e){}
+      // ⚡ v10.2: actually re-render the page with the new filters. Without
+      // this, MS_STATE updates but charts stay on the pre-share-link state.
+      try { typeof refreshCurrentPage === 'function' && refreshCurrentPage(); } catch(e){}
     }
     return touched;
   }
@@ -9627,10 +9637,12 @@ function injectChartExportButtons() {
   <button type="button" class="email-gate__close" id="email-gate-close" aria-label="Dismiss">✕</button>
   <h3 id="email-gate-title" class="email-gate__title">📬 Get monthly registration alerts</h3>
   <p class="email-gate__sub">Free monthly read for analysts, OEM strategy teams and consultants. Unsubscribe anytime.</p>
-  <div class="email-gate__form">
+  <div class="email-gate__form" style="text-align:center">
     <iframe src="https://subscribe-forms.beehiiv.com/b75c37c6-0c29-4960-8073-50983edd9727"
+            class="beehiiv-embed" data-test-id="beehiiv-embed"
             frameborder="0" scrolling="yes"
-            style="width:100%;height:540px;border:none;border-radius:0;background:transparent;display:block"></iframe>
+            style="width:718px;height:540px;margin:0;border-radius:0;background-color:transparent;box-shadow:0 0 #0000;max-width:100%;display:inline-block;border:none"></iframe>
+    <script async src="https://subscribe-forms.beehiiv.com/embed.js"></script>
   </div>
   <div class="email-gate__foot">
     <button type="button" class="email-gate__skip" id="email-gate-skip">Maybe later</button>
