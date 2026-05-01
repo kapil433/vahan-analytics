@@ -9632,18 +9632,28 @@ function injectChartExportButtons() {
       CMP_MS_STATE.geo.add(geob);
     }
 
-    // Forecast-page controls — set values on the underlying <select>s; the
-    // Forecast page reads them via getElementById on each runForecast call.
+    // Forecast-page controls — set values on the underlying <select>s.
+    // Track if any fc_* param was actually present so we can auto-trigger
+    // runForecast() after switching to the Forecast page (otherwise the
+    // user lands on a page with controls pre-filled but the chart still
+    // says 'Select settings and click Run Forecast').
     const fcMap = {
       fc_geo: 'fc-geo', fc_metric: 'fc-metric', fc_fuel: 'fc-fuel',
       fc_oem: 'fc-oem', fc_grain: 'fc-grain', fc_horizon: 'fc-horizon',
       fc_method: 'fc-method', fc_from: 'fc-from',
     };
+    let anyForecastParam = false;
     Object.entries(fcMap).forEach(([param, id]) => {
       const v = p.get(param);
       if (v != null) {
         const el = document.getElementById(id);
-        if (el) el.value = v;
+        if (el) {
+          el.value = v;
+          // Fire the change event so any per-control side-effects
+          // (e.g. revealing fc-oem-row when metric=oem) take effect.
+          try { el.dispatchEvent(new Event('change', {bubbles: true})); } catch(_){}
+        }
+        anyForecastParam = true;
       }
     });
 
@@ -9658,6 +9668,14 @@ function injectChartExportButtons() {
     // internally calls refreshCurrentPage() → build<Page>() with new MS_STATE.
     if (ALL_PAGES.includes(h) && h !== 'overview' && typeof switchPage === 'function') {
       switchPage(h);
+      // Forecast page needs runForecast() to actually compute + render the
+      // chart; setting <select> values alone leaves it on the placeholder
+      // 'Select settings and click Run Forecast' screen. Trigger it now if
+      // the URL came with any fc_* param.
+      if (h === 'forecast' && anyForecastParam && typeof runForecast === 'function') {
+        // Small delay so initForecastPage finishes wiring up the page first
+        setTimeout(() => { try { runForecast(); } catch(_){} }, 200);
+      }
       return true; // skip the remaining buildOverview call from init
     }
     return false; // stay on Overview, fall through to original buildOverview
