@@ -68,6 +68,15 @@ jobs:
             python3 scripts/prerender_dashboard_seo.py --input "$f" --output "$f"
           done
 
+          # ── SEO landing pages ──
+          # Generate static per-state + per-OEM + topic pages from data/vahan_local.db
+          # so Google indexes them on first crawl. Output: _site/seo/{states,oems,topics}/...
+          if [ -f data/vahan_local.db ]; then
+            python3 scripts/generate_seo_pages.py --out _site/seo
+          else
+            echo "WARN: data/vahan_local.db missing — skipping SEO landing pages"
+          fi
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site

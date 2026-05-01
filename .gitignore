@@ -5,6 +5,10 @@ __pycache__/
 .venv/
 venv/
 
+# Auto-generated SEO landing pages — built fresh on each Pages deploy by
+# scripts/generate_seo_pages.py. Not committed (saves repo size + avoids drift).
+docs/seo/
+
 # Secrets / credentials — never commit
 .env
 .env.*

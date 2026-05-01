@@ -2487,6 +2487,44 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <p style="margin-top:10px"><a href="#blog">Blog</a> · <a href="#info">Updates</a> · <a href="#about">About</a> · <a href="#privacy-policy">Privacy</a></p>
     </div>
   </div>
+  <!-- Internal-link block so crawlers (and curious users) discover the SEO landing pages.
+       Kept compact and at the end so it doesn't dominate the visible footer. -->
+  <div class="site-footer-inner" style="border-top:1px solid var(--border);padding-top:14px;margin-top:14px;display:block">
+    <h4 style="margin-bottom:8px">Browse by state</h4>
+    <p style="font-size:12.5px;line-height:1.7;color:var(--text-mid)">
+      <a href="/seo/states/maharashtra/">Maharashtra</a> ·
+      <a href="/seo/states/uttar-pradesh/">Uttar Pradesh</a> ·
+      <a href="/seo/states/tamil-nadu/">Tamil Nadu</a> ·
+      <a href="/seo/states/gujarat/">Gujarat</a> ·
+      <a href="/seo/states/karnataka/">Karnataka</a> ·
+      <a href="/seo/states/kerala/">Kerala</a> ·
+      <a href="/seo/states/haryana/">Haryana</a> ·
+      <a href="/seo/states/rajasthan/">Rajasthan</a> ·
+      <a href="/seo/states/delhi/">Delhi</a> ·
+      <a href="/seo/states/west-bengal/">West Bengal</a> ·
+      <a href="/seo/states/madhya-pradesh/">Madhya Pradesh</a> ·
+      <a href="/seo/states/andhra-pradesh/">Andhra Pradesh</a> ·
+      <a href="/seo/states/india/">All India</a> ·
+      <a href="/seo/states/">all 36 states →</a>
+    </p>
+    <h4 style="margin-top:14px;margin-bottom:8px">Browse by OEM</h4>
+    <p style="font-size:12.5px;line-height:1.7;color:var(--text-mid)">
+      <a href="/seo/oems/maruti-suzuki/">Maruti Suzuki</a> ·
+      <a href="/seo/oems/hyundai/">Hyundai</a> ·
+      <a href="/seo/oems/tata-motors-pv/">Tata Motors PV</a> ·
+      <a href="/seo/oems/mahindra/">Mahindra</a> ·
+      <a href="/seo/oems/toyota-kirloskar/">Toyota Kirloskar</a> ·
+      <a href="/seo/oems/kia-india/">Kia India</a> ·
+      <a href="/seo/oems/skoda-auto-volkswagen/">Skoda Auto Volkswagen</a> ·
+      <a href="/seo/oems/honda-cars/">Honda Cars</a> ·
+      <a href="/seo/oems/tata-passenger-electric-mobility/">Tata EV</a> ·
+      <a href="/seo/oems/jsw-mg-motor/">JSW MG Motor</a> ·
+      <a href="/seo/oems/">all OEMs →</a>
+    </p>
+    <p style="font-size:12.5px;line-height:1.7;color:var(--text-mid);margin-top:8px">
+      Topics: <a href="/seo/topics/ev-india/">India EV adoption</a>
+    </p>
+  </div>
 </footer>
 
 <script>
@@ -4675,6 +4713,20 @@ function updatePageMeta(page) {
   setMetaContent('meta[name="twitter:description"]', m.desc);
   const link = document.querySelector('link[rel="canonical"]');
   if (link) link.setAttribute('href', m.canonical);
+
+  // GA4 virtual page_view — fires on every SPA route change so each
+  // /#fuel, /#oem, /#ev etc. shows up as a distinct page in GA Reports.
+  // Without this, GA only ever sees `/` regardless of where the user clicks.
+  try {
+    if (window.dataLayer) {
+      window.dataLayer.push({
+        event: 'page_view',
+        page_path: m.canonical.replace('https://www.vahanintelligence.in', ''),
+        page_title: m.title,
+        page_location: m.canonical
+      });
+    }
+  } catch (_) {}
 
   // BreadcrumbList: home → current page (skip on overview which IS home)
   const crumbScript = document.getElementById('breadcrumb-jsonld');

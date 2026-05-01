@@ -25,3 +25,4 @@ User-agent: PerplexityBot
 Disallow: /
 
 Sitemap: https://www.vahanintelligence.in/sitemap.xml
+Sitemap: https://www.vahanintelligence.in/seo/sitemap-seo.xml
