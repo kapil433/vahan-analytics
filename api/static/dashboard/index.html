@@ -1398,9 +1398,10 @@ body{padding-bottom:var(--safe-bottom)}
   position:fixed;left:50%;top:50%;
   transform:translate(-50%,-50%) scale(0.96);
   z-index:9999;width:min(460px,calc(100vw - 32px));
+  max-height:90dvh;overflow-y:auto;       /* scroll on small viewports */
   background:var(--surface);border-radius:14px;
   box-shadow:var(--shadow-lg);
-  padding:24px 26px 18px;
+  padding:22px 24px 16px;
   opacity:0;pointer-events:none;
   transition:opacity .2s,transform .2s;
 }
@@ -1415,7 +1416,7 @@ body{padding-bottom:var(--safe-bottom)}
 .email-gate__close:hover{background:var(--surface3);color:var(--text)}
 .email-gate__title{font-size:18px;font-weight:700;margin-bottom:8px;color:var(--text);line-height:1.3}
 .email-gate__sub{font-size:13.5px;color:var(--text-mid);line-height:1.6;margin-bottom:14px}
-.email-gate__form{margin-bottom:8px;min-height:300px}
+.email-gate__form{margin-bottom:8px;min-height:460px}
 .email-gate__foot{display:flex;justify-content:center;margin-top:6px}
 .email-gate__skip{
   background:transparent;border:none;color:var(--text-dim);
@@ -9387,13 +9388,20 @@ function injectChartExportButtons() {
     pushDataLayer('email_gate_dismissed');
   }
 
-  // Wire up close handlers once DOM is ready
-  function wireGate(){
-    document.getElementById('email-gate-close')?.addEventListener('click', closeGate);
-    document.getElementById('email-gate-skip')?.addEventListener('click', closeGate);
-    document.getElementById('email-gate-backdrop')?.addEventListener('click', closeGate);
-  }
-  wireGate();
+  // Document-level event delegation — works regardless of when the modal
+  // HTML appears in the DOM (the modal markup is rendered AFTER this script
+  // tag, so direct addEventListener on those IDs would attach to null).
+  document.addEventListener('click', (e) => {
+    const m = document.getElementById('email-gate');
+    if (!m || m.hidden) return;
+    const t = e.target;
+    if (t && (t.closest('#email-gate-close') ||
+              t.closest('#email-gate-skip')  ||
+              t.id === 'email-gate-backdrop')) {
+      e.stopPropagation();
+      closeGate();
+    }
+  });
   document.addEventListener('keydown', e => {
     const m = document.getElementById('email-gate');
     if (e.key === 'Escape' && m && !m.hidden) closeGate();
@@ -9560,11 +9568,11 @@ function injectChartExportButtons() {
 <div id="email-gate" class="email-gate" hidden role="dialog" aria-modal="true" aria-labelledby="email-gate-title">
   <button type="button" class="email-gate__close" id="email-gate-close" aria-label="Dismiss">✕</button>
   <h3 id="email-gate-title" class="email-gate__title">📬 Get monthly registration alerts</h3>
-  <p class="email-gate__sub">Subscribe to <strong>Vahan Pulse</strong> — one focused email a month with the chart that defined the month, OEM/state movement worth watching, and the data point you'll want to quote. Plain text + one chart. Unsubscribe anytime.</p>
+  <p class="email-gate__sub">Free monthly read for analysts, OEM strategy teams and consultants. Unsubscribe anytime.</p>
   <div class="email-gate__form">
     <iframe src="https://subscribe-forms.beehiiv.com/b75c37c6-0c29-4960-8073-50983edd9727"
-            frameborder="0" scrolling="no"
-            style="width:100%;height:300px;border:none;border-radius:0;background:transparent;display:block"></iframe>
+            frameborder="0" scrolling="yes"
+            style="width:100%;height:460px;border:none;border-radius:0;background:transparent;display:block"></iframe>
   </div>
   <div class="email-gate__foot">
     <button type="button" class="email-gate__skip" id="email-gate-skip">Maybe later</button>
