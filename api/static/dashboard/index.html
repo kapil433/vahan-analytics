@@ -9557,16 +9557,70 @@ function injectChartExportButtons() {
     return touched;
   }
 
-  // Apply URL → filters once data is loaded (hook into first buildOverview call)
+  // ⚡ v10.3 — Monkey-patch buildOverview so URL state is applied as the
+  // FIRST action when init() finishes loading data. Without this,
+  // init()'s unconditional buildOverview() call clobbers the hash routing
+  // and shareable links always land on Overview with default filters.
   let urlAppliedOnce = false;
-  function tryApplyUrlOnce(){
-    if (urlAppliedOnce || typeof window.DATA === 'undefined' || !window.DATA) return;
+  function applyUrlOnFirstBuild(){
+    if (urlAppliedOnce) return false;
     urlAppliedOnce = true;
-    applyUrlFilters();
+
+    const p = new URLSearchParams(location.search);
+    const h = (location.hash || '').replace(/^#/, '');
+    const ALL_PAGES = ['overview','geomap','fuel','oem','ev','compare','forecast','blog','info','about'];
+
+    // Apply filter query params → MS_STATE
+    if (typeof MS_STATE !== 'undefined') {
+      ['geo','year','month','oem','fuel'].forEach(k => {
+        const raw = p.get(k);
+        if (raw && MS_STATE[k]) {
+          const vals = raw.split(',').map(s=>s.trim()).filter(Boolean);
+          if (vals.length) {
+            MS_STATE[k].clear();
+            vals.forEach(v => MS_STATE[k].add(v));
+          }
+        }
+      });
+    }
+    // Year type
+    const yt = p.get('yt');
+    if (yt === 'fy' || yt === 'cy') {
+      const ytEl = document.getElementById('f-yeartype');
+      if (ytEl) ytEl.value = yt;
+    }
+    // Compare-page State B
+    const geob = p.get('geob');
+    if (geob && typeof CMP_MS_STATE !== 'undefined' && CMP_MS_STATE.geo) {
+      CMP_MS_STATE.geo.clear();
+      CMP_MS_STATE.geo.add(geob);
+    }
+
+    // Sync dropdown labels + check states to the new MS_STATE
+    ['geo','year','month','oem','fuel'].forEach(k => {
+      try { typeof updateMSTrigger === 'function' && updateMSTrigger(k); } catch(e){}
+    });
+    try { typeof updateCmpMSTrigger === 'function' && updateCmpMSTrigger('geo'); } catch(e){}
+    try { typeof updateFilterActiveSummary === 'function' && updateFilterActiveSummary(); } catch(e){}
+
+    // If hash specifies a non-default page, route there. switchPage()
+    // internally calls refreshCurrentPage() → build<Page>() with new MS_STATE.
+    if (ALL_PAGES.includes(h) && h !== 'overview' && typeof switchPage === 'function') {
+      switchPage(h);
+      return true; // skip the remaining buildOverview call from init
+    }
+    return false; // stay on Overview, fall through to original buildOverview
   }
-  // Run after init + each refresh; guarded so it only fires the first time
-  setTimeout(tryApplyUrlOnce, 1500);
-  setInterval(() => { if (!urlAppliedOnce) tryApplyUrlOnce(); }, 1000);
+
+  // Wrap buildOverview — runs once when init() completes loading data
+  const origBuildOverview = window.buildOverview;
+  if (typeof origBuildOverview === 'function') {
+    window.buildOverview = function() {
+      const skipped = applyUrlOnFirstBuild();
+      if (skipped) return;
+      return origBuildOverview.apply(this, arguments);
+    };
+  }
 
   // Sync URL → filter changes (debounced, after every filter event bubbles up)
   let urlSyncTimer = null;
