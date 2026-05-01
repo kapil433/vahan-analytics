@@ -9350,7 +9350,9 @@ function injectChartExportButtons() {
   'use strict';
 
   // ── 1. EMAIL-CAPTURE MODAL ────────────────────────────────────────────
-  const STORAGE_KEY    = 'vi-email-gate-v1';
+  // v2 storage key (bumped from v1) — invalidates any users who were wrongly
+  // marked as 'subscribed' by the v1 over-eager postMessage handler.
+  const STORAGE_KEY    = 'vi-email-gate-v2';
   const SHOW_DELAY_MS  = 20000;          // 20s before first popup
   const REPOP_MS       = 40000;          // 40s between re-popups after dismiss
   const MAX_DISMISSES  = 5;              // safety cap per session
@@ -9446,15 +9448,32 @@ function injectChartExportButtons() {
     if (e.key === 'Escape' && m && !m.hidden) closeGate();
   });
 
-  // Listen for Beehiiv postMessage signals — when the iframe sends ANY
-  // message back to us, treat it as a successful interaction and stop
-  // re-popping. Beehiiv only posts on form-completion events.
+  // Listen for Beehiiv postMessage signals — but ONLY auto-mark as subscribed
+  // when the message clearly indicates a successful subscription. v1's
+  // over-eager handler caught ANY Beehiiv message (including iframe-resize
+  // events) and silently marked users subscribed → re-popups never fired
+  // because shouldShowGate() saw subscribed:true. Strict check now.
+  function isBeehiivSubscribeMessage(data){
+    if (!data) return false;
+    if (typeof data === 'string') return /subscribe.*success|subscribed|form.*complete/i.test(data);
+    if (typeof data === 'object'){
+      const t = String(data.type || data.event || '').toLowerCase();
+      const s = String(data.status || '').toLowerCase();
+      return /subscribe|signup|form.*complete/.test(t) ||
+             /success|complete|subscribed/.test(s);
+    }
+    return false;
+  }
   window.addEventListener('message', (e) => {
-    if (e.origin === 'https://subscribe-forms.beehiiv.com' || /beehiiv\.com$/.test(new URL(e.origin || 'http://x').hostname || '')) {
+    let isBeehiiv = false;
+    try {
+      const host = new URL(e.origin).hostname;
+      isBeehiiv = host === 'subscribe-forms.beehiiv.com' || host.endsWith('.beehiiv.com');
+    } catch(_) {}
+    if (!isBeehiiv) return;
+    if (isBeehiivSubscribeMessage(e.data)) {
       markSubscribed();
       pushDataLayer('email_gate_subscribed');
-      // Auto-close the modal a moment after subscribe so user sees the
-      // Beehiiv "Thanks" state, then it goes away.
       setTimeout(() => {
         const m = document.getElementById('email-gate');
         if (m && !m.hidden) {
@@ -9464,6 +9483,8 @@ function injectChartExportButtons() {
         }
       }, 2500);
     }
+    // Other Beehiiv messages (iframe-resize, etc.) → ignored, re-popup loop
+    // continues normally so the user can be reminded if they didn't subscribe.
   });
 
   // First popup — 20s after page load (unless we shouldn't show)
@@ -9484,6 +9505,7 @@ function injectChartExportButtons() {
     if (typeof MS_STATE === 'undefined') return;
     const params = new URLSearchParams();
     const setIf = (key, vals) => { if (vals && vals.length) params.set(key, vals.join(',')); };
+    const setVal = (key, v, defVal) => { if (v && v !== defVal) params.set(key, v); };
     setIf('geo',   asArr(MS_STATE.geo));
     setIf('year',  asArr(MS_STATE.year));
     setIf('month', asArr(MS_STATE.month));
@@ -9491,15 +9513,25 @@ function injectChartExportButtons() {
     setIf('fuel',  asArr(MS_STATE.fuel));
     const yt = document.getElementById('f-yeartype')?.value;
     if (yt && yt !== 'fy') params.set('yt', yt);  // default is 'fy', omit
-    // Compare-page State B — ONLY include in URL when the user is actually
-    // on the Compare page. The cmp picker auto-populates with the
-    // alphabetically-first state when it loads (which isn't a user choice),
-    // so including geob always would show 'Andaman and Nicobar Islands' on
-    // every Share link from any other page.
+
+    // Compare-page State B — only when user is on Compare page.
     if ((window.currentPage === 'compare' || (location.hash || '').replace(/^#/, '') === 'compare')
         && typeof CMP_MS_STATE !== 'undefined' && CMP_MS_STATE.geo && CMP_MS_STATE.geo.size > 0) {
       const geoB = Array.from(CMP_MS_STATE.geo)[0];
       if (geoB && geoB !== 'All India') params.set('geob', geoB);
+    }
+
+    // Forecast-page state — only when user is on Forecast page.
+    const onForecast = (window.currentPage === 'forecast' || (location.hash || '').replace(/^#/, '') === 'forecast');
+    if (onForecast) {
+      setVal('fc_geo',     document.getElementById('fc-geo')?.value,     'All India');
+      setVal('fc_metric',  document.getElementById('fc-metric')?.value,  'volume');
+      setVal('fc_fuel',    document.getElementById('fc-fuel')?.value,    'all');
+      setVal('fc_oem',     document.getElementById('fc-oem')?.value,     '');
+      setVal('fc_grain',   document.getElementById('fc-grain')?.value,   'monthly');
+      setVal('fc_horizon', document.getElementById('fc-horizon')?.value, '12');
+      setVal('fc_method',  document.getElementById('fc-method')?.value,  'holtwinters');
+      setVal('fc_from',    document.getElementById('fc-from')?.value,    '');
     }
     const qs = params.toString();
     const newSearch = qs ? '?' + qs : '';
@@ -9595,6 +9627,21 @@ function injectChartExportButtons() {
       CMP_MS_STATE.geo.clear();
       CMP_MS_STATE.geo.add(geob);
     }
+
+    // Forecast-page controls — set values on the underlying <select>s; the
+    // Forecast page reads them via getElementById on each runForecast call.
+    const fcMap = {
+      fc_geo: 'fc-geo', fc_metric: 'fc-metric', fc_fuel: 'fc-fuel',
+      fc_oem: 'fc-oem', fc_grain: 'fc-grain', fc_horizon: 'fc-horizon',
+      fc_method: 'fc-method', fc_from: 'fc-from',
+    };
+    Object.entries(fcMap).forEach(([param, id]) => {
+      const v = p.get(param);
+      if (v != null) {
+        const el = document.getElementById(id);
+        if (el) el.value = v;
+      }
+    });
 
     // Sync dropdown labels + check states to the new MS_STATE
     ['geo','year','month','oem','fuel'].forEach(k => {
