@@ -1388,6 +1388,58 @@ body{padding-bottom:var(--safe-bottom)}
 /* Make mfilter-count visible (was using hidden attribute alone) */
 .mft-count[hidden]{display:none}
 
+/* ── v10: Email-capture modal (20s after first interaction, once per 30 days) ── */
+.email-gate-backdrop{
+  position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:9998;
+  opacity:0;pointer-events:none;transition:opacity .2s;
+}
+.email-gate-backdrop.open{opacity:1;pointer-events:auto}
+.email-gate{
+  position:fixed;left:50%;top:50%;
+  transform:translate(-50%,-50%) scale(0.96);
+  z-index:9999;width:min(460px,calc(100vw - 32px));
+  background:var(--surface);border-radius:14px;
+  box-shadow:var(--shadow-lg);
+  padding:24px 26px 18px;
+  opacity:0;pointer-events:none;
+  transition:opacity .2s,transform .2s;
+}
+.email-gate.open{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+.email-gate__close{
+  position:absolute;top:10px;right:10px;
+  width:34px;height:34px;border-radius:50%;
+  border:1px solid var(--border);background:var(--surface2);color:var(--text-mid);
+  font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:background .15s,color .15s;
+}
+.email-gate__close:hover{background:var(--surface3);color:var(--text)}
+.email-gate__title{font-size:18px;font-weight:700;margin-bottom:8px;color:var(--text);line-height:1.3}
+.email-gate__sub{font-size:13.5px;color:var(--text-mid);line-height:1.6;margin-bottom:14px}
+.email-gate__form{margin-bottom:8px;min-height:300px}
+.email-gate__foot{display:flex;justify-content:center;margin-top:6px}
+.email-gate__skip{
+  background:transparent;border:none;color:var(--text-dim);
+  font-size:13px;cursor:pointer;padding:8px 14px;border-radius:6px;
+}
+.email-gate__skip:hover{color:var(--text-mid);background:var(--surface2)}
+@media(max-width:480px){
+  .email-gate{padding:20px 18px 14px;width:calc(100vw - 24px);max-height:90dvh;overflow-y:auto}
+  .email-gate__title{font-size:16px}
+  .email-gate__sub{font-size:12.5px}
+}
+
+/* ── v10: Share-view button on filter bar ── */
+.btn-share-view{
+  border:1px solid var(--blue)!important;
+  color:var(--blue)!important;
+  background:var(--blue-dim)!important;
+  font-weight:500;
+}
+.btn-share-view:hover{
+  background:var(--blue)!important;
+  color:#fff!important;
+}
+
 /* (Compare-page filter labels removed in v6.3 — the toggle button text on
     each filter bar is enough to distinguish them: "⚙ Filters" for global
     All India context, "⚙ State filters" for the State drill-down filters.) */
@@ -9280,7 +9332,244 @@ function injectChartExportButtons() {
   setTimeout(compactCmpFilterBar, 800);
   setInterval(compactCmpFilterBar, 5000);
 })();
+
+/* ═══════════════════════════════════════════════════════════════════════
+   v10 growth features:
+     1. Email-capture modal (20s after first interaction, once per 30 days)
+     2. Shareable URL state (filter ⇄ query params + Share view button)
+   ═══════════════════════════════════════════════════════════════════════ */
+(function growthFeaturesV10(){
+  'use strict';
+
+  // ── 1. EMAIL-CAPTURE MODAL ────────────────────────────────────────────
+  const STORAGE_KEY    = 'vi-email-gate-v1';
+  const SHOW_DELAY_MS  = 20000;          // 20 seconds (per user)
+  const COOLDOWN_DAYS  = 30;             // don't re-prompt for 30 days
+
+  function shouldShowGate(){
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return true;
+      const data = JSON.parse(raw);
+      if (data.subscribed) return false;
+      if (data.dismissedAt){
+        const ageDays = (Date.now() - data.dismissedAt) / 86400000;
+        return ageDays >= COOLDOWN_DAYS;
+      }
+      return true;
+    } catch(e) { return true; }
+  }
+  function markDismissed(){
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({dismissedAt: Date.now()})); } catch(e){}
+  }
+  function pushDataLayer(eventName, extra){
+    try {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push(Object.assign({event: eventName}, extra || {}));
+    } catch(e){}
+  }
+
+  function openGate(){
+    const m = document.getElementById('email-gate');
+    const b = document.getElementById('email-gate-backdrop');
+    if (!m || !b) return;
+    m.hidden = false; b.hidden = false;
+    requestAnimationFrame(() => { m.classList.add('open'); b.classList.add('open'); });
+    pushDataLayer('email_gate_shown');
+  }
+  function closeGate(){
+    const m = document.getElementById('email-gate');
+    const b = document.getElementById('email-gate-backdrop');
+    if (!m || !b) return;
+    m.classList.remove('open'); b.classList.remove('open');
+    setTimeout(() => { m.hidden = true; b.hidden = true; }, 220);
+    markDismissed();
+    pushDataLayer('email_gate_dismissed');
+  }
+
+  // Wire up close handlers once DOM is ready
+  function wireGate(){
+    document.getElementById('email-gate-close')?.addEventListener('click', closeGate);
+    document.getElementById('email-gate-skip')?.addEventListener('click', closeGate);
+    document.getElementById('email-gate-backdrop')?.addEventListener('click', closeGate);
+  }
+  wireGate();
+  document.addEventListener('keydown', e => {
+    const m = document.getElementById('email-gate');
+    if (e.key === 'Escape' && m && !m.hidden) closeGate();
+  });
+
+  if (shouldShowGate()) {
+    setTimeout(openGate, SHOW_DELAY_MS);
+  }
+
+  // ── 2. SHAREABLE URL STATE ────────────────────────────────────────────
+  // Filter ⇄ URL query params. Default values are omitted from the URL
+  // for clean shareable links. Updates on every filter change.
+
+  function asArr(s){
+    if (!s) return [];
+    return Array.from(s).filter(v => v && v !== 'all');
+  }
+
+  function syncUrlFromFilters(){
+    if (typeof MS_STATE === 'undefined') return;
+    const params = new URLSearchParams();
+    const setIf = (key, vals) => { if (vals && vals.length) params.set(key, vals.join(',')); };
+    setIf('geo',   asArr(MS_STATE.geo));
+    setIf('year',  asArr(MS_STATE.year));
+    setIf('month', asArr(MS_STATE.month));
+    setIf('oem',   asArr(MS_STATE.oem));
+    setIf('fuel',  asArr(MS_STATE.fuel));
+    const yt = document.getElementById('f-yeartype')?.value;
+    if (yt && yt !== 'fy') params.set('yt', yt);  // default is 'fy', omit
+    // Compare-page State B
+    if (typeof CMP_MS_STATE !== 'undefined' && CMP_MS_STATE.geo && CMP_MS_STATE.geo.size > 0) {
+      const geoB = Array.from(CMP_MS_STATE.geo)[0];
+      if (geoB && geoB !== 'All India') params.set('geob', geoB);
+    }
+    const qs = params.toString();
+    const newSearch = qs ? '?' + qs : '';
+    if (newSearch !== location.search) {
+      try {
+        history.replaceState(null, '', location.pathname + newSearch + (location.hash || ''));
+      } catch(e){}
+    }
+  }
+
+  function applyUrlFilters(){
+    const p = new URLSearchParams(location.search);
+    if (![...p.keys()].length) return false;
+    let touched = false;
+    const setMS = (key, target) => {
+      const raw = p.get(key);
+      if (!raw || !target[key]) return;
+      const vals = raw.split(',').map(s => s.trim()).filter(Boolean);
+      if (!vals.length) return;
+      target[key].clear();
+      vals.forEach(v => target[key].add(v));
+      touched = true;
+    };
+    if (typeof MS_STATE !== 'undefined'){
+      setMS('geo',   MS_STATE);
+      setMS('year',  MS_STATE);
+      setMS('month', MS_STATE);
+      setMS('oem',   MS_STATE);
+      setMS('fuel',  MS_STATE);
+    }
+    const yt = p.get('yt');
+    if (yt === 'cy' || yt === 'fy') {
+      const ytEl = document.getElementById('f-yeartype');
+      if (ytEl) { ytEl.value = yt; touched = true; }
+    }
+    if (typeof CMP_MS_STATE !== 'undefined'){
+      const geob = p.get('geob');
+      if (geob) {
+        CMP_MS_STATE.geo.clear();
+        CMP_MS_STATE.geo.add(geob);
+        touched = true;
+      }
+    }
+    if (touched){
+      // Refresh dropdown labels + check states to match new MS_STATE
+      ['geo','year','month','oem','fuel'].forEach(k => {
+        try { typeof updateMSTrigger === 'function' && updateMSTrigger(k); } catch(e){}
+      });
+      try { typeof updateCmpMSTrigger === 'function' && updateCmpMSTrigger('geo'); } catch(e){}
+      try { typeof updateFilterActiveSummary === 'function' && updateFilterActiveSummary(); } catch(e){}
+    }
+    return touched;
+  }
+
+  // Apply URL → filters once data is loaded (hook into first buildOverview call)
+  let urlAppliedOnce = false;
+  function tryApplyUrlOnce(){
+    if (urlAppliedOnce || typeof window.DATA === 'undefined' || !window.DATA) return;
+    urlAppliedOnce = true;
+    applyUrlFilters();
+  }
+  // Run after init + each refresh; guarded so it only fires the first time
+  setTimeout(tryApplyUrlOnce, 1500);
+  setInterval(() => { if (!urlAppliedOnce) tryApplyUrlOnce(); }, 1000);
+
+  // Sync URL → filter changes (debounced, after every filter event bubbles up)
+  let urlSyncTimer = null;
+  function debouncedSync(){
+    clearTimeout(urlSyncTimer);
+    urlSyncTimer = setTimeout(syncUrlFromFilters, 250);
+  }
+  ['change','click'].forEach(ev => {
+    document.addEventListener(ev, debouncedSync, true);
+  });
+
+  // ── 3. SHARE VIEW BUTTON + CLIPBOARD ────────────────────────────────
+  function shareCurrentView(){
+    syncUrlFromFilters();
+    const url = location.href;
+    const onCopied = () => showShareToast('🔗 Link copied — paste anywhere to share this exact view');
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(url).then(onCopied).catch(() => promptCopy(url));
+    } else {
+      promptCopy(url);
+    }
+    pushDataLayer('share_view_clicked', {url});
+  }
+  function promptCopy(url){
+    window.prompt('Copy this URL to share the current view:', url);
+  }
+  function showShareToast(msg){
+    const t = document.createElement('div');
+    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);' +
+      'background:var(--surface);color:var(--text);' +
+      'border:1px solid var(--accent-emerald);border-radius:10px;' +
+      'padding:11px 18px;font-size:13.5px;z-index:9999;' +
+      'box-shadow:var(--shadow-md);font-weight:500;' +
+      'max-width:calc(100vw - 32px);text-align:center';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3500);
+  }
+
+  function injectShareButton(){
+    const inner = document.getElementById('filter-bar-inner');
+    if (!inner) return;
+    if (inner.querySelector('.btn-share-view')) return;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'btn-filter-reset btn-share-view';
+    btn.title = 'Copy a URL that opens this exact filter combination';
+    btn.innerHTML = '🔗 Share view';
+    btn.addEventListener('click', shareCurrentView);
+    const reset = inner.querySelector('.btn-filter-reset');
+    if (reset && reset.parentNode === inner){
+      reset.parentNode.insertBefore(btn, reset.nextSibling);
+    } else {
+      inner.appendChild(btn);
+    }
+  }
+  setTimeout(injectShareButton, 1500);
+  setInterval(injectShareButton, 5000);
+})();
 </script>
+
+<!-- ────────────────────────────────────────────────────────────────
+     Email-capture modal (v10) — wraps the existing Beehiiv embed.
+     Triggered 20s after the user opens the dashboard (once per 30 days).
+     ──────────────────────────────────────────────────────────────── -->
+<div id="email-gate-backdrop" class="email-gate-backdrop" hidden></div>
+<div id="email-gate" class="email-gate" hidden role="dialog" aria-modal="true" aria-labelledby="email-gate-title">
+  <button type="button" class="email-gate__close" id="email-gate-close" aria-label="Dismiss">✕</button>
+  <h3 id="email-gate-title" class="email-gate__title">📬 Get monthly registration alerts</h3>
+  <p class="email-gate__sub">Subscribe to <strong>Vahan Pulse</strong> — one focused email a month with the chart that defined the month, OEM/state movement worth watching, and the data point you'll want to quote. Plain text + one chart. Unsubscribe anytime.</p>
+  <div class="email-gate__form">
+    <iframe src="https://subscribe-forms.beehiiv.com/b75c37c6-0c29-4960-8073-50983edd9727"
+            frameborder="0" scrolling="no"
+            style="width:100%;height:300px;border:none;border-radius:0;background:transparent;display:block"></iframe>
+  </div>
+  <div class="email-gate__foot">
+    <button type="button" class="email-gate__skip" id="email-gate-skip">Maybe later</button>
+  </div>
+</div>
 
 </body>
 </html>
