@@ -5619,14 +5619,18 @@ async function init() {
     let resp;
     const paths = [];
     const _apiB = vahanApiBase();
-    if (_apiB) paths.push(apiUrl('/data/vahan_master_compat'));
+    // Append ?v=<build-sha> to the data URL so each Pages deploy busts the
+    // browser + Cloudflare cache automatically. The version is injected at
+    // build time by scripts/inject_pages_api_base.py.
+    const _ver = (typeof window !== 'undefined' && window.__VAHAN_DATA_VERSION__) ? '?v=' + encodeURIComponent(window.__VAHAN_DATA_VERSION__) : '';
+    if (_apiB) paths.push(apiUrl('/data/vahan_master_compat') + _ver);
     paths.push(
-      '/data/vahan_master_compat',
-      'data/vahan_master.json',
-      './data/vahan_master.json',
-      '../data/vahan_master.json',
-      'vahan_master.json',
-      './vahan_master.json',
+      '/data/vahan_master_compat' + _ver,
+      'data/vahan_master.json' + _ver,
+      './data/vahan_master.json' + _ver,
+      '../data/vahan_master.json' + _ver,
+      'vahan_master.json' + _ver,
+      './vahan_master.json' + _ver,
     );
     let lastErr = '';
     for (const path of paths) {
