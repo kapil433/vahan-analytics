@@ -1397,11 +1397,15 @@ body{padding-bottom:var(--safe-bottom)}
 .email-gate{
   position:fixed;left:50%;top:50%;
   transform:translate(-50%,-50%) scale(0.96);
-  z-index:9999;width:min(460px,calc(100vw - 32px));
-  max-height:90dvh;overflow-y:auto;       /* scroll on small viewports */
+  z-index:9999;
+  /* Wide enough that Beehiiv's 718px-default form fits at natural width
+     so the email input renders centred and full-width inside the form,
+     not squeezed. Capped at 100vw - 32px so it still fits on mobile. */
+  width:min(780px, calc(100vw - 32px));
+  max-height:90dvh;overflow-y:auto;
   background:var(--surface);border-radius:14px;
   box-shadow:var(--shadow-lg);
-  padding:22px 24px 16px;
+  padding:20px 22px 14px;
   opacity:0;pointer-events:none;
   transition:opacity .2s,transform .2s;
 }
