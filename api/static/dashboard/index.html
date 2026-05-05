@@ -5670,9 +5670,9 @@ async function init() {
     rebuildBundleRegionMatchers();
     const meta = DATA.meta || {};
     const recN = Number(meta.total_records != null ? meta.total_records : (Array.isArray(DATA.raw) ? DATA.raw.length : 0));
-    const cy = Array.isArray(meta.cal_years) && meta.cal_years.length ? meta.cal_years : null;
-    const yrLo = cy ? cy[0] : '—';
-    const yrHi = cy ? cy[cy.length - 1] : '—';
+    const cy = Array.isArray(meta.cal_years) && meta.cal_years.length ? meta.cal_years.filter(y => Number(y) >= 2023) : null;
+    const yrLo = cy && cy.length ? cy[0] : '—';
+    const yrHi = cy && cy.length ? cy[cy.length - 1] : '—';
     const db = document.getElementById('dataBadge');
     if (db) {
       db.classList.remove('is-error');
