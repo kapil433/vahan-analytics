@@ -716,6 +716,9 @@ body{font-family:var(--font);font-size:15px;background:var(--bg);color:var(--tex
 .blog-reading{font-size:12px;color:var(--text-dim);font-style:italic;border-left:3px solid var(--blue);padding:8px 0 8px 12px;margin:10px 0;background:var(--surface2);border-radius:0 6px 6px 0}
 .blog-sources{font-size:11px;color:var(--text-dim);font-family:var(--mono);line-height:1.5;margin-top:8px;padding-top:10px;border-top:1px solid var(--border)}
 .blog-sources strong{color:var(--text-mid);font-family:var(--font);font-weight:600}
+.blog-share{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-family:var(--mono);color:var(--blue);background:rgba(37,99,235,.08);border:1px solid rgba(37,99,235,.2);border-radius:6px;padding:4px 10px;cursor:pointer;transition:all .15s;text-decoration:none;white-space:nowrap;margin-left:auto}
+.blog-share:hover{background:rgba(37,99,235,.15);border-color:rgba(37,99,235,.35)}
+.blog-share.copied{color:var(--green);background:rgba(5,150,105,.08);border-color:rgba(5,150,105,.3)}
 
 /* Narrow screens: stack chart grids */
 @media(max-width:768px){
@@ -2167,7 +2170,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="blog-list" style="display:grid;gap:18px">
 
     <!-- POST 0 — April 2026 monthly read (newest) -->
-    <article itemscope itemtype="https://schema.org/Article" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 24px;box-shadow:var(--shadow-sm)">
+    <article id="post-apr-2026" itemscope itemtype="https://schema.org/Article" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 24px;box-shadow:var(--shadow-sm)">
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
         <span style="background:rgba(220,38,38,.10);color:var(--red);font-size:10.5px;font-family:var(--mono);font-weight:600;letter-spacing:.08em;padding:3px 9px;border-radius:5px">MONTHLY READ · MAY 2026</span>
         <span style="font-size:11px;color:var(--text-dim)">7 min read</span>
@@ -2271,7 +2274,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </article>
 
     <!-- POST 1 — EV inflection -->
-    <article itemscope itemtype="https://schema.org/Article" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 24px;box-shadow:var(--shadow-sm)">
+    <article id="post-ev-inflection" itemscope itemtype="https://schema.org/Article" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 24px;box-shadow:var(--shadow-sm)">
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
         <span style="background:var(--blue-dim);color:var(--blue-bright);font-size:10.5px;font-family:var(--mono);font-weight:600;letter-spacing:.08em;padding:3px 9px;border-radius:5px">EV ADOPTION</span>
         <span style="font-size:11px;color:var(--text-dim)">5 min read</span>
@@ -2306,7 +2309,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </article>
 
     <!-- POST 2 — Maruti -->
-    <article itemscope itemtype="https://schema.org/Article" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 24px;box-shadow:var(--shadow-sm)">
+    <article id="post-maruti-suv-shift" itemscope itemtype="https://schema.org/Article" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 24px;box-shadow:var(--shadow-sm)">
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
         <span style="background:rgba(168,85,247,.15);color:var(--accent-purple);font-size:10.5px;font-family:var(--mono);font-weight:600;letter-spacing:.08em;padding:3px 9px;border-radius:5px">OEM SHARE</span>
         <span style="font-size:11px;color:var(--text-dim)">4 min read</span>
@@ -2328,7 +2331,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </article>
 
     <!-- POST 3 — Diesel -->
-    <article itemscope itemtype="https://schema.org/Article" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 24px;box-shadow:var(--shadow-sm)">
+    <article id="post-diesel-decline" itemscope itemtype="https://schema.org/Article" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 24px;box-shadow:var(--shadow-sm)">
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
         <span style="background:rgba(148,163,184,.18);color:var(--diesel);font-size:10.5px;font-family:var(--mono);font-weight:600;letter-spacing:.08em;padding:3px 9px;border-radius:5px">FUEL MIX</span>
         <span style="font-size:11px;color:var(--text-dim)">4 min read</span>
@@ -2350,7 +2353,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </article>
 
     <!-- POST 4 — CNG surprise -->
-    <article itemscope itemtype="https://schema.org/Article" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 24px;box-shadow:var(--shadow-sm)">
+    <article id="post-cng-surprise" itemscope itemtype="https://schema.org/Article" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 24px;box-shadow:var(--shadow-sm)">
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
         <span style="background:rgba(52,211,153,.15);color:var(--cng);font-size:10.5px;font-family:var(--mono);font-weight:600;letter-spacing:.08em;padding:3px 9px;border-radius:5px">CNG</span>
         <span style="font-size:11px;color:var(--text-dim)">4 min read</span>
@@ -2375,7 +2378,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </article>
 
     <!-- POST 5 — State leaderboard -->
-    <article itemscope itemtype="https://schema.org/Article" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 24px;box-shadow:var(--shadow-sm)">
+    <article id="post-state-leaderboard" itemscope itemtype="https://schema.org/Article" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 24px;box-shadow:var(--shadow-sm)">
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
         <span style="background:rgba(251,191,36,.15);color:var(--accent-amber);font-size:10.5px;font-family:var(--mono);font-weight:600;letter-spacing:.08em;padding:3px 9px;border-radius:5px">GEOGRAPHY</span>
         <span style="font-size:11px;color:var(--text-dim)">5 min read</span>
@@ -2398,7 +2401,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </article>
 
     <!-- POST 6 — Hybrid surge -->
-    <article itemscope itemtype="https://schema.org/Article" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 24px;box-shadow:var(--shadow-sm)">
+    <article id="post-hybrid-surge" itemscope itemtype="https://schema.org/Article" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 24px;box-shadow:var(--shadow-sm)">
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
         <span style="background:rgba(251,191,36,.15);color:var(--hybrid);font-size:10.5px;font-family:var(--mono);font-weight:600;letter-spacing:.08em;padding:3px 9px;border-radius:5px">HYBRID</span>
         <span style="font-size:11px;color:var(--text-dim)">3 min read</span>
@@ -4963,6 +4966,12 @@ function applyHashToPage() {
     setTimeout(() => document.getElementById('privacy-policy')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0);
     return;
   }
+  if (h.startsWith('blog/')) {
+    switchPage('blog');
+    const postId = h.replace('blog/', '');
+    setTimeout(() => document.getElementById(postId)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    return;
+  }
   // v10.2: route ALL valid pages from URL hash, not just blog/info/about.
   const ALL_PAGES = ['overview','geomap','fuel','oem','ev','compare','forecast','blog','info','about'];
   if (ALL_PAGES.includes(h)) switchPage(h);
@@ -6279,6 +6288,35 @@ document.addEventListener('click', (e) => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Inject share buttons into blog articles
+  document.querySelectorAll('.blog-list > article[id]').forEach((art, i) => {
+    const h2 = art.querySelector('h2');
+    if (!h2) return;
+    const wrap = h2.parentElement;
+    const btn = document.createElement('button');
+    btn.className = 'blog-share';
+    btn.setAttribute('aria-label', 'Share this post');
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg> Share';
+    btn.onclick = function() {
+      const url = location.origin + '/#blog/' + art.id;
+      if (navigator.share) {
+        navigator.share({ title: h2.textContent.trim(), url: url }).catch(()=>{});
+      } else {
+        navigator.clipboard.writeText(url).then(() => {
+          btn.classList.add('copied');
+          btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+          setTimeout(() => {
+            btn.classList.remove('copied');
+            btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg> Share';
+          }, 2000);
+        });
+      }
+    };
+    const headerRow = art.querySelector('div[style*="display:flex"]');
+    if (headerRow) { headerRow.appendChild(btn); }
+    else { h2.insertAdjacentElement('afterend', btn); }
+  });
+
   // Run filter bar responsive init
   handleFilterBarResize();
   const cmpYt = document.getElementById('cmp-yeartype');
