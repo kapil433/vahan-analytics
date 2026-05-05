@@ -249,9 +249,9 @@ def page_shell(*, title: str, description: str, canonical: str,
       <h1>{safe(h1)}</h1>
       {body_html}
       <div class="footer">
-        <p><strong>Source.</strong> Government of India VAHAN/Parivahan portal, cleaned and aggregated by Vahan Intelligence. Last refreshed {TODAY}.</p>
-        <p><strong>License.</strong> Data is published under <a href="https://creativecommons.org/licenses/by/4.0/" rel="license">CC BY 4.0</a>. Cite as: "Vahan Intelligence, vahanintelligence.in".</p>
-        <p><strong>Caveat.</strong> Numbers reflect new vehicle registrations on the VAHAN portal. The current calendar month is excluded because the portal accepts late entries for ~2 weeks.</p>
+        <p><strong>Source.</strong> Publicly available registration data, cleaned and aggregated by Vahan Intelligence. Last refreshed {TODAY}.</p>
+        <p><strong>Disclaimer.</strong> Independent research platform for educational and informational purposes only. Not affiliated with any government body.</p>
+        <p><strong>Caveat.</strong> Numbers reflect new vehicle registrations from publicly available records. The current calendar month is excluded due to reporting lag.</p>
         <p>Questions? <a href="mailto:info@vahanintelligence.in">info@vahanintelligence.in</a> · <a href="/#info">Methodology</a> · <a href="/">Live dashboard</a></p>
       </div>
     </main>
@@ -392,7 +392,7 @@ def render_state_page(state_name: str, m: dict) -> str:
     title = f"{title_state} Passenger Vehicle Registrations — {month_short} + FY 2025-26 Numbers | Vahan Intelligence"
     desc_top_oem = display_oem(m["top_oems_yoy"][0][0]) if m["top_oems_yoy"] else "n/a"
     desc = (f"{title_state} car registrations: {fmt_int(m['latest_total'])} in {month_short} ({fmt_pct(m['yoy_pct'], sign=True)} YoY). "
-            f"Top OEM {desc_top_oem}. Fuel mix, OEM ranking, FY 25-26 totals from VAHAN data.")
+            f"Top OEM {desc_top_oem}. Fuel mix, OEM ranking, FY 25-26 totals from publicly available registration data.")
 
     h1 = f"{title_state} Passenger Vehicle Registrations — {month_short}"
 
@@ -481,7 +481,7 @@ def render_state_page(state_name: str, m: dict) -> str:
     # FAQ specific to state
     faqs = [
         (f"What was the total number of car registrations in {title_state} in {month_full}?",
-         f"{title_state} recorded {fmt_int(m['latest_total'])} new passenger vehicle registrations in {month_full}, sourced from the Government of India's VAHAN portal."),
+         f"{title_state} recorded {fmt_int(m['latest_total'])} new passenger vehicle registrations in {month_full}, based on publicly available registration data."),
         (f"Which OEM leads in {title_state}?",
          f"In {month_full}, {display_oem(m['top_oems_yoy'][0][0])} led {title_state} with {fmt_int(m['top_oems_yoy'][0][1])} registrations."),
         (f"How does {title_state} compare to All India?" if not is_ai else "How was the YoY growth?",
@@ -1015,10 +1015,10 @@ def render_ev_topic_page(c) -> str:
 def render_states_index(state_names: list[str]) -> str:
     canonical = f"{SITE_URL}/seo/states/"
     title = "India Car Registrations by State — All 36 States/UTs | Vahan Intelligence"
-    desc = "Passenger vehicle registrations for every Indian state and UT — Maharashtra, UP, Tamil Nadu, Gujarat, Karnataka and more. Latest month data + FY totals from VAHAN."
+    desc = "Passenger vehicle registrations for every Indian state and UT — Maharashtra, UP, Tamil Nadu, Gujarat, Karnataka and more. Latest month data + FY totals."
     items = "\n".join(f'<a href="/seo/states/{slug(s)}/">{safe(s)} car registrations</a>' for s in state_names)
     body = f"""
-    <p class="lede">A landing page for every Indian state and Union Territory with the latest passenger-vehicle registration numbers, top OEMs, fuel mix, and FY totals — sourced from the VAHAN portal and refreshed monthly.</p>
+    <p class="lede">A landing page for every Indian state and Union Territory with the latest passenger-vehicle registration numbers, top OEMs, fuel mix, and FY totals — refreshed monthly.</p>
     <h2>All states (alphabetical)</h2>
     <div class="related">{items}</div>
     """
